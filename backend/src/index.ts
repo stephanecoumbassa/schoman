@@ -3,6 +3,11 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
+// Import routes
+import authRoutes from './routes/authRoutes';
+import studentRoutes from './routes/studentRoutes';
+import dashboardRoutes from './routes/dashboardRoutes';
+
 // Configuration
 dotenv.config();
 
@@ -41,6 +46,11 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/students', studentRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
