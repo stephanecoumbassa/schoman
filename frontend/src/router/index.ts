@@ -3,6 +3,7 @@ import { useAuthStore } from '../stores/auth'
 import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import StudentsView from '../views/StudentsView.vue'
+import ClassesView from '../views/ClassesView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +28,12 @@ const router = createRouter({
       path: '/students',
       name: 'students',
       component: StudentsView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/classes',
+      name: 'classes',
+      component: ClassesView,
       meta: { requiresAuth: true },
     },
   ],
