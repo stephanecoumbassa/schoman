@@ -1,0 +1,35 @@
+{
+  "name": "schoman",
+  "version": "1.0.0",
+  "description": "School Management System - Complete web application for managing school operations",
+  "scripts": {
+    "setup": "bash setup.sh",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build:all": "npm run build:backend && npm run build:frontend",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm run preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stephanecoumbassa/schoman.git"
+  },
+  "keywords": [
+    "school",
+    "management",
+    "education",
+    "vue",
+    "typescript",
+    "mongodb",
+    "express",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=20.19.0 || >=22.12.0"
+  }
+}

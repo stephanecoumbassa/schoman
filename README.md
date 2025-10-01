@@ -2,6 +2,14 @@
 
 A comprehensive web application for managing school operations including academics, finance, library, events, and communications.
 
+## 📚 Documentation
+
+- **[User Guide](USER_GUIDE.md)** - Complete guide for end users
+- **[API Documentation](backend/API.md)** - REST API endpoints reference
+- **[Database Schema](DATABASE_SCHEMA.md)** - MongoDB schema documentation
+- **[Deployment Guide](DEPLOYMENT.md)** - Production deployment instructions
+- **[Contributing](CONTRIBUTING.md)** - How to contribute to the project
+
 ## Features
 
 ### 🎓 Academic Management
