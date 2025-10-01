@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import User from '../models/User';
-import Student from '../models/Student';
-import Class from '../models/Class';
+import User from '../models/User.js';
+import Student from '../models/Student.js';
+import Class from '../models/Class.js';
 
 dotenv.config();
 

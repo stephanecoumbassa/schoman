@@ -1,7 +1,7 @@
 import { Response } from 'express';
-import Student from '../models/Student';
-import User from '../models/User';
-import { AuthRequest } from '../middleware/auth';
+import Student from '../models/Student.js';
+import User from '../models/User.js';
+import { AuthRequest } from '../middleware/auth.js';
 
 export const createStudent = async (req: AuthRequest, res: Response) => {
   try {

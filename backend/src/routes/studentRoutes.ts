@@ -5,8 +5,8 @@ import {
   getStudent, 
   updateStudent, 
   deleteStudent 
-} from '../controllers/studentController';
-import { authenticate, authorize } from '../middleware/auth';
+} from '../controllers/studentController.js';
+import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = Router();
 
