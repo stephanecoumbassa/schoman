@@ -8,15 +8,18 @@ Application complète de gestion d'école avec authentification, gestion des él
 - ✅ Authentification JWT avec rôles (admin, enseignant, élève, parent)
 - ✅ Gestion des utilisateurs
 - ✅ CRUD complet pour les élèves
+- ✅ Gestion des classes (CRUD complet)
+- ✅ Gestion des notes/bulletins (création, modification, moyennes)
+- ✅ Suivi des présences/absences (enregistrement et statistiques)
 - ✅ Tableau de bord avec statistiques
-- ✅ Recherche et filtrage des élèves
+- ✅ Recherche et filtrage avancés
 - ✅ Pagination des résultats
-- ✅ Gestion des classes
 
 ### Frontend (Interface Web)
 - ✅ Page de connexion sécurisée
 - ✅ Tableau de bord avec statistiques en temps réel
 - ✅ Interface de gestion des élèves
+- ✅ Interface de gestion des classes
 - ✅ Recherche et filtres avancés
 - ✅ Design responsive avec Tailwind CSS
 - ✅ Navigation protégée par rôles
@@ -194,6 +197,31 @@ schoman/
 - `GET /api/students/:id` - Détails d'un élève
 - `PUT /api/students/:id` - Modifier un élève (admin/enseignant)
 - `DELETE /api/students/:id` - Désactiver un élève (admin)
+
+### Classes
+- `GET /api/classes` - Liste des classes (avec pagination, recherche, filtres)
+- `POST /api/classes` - Créer une classe (admin/enseignant)
+- `GET /api/classes/:id` - Détails d'une classe avec élèves
+- `GET /api/classes/:id/statistics` - Statistiques de la classe
+- `PUT /api/classes/:id` - Modifier une classe (admin/enseignant)
+- `DELETE /api/classes/:id` - Désactiver une classe (admin)
+
+### Notes
+- `GET /api/grades` - Liste des notes (avec filtres par élève, classe, matière)
+- `POST /api/grades` - Créer une note (admin/enseignant)
+- `GET /api/grades/:id` - Détails d'une note
+- `GET /api/grades/student/:studentId/summary` - Bulletin de l'élève avec moyennes
+- `PUT /api/grades/:id` - Modifier une note (admin/enseignant)
+- `DELETE /api/grades/:id` - Supprimer une note (admin/enseignant)
+
+### Présences
+- `GET /api/attendance` - Liste des présences (avec filtres)
+- `POST /api/attendance` - Enregistrer une présence (admin/enseignant)
+- `GET /api/attendance/:id` - Détails d'une présence
+- `GET /api/attendance/student/:studentId/stats` - Statistiques de présence d'un élève
+- `GET /api/attendance/class/:classId/date` - Présences d'une classe pour une date
+- `PUT /api/attendance/:id` - Modifier une présence (admin/enseignant)
+- `DELETE /api/attendance/:id` - Supprimer une présence (admin/enseignant)
 
 ### Dashboard
 - `GET /api/dashboard/stats` - Statistiques du tableau de bord
