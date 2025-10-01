@@ -51,11 +51,6 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({ message: 'Route non trouvée' });
-});
-
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Serveur démarré sur http://localhost:${PORT}`);
