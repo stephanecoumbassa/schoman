@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import authRoutes from './routes/authRoutes.js';
+import studentRoutes from './routes/studentRoutes.js';
 
 // Configuration
 dotenv.config();
@@ -29,7 +31,12 @@ app.get('/', (req, res) => {
   res.json({ 
     message: 'Bienvenue sur l\'API Schoman!',
     status: 'En fonctionnement',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      students: '/api/students',
+    }
   });
 });
 
@@ -41,6 +48,10 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/students', studentRoutes);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
