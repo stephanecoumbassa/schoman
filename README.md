@@ -1,6 +1,8 @@
 # Schoman - Application Full Stack
 
-Application complète de gestion d'école avec authentification, gestion des élèves, et tableau de bord statistique.
+Application complète de gestion d'école avec authentification, gestion des élèves, classes, notes et présences.
+
+> **Note:** L'application est configurée pour utiliser MongoDB Atlas (cloud) par défaut. Aucune installation locale de MongoDB n'est requise.
 
 ## 🎯 Fonctionnalités Implémentées
 
@@ -76,48 +78,52 @@ git clone https://github.com/stephanecoumbassa/schoman.git
 cd schoman
 ```
 
-2. **Installez MongoDB** (si ce n'est pas déjà fait)
-   - Linux/Mac: Suivez les instructions sur [mongodb.com](https://www.mongodb.com/docs/manual/installation/)
+2. **Configurez la base de données MongoDB**
+
+   Vous avez deux options:
+
+   **Option A: MongoDB Atlas (Cloud - Recommandé)**
+   - La configuration est déjà prête avec MongoDB Atlas
+   - Le fichier `.env` dans le dossier `backend/` contient la connexion
+
+   **Option B: MongoDB Local**
+   - Installez MongoDB localement : [mongodb.com](https://www.mongodb.com/docs/manual/installation/)
    - Ou utilisez Docker: `docker run -d -p 27017:27017 mongo`
+   - Modifiez le `.env` pour utiliser: `MONGODB_URI=mongodb://localhost:27017/schoman`
 
-3. **Démarrez MongoDB**
-```bash
-# Sous Linux/Mac
-mongod
-
-# Ou avec Docker
-docker start <container_id>
-```
-
-4. **Configurez le backend**
+3. **Configurez le backend**
 ```bash
 cd backend
 npm install
-# Le fichier .env est déjà créé avec les valeurs par défaut
+
+# Créez le fichier .env en copiant l'exemple
+cp .env.example .env
+
+# Modifiez le .env si nécessaire avec vos propres configurations
 ```
 
-5. **Initialisez la base de données avec des données de test**
+4. **Initialisez la base de données avec des données de test**
 ```bash
 npm run seed
 ```
 
-6. **Démarrez le backend**
+5. **Démarrez le backend**
 ```bash
 npm run dev
 ```
 
-7. **Dans un nouveau terminal, configurez le frontend**
+6. **Dans un nouveau terminal, configurez le frontend**
 ```bash
 cd ../frontend
 npm install
 ```
 
-8. **Démarrez le frontend**
+7. **Démarrez le frontend**
 ```bash
 npm run dev
 ```
 
-9. **Accédez à l'application**
+8. **Accédez à l'application**
    - Frontend: http://localhost:5173
    - Backend API: http://localhost:3000
 

@@ -2,47 +2,56 @@
 
 ## 📊 Statistiques du projet
 
-- **Lignes de code:** ~1700 lignes (TypeScript + Vue)
-- **Temps de développement:** Session unique
-- **Fichiers créés:** 23 fichiers principaux
+- **Lignes de code:** ~4500 lignes (TypeScript + Vue)
+- **Temps de développement:** Multiple sessions
+- **Fichiers créés:** 35+ fichiers principaux
 - **Technologies:** 8 (Node.js, Express, MongoDB, Vue.js, TypeScript, Tailwind CSS, Pinia, JWT)
 
 ## ✅ Fonctionnalités implémentées
 
-### Backend API (11 fichiers)
+### Backend API (23 fichiers)
 
-#### Modèles de données (3)
+#### Modèles de données (5)
 - ✅ `User.ts` - Modèle utilisateur avec 4 rôles et authentification
 - ✅ `Student.ts` - Profil élève complet avec contacts
 - ✅ `Class.ts` - Gestion des classes et groupes
+- ✅ `Grade.ts` - Gestion des notes et évaluations
+- ✅ `Attendance.ts` - Suivi des présences et absences
 
-#### Controllers (3)
+#### Controllers (6)
 - ✅ `authController.ts` - Inscription, connexion, profil
 - ✅ `studentController.ts` - CRUD complet avec recherche/filtres
 - ✅ `dashboardController.ts` - Statistiques en temps réel
+- ✅ `classController.ts` - CRUD complet des classes avec statistiques
+- ✅ `gradeController.ts` - Gestion des notes et bulletins
+- ✅ `attendanceController.ts` - Suivi des présences avec statistiques
 
-#### Routes (3)
+#### Routes (6)
 - ✅ `authRoutes.ts` - Routes d'authentification
 - ✅ `studentRoutes.ts` - Routes élèves avec autorisations
 - ✅ `dashboardRoutes.ts` - Routes dashboard
+- ✅ `classRoutes.ts` - Routes classes
+- ✅ `gradeRoutes.ts` - Routes notes
+- ✅ `attendanceRoutes.ts` - Routes présences
 
 #### Middleware & Scripts (2)
 - ✅ `auth.ts` - Authentification JWT et autorisation par rôles
 - ✅ `seed.ts` - Génération de données de démonstration
 
-### Frontend Interface (5 fichiers)
+### Frontend Interface (6 fichiers)
 
-#### Pages (3)
+#### Pages (4)
 - ✅ `LoginView.vue` - Page de connexion sécurisée
 - ✅ `DashboardView.vue` - Tableau de bord avec statistiques
 - ✅ `StudentsView.vue` - Gestion complète des élèves
+- ✅ `ClassesView.vue` - Gestion complète des classes
 
 #### Services & Stores (2)
-- ✅ `api.ts` - Client API REST avec authentification
+- ✅ `api.ts` - Client API REST avec authentification (tous les endpoints)
 - ✅ `auth.ts` - Store Pinia pour la gestion de session
 
 ### Documentation (4 fichiers)
-- ✅ `README.md` - Guide d'installation et présentation
+- ✅ `README.md` - Guide d'installation et présentation (mis à jour)
 - ✅ `USAGE.md` - Guide d'utilisation détaillé
 - ✅ `IMPLEMENTATION.md` - Documentation technique complète
 - ✅ `SUMMARY.md` - Ce fichier
@@ -108,6 +117,31 @@
 - `GET /api/students/:id` - Détails
 - `PUT /api/students/:id` - Modification (admin/teacher)
 - `DELETE /api/students/:id` - Désactivation (admin)
+
+### Endpoints Classes (6)
+- `GET /api/classes` - Liste avec pagination/recherche/filtres
+- `POST /api/classes` - Création (admin/teacher)
+- `GET /api/classes/:id` - Détails avec élèves
+- `GET /api/classes/:id/statistics` - Statistiques de la classe
+- `PUT /api/classes/:id` - Modification (admin/teacher)
+- `DELETE /api/classes/:id` - Désactivation (admin)
+
+### Endpoints Notes (6)
+- `GET /api/grades` - Liste avec filtres multiples
+- `POST /api/grades` - Création (admin/teacher)
+- `GET /api/grades/:id` - Détails
+- `GET /api/grades/student/:studentId/summary` - Bulletin avec moyennes
+- `PUT /api/grades/:id` - Modification (admin/teacher)
+- `DELETE /api/grades/:id` - Suppression (admin/teacher)
+
+### Endpoints Présences (7)
+- `GET /api/attendance` - Liste avec filtres
+- `POST /api/attendance` - Enregistrement (admin/teacher)
+- `GET /api/attendance/:id` - Détails
+- `GET /api/attendance/student/:studentId/stats` - Statistiques élève
+- `GET /api/attendance/class/:classId/date` - Présences classe par date
+- `PUT /api/attendance/:id` - Modification (admin/teacher)
+- `DELETE /api/attendance/:id` - Suppression (admin/teacher)
 
 ### Endpoints Dashboard (1)
 - `GET /api/dashboard/stats` - Statistiques
@@ -202,7 +236,9 @@ Le script seed crée automatiquement :
 L'application est fonctionnelle et peut être utilisée immédiatement pour :
 - ✅ Gérer des utilisateurs avec différents rôles
 - ✅ Enregistrer et suivre des élèves
-- ✅ Organiser des classes
+- ✅ Organiser des classes et affectations
+- ✅ Gérer les notes et générer des bulletins
+- ✅ Suivre les présences et absences
 - ✅ Obtenir des statistiques en temps réel
 - ✅ Rechercher et filtrer des données
 
@@ -211,15 +247,15 @@ L'application est fonctionnelle et peut être utilisée immédiatement pour :
 Basé sur `Project.md`, voici ce qui peut être ajouté :
 
 ### Court terme
-- 📝 Gestion des notes et bulletins
-- 📅 Emploi du temps
-- 📊 Absences et retards
+- 📝 Emploi du temps interactif
 - 📎 Upload de fichiers (bulletins, documents)
+- 📧 Notifications par email
+- 🖨️ Génération de rapports PDF
 
 ### Moyen terme
-- 💰 Module Comptabilité
-- 🧾 Module Facturation
-- 📉 Suivi des dépenses
+- 💰 Module Comptabilité (recettes/dépenses)
+- 🧾 Module Facturation (frais de scolarité)
+- 📉 Suivi des paiements fournisseurs
 - 📚 Gestion de bibliothèque
 
 ### Long terme
