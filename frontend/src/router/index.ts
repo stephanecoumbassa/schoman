@@ -4,6 +4,8 @@ import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import StudentsView from '../views/StudentsView.vue'
 import ClassesView from '../views/ClassesView.vue'
+import GradesView from '../views/GradesView.vue'
+import AttendanceView from '../views/AttendanceView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,6 +36,18 @@ const router = createRouter({
       path: '/classes',
       name: 'classes',
       component: ClassesView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/grades',
+      name: 'grades',
+      component: GradesView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/attendance',
+      name: 'attendance',
+      component: AttendanceView,
       meta: { requiresAuth: true },
     },
   ],
