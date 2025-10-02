@@ -1,10 +1,11 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { api } from '../services/api';
+import type { User } from '@/types';
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem('token'));
-  const user = ref<any>(null);
+  const user = ref<User | null>(null);
   const loading = ref(false);
   const error = ref<string | null>(null);
 
@@ -33,7 +34,7 @@ export const useAuthStore = defineStore('auth', () => {
     return true;
   }
 
-  async function register(userData: any) {
+  async function register(userData: Partial<User> & { password: string }) {
     loading.value = true;
     error.value = null;
 

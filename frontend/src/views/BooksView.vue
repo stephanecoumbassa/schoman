@@ -290,10 +290,11 @@
 import { ref, onMounted, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import api from '@/services/api';
+import type { Book } from '@/types';
 
 const authStore = useAuthStore();
 
-const books = ref<any[]>([]);
+const books = ref<Book[]>([]);
 const loading = ref(false);
 const error = ref('');
 const showAddForm = ref(false);
@@ -349,8 +350,8 @@ const loadBooks = async () => {
       books.value = response.data.books;
       pagination.value = response.data.pagination;
     }
-  } catch (err: any) {
-    error.value = err.message || 'Erreur lors du chargement des livres';
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Erreur lors du chargement des livres';
   } finally {
     loading.value = false;
   }
@@ -393,14 +394,14 @@ const createBook = async () => {
       closeForm();
       loadBooks();
     }
-  } catch (err: any) {
-    alert('Erreur: ' + (err.message || 'Erreur lors de la création du livre'));
+  } catch (err) {
+    alert('Erreur: ' + (err instanceof Error ? err.message : 'Erreur lors de la création du livre'));
   } finally {
     loading.value = false;
   }
 };
 
-const editBook = (book: any) => {
+const editBook = (book: Book) => {
   formData.value = {
     title: book.title,
     author: book.author,
@@ -427,8 +428,8 @@ const updateBook = async () => {
       closeForm();
       loadBooks();
     }
-  } catch (err: any) {
-    alert('Erreur: ' + (err.message || 'Erreur lors de la mise à jour du livre'));
+  } catch (err) {
+    alert('Erreur: ' + (err instanceof Error ? err.message : 'Erreur lors de la mise à jour du livre'));
   } finally {
     loading.value = false;
   }
@@ -447,8 +448,8 @@ const deleteBook = async (id: string) => {
     } else {
       loadBooks();
     }
-  } catch (err: any) {
-    alert('Erreur: ' + (err.message || 'Erreur lors de la suppression du livre'));
+  } catch (err) {
+    alert('Erreur: ' + (err instanceof Error ? err.message : 'Erreur lors de la suppression du livre'));
   } finally {
     loading.value = false;
   }

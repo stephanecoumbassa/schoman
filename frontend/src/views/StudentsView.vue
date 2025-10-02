@@ -202,12 +202,13 @@
 import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { api } from '../services/api';
+import type { Student, Pagination } from '@/types';
 
 const authStore = useAuthStore();
 
 const loading = ref(true);
-const students = ref<any[]>([]);
-const pagination = ref<any>(null);
+const students = ref<Student[]>([]);
+const pagination = ref<Pagination | null>(null);
 const searchQuery = ref('');
 const selectedLevel = ref('');
 const activeFilter = ref('');
@@ -218,10 +219,10 @@ const canManageStudents = computed(() => {
   return ['admin', 'teacher'].includes(authStore.userRole || '');
 });
 
-let searchTimeout: any = null;
+let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
 function debouncedSearch() {
-  clearTimeout(searchTimeout);
+  if (searchTimeout) clearTimeout(searchTimeout);
   searchTimeout = setTimeout(() => {
     currentPage.value = 1;
     fetchStudents();
@@ -250,12 +251,14 @@ function changePage(page: number) {
   fetchStudents();
 }
 
-function viewStudent(student: any) {
-  alert(`Détails de l'élève:\n\nNom: ${student.userId?.firstName} ${student.userId?.lastName}\nEmail: ${student.userId?.email}\nNiveau: ${student.level}\nNuméro: ${student.studentNumber}`);
+function viewStudent(student: Student) {
+  alert(`Détails de l'élève:\n\nNom: ${typeof student.userId !== 'string' ? student.userId.firstName : ''} ${typeof student.userId !== 'string' ? student.userId.lastName : ''}\nEmail: ${typeof student.userId !== 'string' ? student.userId.email : ''}\nNiveau: ${student.level}\nMatricule: ${student.matricule}`);
 }
 
-async function deleteStudent(student: any) {
-  if (!confirm(`Êtes-vous sûr de vouloir désactiver ${student.userId?.firstName} ${student.userId?.lastName}?`)) {
+async function deleteStudent(student: Student) {
+  const firstName = typeof student.userId !== 'string' ? student.userId.firstName : '';
+  const lastName = typeof student.userId !== 'string' ? student.userId.lastName : '';
+  if (!confirm(`Êtes-vous sûr de vouloir désactiver ${firstName} ${lastName}?`)) {
     return;
   }
 
