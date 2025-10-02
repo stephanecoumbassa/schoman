@@ -6,6 +6,8 @@ import StudentsView from '../views/StudentsView.vue'
 import ClassesView from '../views/ClassesView.vue'
 import GradesView from '../views/GradesView.vue'
 import AttendanceView from '../views/AttendanceView.vue'
+import BooksView from '../views/BooksView.vue'
+import LoansView from '../views/LoansView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -48,6 +50,18 @@ const router = createRouter({
       path: '/attendance',
       name: 'attendance',
       component: AttendanceView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/books',
+      name: 'books',
+      component: BooksView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/loans',
+      name: 'loans',
+      component: LoansView,
       meta: { requiresAuth: true },
     },
   ],

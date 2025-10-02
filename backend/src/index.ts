@@ -10,6 +10,8 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 import classRoutes from './routes/classRoutes.js';
 import gradeRoutes from './routes/gradeRoutes.js';
 import attendanceRoutes from './routes/attendanceRoutes.js';
+import bookRoutes from './routes/bookRoutes.js';
+import loanRoutes from './routes/loanRoutes.js';
 
 // Configuration
 dotenv.config();
@@ -57,6 +59,8 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/classes', classRoutes);
 app.use('/api/grades', gradeRoutes);
 app.use('/api/attendance', attendanceRoutes);
+app.use('/api/books', bookRoutes);
+app.use('/api/loans', loanRoutes);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
