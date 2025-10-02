@@ -241,6 +241,19 @@
           <h3 class="text-lg font-semibold text-gray-900 mb-2">Gérer les paiements</h3>
           <p class="text-sm text-gray-600">Enregistrer et suivre les paiements</p>
         </router-link>
+
+        <router-link
+          to="/expenses"
+          class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition text-center"
+        >
+          <div class="text-red-600 mb-3">
+            <svg class="h-12 w-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 8h6m-5 0a3 3 0 110 6H9l3 3m-3-6h6m6 1a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Gérer les dépenses</h3>
+          <p class="text-sm text-gray-600">Suivre et enregistrer les dépenses</p>
+        </router-link>
       </div>
     </div>
   </div>
