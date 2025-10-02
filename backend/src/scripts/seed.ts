@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import User from '../models/User.js';
 import Student from '../models/Student.js';
 import Class from '../models/Class.js';
+import Book from '../models/Book.js';
+import Loan from '../models/Loan.js';
 
 dotenv.config();
 
@@ -19,6 +21,8 @@ async function seed() {
     await User.deleteMany({});
     await Student.deleteMany({});
     await Class.deleteMany({});
+    await Book.deleteMany({});
+    await Loan.deleteMany({});
 
     // Create admin user
     console.log('👤 Création de l\'administrateur...');
@@ -174,6 +178,7 @@ async function seed() {
       },
     ];
 
+    const students = [];
     for (const data of studentData) {
       const user = await User.create({
         email: data.email,
@@ -183,7 +188,7 @@ async function seed() {
         role: 'student',
       });
 
-      await Student.create({
+      const student = await Student.create({
         userId: user._id,
         studentNumber: data.studentNumber,
         dateOfBirth: data.dateOfBirth,
@@ -194,17 +199,116 @@ async function seed() {
         parentContact: data.parentContact,
         emergencyContact: data.emergencyContact,
       });
+      students.push(student);
     }
 
     // Update class enrollment counts
     await Class.findByIdAndUpdate(classCE1._id, { currentEnrollment: 3 });
     await Class.findByIdAndUpdate(classCE2._id, { currentEnrollment: 2 });
 
+    // Create books
+    console.log('📚 Création des livres...');
+    const books = await Book.insertMany([
+      {
+        title: 'Le Petit Prince',
+        author: 'Antoine de Saint-Exupéry',
+        isbn: '978-2070612758',
+        category: 'Littérature',
+        publisher: 'Gallimard',
+        publishedYear: 1943,
+        description: 'Un conte philosophique et poétique',
+        totalQuantity: 3,
+        availableQuantity: 3,
+        location: 'Étagère A1',
+      },
+      {
+        title: 'Harry Potter à l\'école des sorciers',
+        author: 'J.K. Rowling',
+        isbn: '978-2070584628',
+        category: 'Jeunesse',
+        publisher: 'Gallimard',
+        publishedYear: 1997,
+        description: 'Premier tome de la saga Harry Potter',
+        totalQuantity: 5,
+        availableQuantity: 4,
+        location: 'Étagère B2',
+      },
+      {
+        title: 'Le Voyage au centre de la Terre',
+        author: 'Jules Verne',
+        isbn: '978-2253006299',
+        category: 'Science-Fiction',
+        publisher: 'Le Livre de Poche',
+        publishedYear: 1864,
+        description: 'Une aventure extraordinaire',
+        totalQuantity: 2,
+        availableQuantity: 2,
+        location: 'Étagère C3',
+      },
+      {
+        title: 'Le Livre de la jungle',
+        author: 'Rudyard Kipling',
+        isbn: '978-2070612796',
+        category: 'Jeunesse',
+        publisher: 'Gallimard',
+        publishedYear: 1894,
+        description: 'Les aventures de Mowgli',
+        totalQuantity: 4,
+        availableQuantity: 4,
+        location: 'Étagère A2',
+      },
+      {
+        title: 'Les Misérables',
+        author: 'Victor Hugo',
+        isbn: '978-2253096337',
+        category: 'Littérature',
+        publisher: 'Le Livre de Poche',
+        publishedYear: 1862,
+        description: 'Un chef-d\'œuvre de la littérature française',
+        totalQuantity: 2,
+        availableQuantity: 2,
+        location: 'Étagère D1',
+      },
+      {
+        title: 'Le Lion',
+        author: 'Joseph Kessel',
+        isbn: '978-2070360154',
+        category: 'Aventure',
+        publisher: 'Gallimard',
+        publishedYear: 1958,
+        description: 'Une histoire captivante au Kenya',
+        totalQuantity: 3,
+        availableQuantity: 3,
+        location: 'Étagère B1',
+      },
+    ]);
+
+    // Create a sample loan
+    console.log('📖 Création d\'un emprunt exemple...');
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 14);
+    
+    await Loan.create({
+      book: books[1]._id, // Harry Potter
+      student: students[0]._id, // First student
+      borrowDate: new Date(),
+      dueDate: futureDate,
+      status: 'borrowed',
+      notes: 'Premier emprunt de l\'année',
+    });
+
+    // Update book availability
+    await Book.findByIdAndUpdate(books[1]._id, {
+      availableQuantity: 4,
+    });
+
     console.log('✅ Données de démonstration créées avec succès!');
     console.log('\n📋 Comptes disponibles:');
     console.log('   Admin: admin@schoman.com / admin123');
     console.log('   Enseignant: teacher@schoman.com / teacher123');
     console.log('   Élève: student@schoman.com / student123');
+    console.log('\n📚 Livres créés: 6 livres avec 19 exemplaires au total');
+    console.log('📖 Emprunts: 1 emprunt en cours');
     console.log('\n🎉 Le système est prêt à être utilisé!');
   } catch (error) {
     console.error('❌ Erreur lors du seeding:', error);

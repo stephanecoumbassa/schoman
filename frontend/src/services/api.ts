@@ -269,6 +269,117 @@ class ApiService {
   async getClassAttendanceForDate(classId: string, date: string) {
     return this.request<any>(`/attendance/class/${classId}/date?date=${date}`);
   }
+
+  // Books endpoints
+  async getBooks(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    category?: string;
+    available?: boolean;
+    isActive?: boolean;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+    return this.request<{ books: any[]; pagination: any }>(
+      `/books?${queryParams}`
+    );
+  }
+
+  async getBook(id: string) {
+    return this.request<{ book: any }>(`/books/${id}`);
+  }
+
+  async createBook(bookData: any) {
+    return this.request<{ book: any }>('/books', {
+      method: 'POST',
+      body: JSON.stringify(bookData),
+    });
+  }
+
+  async updateBook(id: string, bookData: any) {
+    return this.request<{ book: any }>(`/books/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(bookData),
+    });
+  }
+
+  async deleteBook(id: string) {
+    return this.request(`/books/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getBookStatistics() {
+    return this.request<any>('/books/statistics');
+  }
+
+  // Loans endpoints
+  async getLoans(params?: {
+    page?: number;
+    limit?: number;
+    student?: string;
+    book?: string;
+    status?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+    return this.request<{ loans: any[]; pagination: any }>(
+      `/loans?${queryParams}`
+    );
+  }
+
+  async getLoan(id: string) {
+    return this.request<{ loan: any }>(`/loans/${id}`);
+  }
+
+  async createLoan(loanData: any) {
+    return this.request<{ loan: any }>('/loans', {
+      method: 'POST',
+      body: JSON.stringify(loanData),
+    });
+  }
+
+  async returnLoan(id: string) {
+    return this.request<{ loan: any }>(`/loans/${id}/return`, {
+      method: 'POST',
+    });
+  }
+
+  async updateLoan(id: string, loanData: any) {
+    return this.request<{ loan: any }>(`/loans/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(loanData),
+    });
+  }
+
+  async deleteLoan(id: string) {
+    return this.request(`/loans/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getStudentLoans(studentId: string) {
+    return this.request<any>(`/loans/student/${studentId}`);
+  }
+
+  async updateOverdueLoans() {
+    return this.request<any>('/loans/update-overdue', {
+      method: 'POST',
+    });
+  }
 }
 
 export const api = new ApiService();
