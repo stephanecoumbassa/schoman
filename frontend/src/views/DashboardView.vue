@@ -237,12 +237,13 @@
 import { ref, onMounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { api } from '../services/api';
+import type { Student } from '@/types';
 
 const authStore = useAuthStore();
 
 const loading = ref(true);
-const stats = ref<any>(null);
-const recentStudents = ref<any[]>([]);
+const stats = ref<Record<string, number> | null>(null);
+const recentStudents = ref<Student[]>([]);
 
 onMounted(async () => {
   const response = await api.getDashboardStats();

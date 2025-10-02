@@ -323,13 +323,14 @@
 import { ref, onMounted, computed } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { api } from '../services/api';
+import type { Attendance } from '@/types';
 
 const authStore = useAuthStore();
 
-const attendances = ref<any[]>([]);
+const attendances = ref<Attendance[]>([]);
 const loading = ref(false);
 const showAddAttendanceForm = ref(false);
-const editingAttendance = ref<any>(null);
+const editingAttendance = ref<Attendance | null>(null);
 
 const filters = ref({
   student: '',
@@ -362,7 +363,14 @@ const canManageAttendance = computed(() => {
 
 const fetchAttendances = async () => {
   loading.value = true;
-  const params: any = {
+  const params: {
+    page: number;
+    limit: number;
+    student?: string;
+    class?: string;
+    status?: string;
+    startDate?: string;
+  } = {
     page: pagination.value.page,
     limit: pagination.value.limit,
   };
@@ -380,15 +388,18 @@ const fetchAttendances = async () => {
   loading.value = false;
 };
 
-const getStudentName = (attendance: any) => {
-  if (attendance.student?.userId) {
-    return `${attendance.student.userId.firstName} ${attendance.student.userId.lastName}`;
+const getStudentName = (attendance: Attendance) => {
+  if (typeof attendance.student !== 'string' && attendance.student?.userId) {
+    const userId = attendance.student.userId;
+    if (typeof userId !== 'string') {
+      return `${userId.firstName} ${userId.lastName}`;
+    }
   }
   return 'N/A';
 };
 
-const getClassName = (attendance: any) => {
-  if (attendance.class) {
+const getClassName = (attendance: Attendance) => {
+  if (typeof attendance.class !== 'string' && attendance.class) {
     return `${attendance.class.name} - ${attendance.class.level}`;
   }
   return 'N/A';
@@ -429,11 +440,11 @@ const saveAttendance = async () => {
   fetchAttendances();
 };
 
-const editAttendance = (attendance: any) => {
+const editAttendance = (attendance: Attendance) => {
   editingAttendance.value = attendance;
   attendanceForm.value = {
-    student: attendance.student._id,
-    class: attendance.class._id,
+    student: typeof attendance.student !== 'string' ? attendance.student._id : attendance.student,
+    class: typeof attendance.class !== 'string' ? attendance.class._id : attendance.class,
     date: new Date(attendance.date).toISOString().split('T')[0],
     status: attendance.status,
     timeIn: attendance.timeIn || '',

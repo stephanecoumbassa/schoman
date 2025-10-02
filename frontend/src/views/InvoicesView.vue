@@ -486,17 +486,18 @@
 import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import api from '../services/api';
+import type { Invoice, Student, Pagination, InvoiceStats } from '@/types';
 
 const authStore = useAuthStore();
 const user = computed(() => authStore.user);
 const canManageInvoices = computed(() => user.value?.role === 'admin' || user.value?.role === 'teacher');
 
-const invoices = ref<any[]>([]);
-const students = ref<any[]>([]);
+const invoices = ref<Invoice[]>([]);
+const students = ref<Student[]>([]);
 const loading = ref(false);
 const error = ref('');
-const pagination = ref<any>(null);
-const stats = ref<any>({});
+const pagination = ref<Pagination | null>(null);
+const stats = ref<InvoiceStats | Record<string, never>>({});
 
 const filters = ref({
   status: '',
@@ -508,7 +509,7 @@ const filters = ref({
 
 const showModal = ref(false);
 const showPaymentModal = ref(false);
-const editingInvoice = ref<any>(null);
+const editingInvoice = ref<Invoice | null>(null);
 
 const form = ref({
   student: '',
@@ -539,16 +540,15 @@ const totalAmount = computed(() => {
 });
 
 const paymentRate = computed(() => {
-  if (!stats.value.stats || stats.value.totalInvoices === 0) return 0;
-  const paidCount = stats.value.stats.find((s: any) => s._id === 'paid')?.count || 0;
-  return Math.round((paidCount / stats.value.totalInvoices) * 100);
+  if (!('totalInvoices' in stats.value) || stats.value.totalInvoices === 0) return 0;
+  return Math.round(((stats.value.paidAmount || 0) / (stats.value.totalAmount || 1)) * 100);
 });
 
 const loadInvoices = async () => {
   loading.value = true;
   error.value = '';
   try {
-    const params: any = { page: filters.value.page, limit: 10 };
+    const params: Record<string, string | number> = { page: filters.value.page, limit: 10 };
     if (filters.value.status) params.status = filters.value.status;
     if (filters.value.student) params.student = filters.value.student;
     if (filters.value.startDate) params.startDate = filters.value.startDate;
@@ -561,8 +561,8 @@ const loadInvoices = async () => {
     } else {
       error.value = response.error || 'Erreur lors du chargement des factures';
     }
-  } catch (err: any) {
-    error.value = err.message || 'Erreur lors du chargement des factures';
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Erreur lors du chargement des factures';
   } finally {
     loading.value = false;
   }
@@ -603,10 +603,10 @@ const openCreateModal = () => {
   showModal.value = true;
 };
 
-const editInvoice = (invoice: any) => {
+const editInvoice = (invoice: Invoice) => {
   editingInvoice.value = invoice;
   form.value = {
-    student: invoice.student._id,
+    student: typeof invoice.student !== 'string' ? invoice.student._id : invoice.student,
     items: JSON.parse(JSON.stringify(invoice.items)),
     taxRate: invoice.taxRate,
     dueDate: invoice.dueDate.split('T')[0],
@@ -616,8 +616,9 @@ const editInvoice = (invoice: any) => {
   showModal.value = true;
 };
 
-const viewInvoice = (invoice: any) => {
-  alert(`Facture ${invoice.invoiceNumber}\nÉlève: ${invoice.student?.userId?.firstName} ${invoice.student?.userId?.lastName}\nMontant: ${formatCurrency(invoice.totalAmount)}\nStatut: ${getStatusLabel(invoice.status)}`);
+const viewInvoice = (invoice: Invoice) => {
+  const studentName = typeof invoice.student !== 'string' ? `${invoice.student.userId.firstName} ${invoice.student.userId.lastName}` : 'N/A';
+  alert(`Facture ${invoice.invoiceNumber}\nÉlève: ${studentName}\nMontant: ${formatCurrency(invoice.totalAmount)}\nStatut: ${getStatusLabel(invoice.status)}`);
 };
 
 const closeModal = () => {
@@ -635,7 +636,7 @@ const removeItem = (index: number) => {
   }
 };
 
-const calculateItemTotal = (item: any) => {
+const calculateItemTotal = (item: { quantity: number; unitPrice: number; totalPrice?: number }) => {
   item.totalPrice = (item.quantity || 0) * (item.unitPrice || 0);
 };
 
@@ -664,12 +665,12 @@ const saveInvoice = async () => {
     } else {
       alert(response.error || 'Erreur lors de l\'enregistrement');
     }
-  } catch (err: any) {
-    alert(err.message || 'Erreur lors de l\'enregistrement');
+  } catch (err) {
+    alert(err instanceof Error ? err.message : 'Erreur lors de l\'enregistrement');
   }
 };
 
-const openPaymentModal = (invoice: any) => {
+const openPaymentModal = (invoice: Invoice) => {
   editingInvoice.value = invoice;
   paymentForm.value = {
     amount: invoice.totalAmount,
@@ -696,8 +697,8 @@ const savePayment = async () => {
     } else {
       alert(response.error || 'Erreur lors de l\'enregistrement du paiement');
     }
-  } catch (err: any) {
-    alert(err.message || 'Erreur lors de l\'enregistrement du paiement');
+  } catch (err) {
+    alert(err instanceof Error ? err.message : 'Erreur lors de l\'enregistrement du paiement');
   }
 };
 
@@ -707,14 +708,14 @@ const deleteInvoice = async (id: string) => {
   try {
     const response = await api.deleteInvoice(id);
     if (response.data) {
-      alert(response.data.message || 'Facture supprimée avec succès');
+      alert('Facture supprimée avec succès');
       await loadInvoices();
       await loadStats();
     } else {
       alert(response.error || 'Erreur lors de la suppression');
     }
-  } catch (err: any) {
-    alert(err.message || 'Erreur lors de la suppression');
+  } catch (err) {
+    alert(err instanceof Error ? err.message : 'Erreur lors de la suppression');
   }
 };
 
@@ -736,7 +737,7 @@ const formatDate = (date: string) => {
 };
 
 const getStatusLabel = (status: string) => {
-  const labels: any = {
+  const labels: Record<string, string> = {
     draft: 'Brouillon',
     sent: 'Envoyée',
     paid: 'Payée',
@@ -747,7 +748,7 @@ const getStatusLabel = (status: string) => {
 };
 
 const getStatusClass = (status: string) => {
-  const classes: any = {
+  const classes: Record<string, string> = {
     draft: 'bg-gray-100 text-gray-800',
     sent: 'bg-blue-100 text-blue-800',
     paid: 'bg-green-100 text-green-800',

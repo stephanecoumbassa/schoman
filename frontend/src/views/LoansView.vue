@@ -274,12 +274,13 @@
 import { ref, onMounted, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import api from '@/services/api';
+import type { Loan, Student, Book } from '@/types';
 
 const authStore = useAuthStore();
 
-const loans = ref<any[]>([]);
-const students = ref<any[]>([]);
-const availableBooks = ref<any[]>([]);
+const loans = ref<Loan[]>([]);
+const students = ref<Student[]>([]);
+const availableBooks = ref<Book[]>([]);
 const loading = ref(false);
 const error = ref('');
 const showAddForm = ref(false);
@@ -330,8 +331,8 @@ const loadLoans = async () => {
       loans.value = response.data.loans;
       pagination.value = response.data.pagination;
     }
-  } catch (err: any) {
-    error.value = err.message || 'Erreur lors du chargement des emprunts';
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Erreur lors du chargement des emprunts';
   } finally {
     loading.value = false;
   }
@@ -395,17 +396,17 @@ const createLoan = async () => {
       loadLoans();
       loadBooks(); // Refresh to update available quantities
     }
-  } catch (err: any) {
-    alert('Erreur: ' + (err.message || 'Erreur lors de la création de l\'emprunt'));
+  } catch (err) {
+    alert('Erreur: ' + (err instanceof Error ? err.message : 'Erreur lors de la création de l\'emprunt'));
   } finally {
     loading.value = false;
   }
 };
 
-const editLoan = (loan: any) => {
+const editLoan = (loan: Loan) => {
   formData.value = {
-    book: loan.book?._id || '',
-    student: loan.student?._id || '',
+    book: (typeof loan.book !== 'string' ? loan.book?._id : loan.book) || '',
+    student: (typeof loan.student !== 'string' ? loan.student?._id : loan.student) || '',
     dueDate: loan.dueDate ? (new Date(loan.dueDate).toISOString().split('T')[0] || '') : '',
     status: loan.status,
     notes: loan.notes || '',
@@ -428,8 +429,8 @@ const updateLoan = async () => {
       closeForm();
       loadLoans();
     }
-  } catch (err: any) {
-    alert('Erreur: ' + (err.message || 'Erreur lors de la mise à jour de l\'emprunt'));
+  } catch (err) {
+    alert('Erreur: ' + (err instanceof Error ? err.message : 'Erreur lors de la mise à jour de l\'emprunt'));
   } finally {
     loading.value = false;
   }
@@ -449,8 +450,8 @@ const returnLoan = async (id: string) => {
       loadLoans();
       loadBooks(); // Refresh to update available quantities
     }
-  } catch (err: any) {
-    alert('Erreur: ' + (err.message || 'Erreur lors du retour du livre'));
+  } catch (err) {
+    alert('Erreur: ' + (err instanceof Error ? err.message : 'Erreur lors du retour du livre'));
   } finally {
     loading.value = false;
   }
@@ -470,8 +471,8 @@ const deleteLoan = async (id: string) => {
       loadLoans();
       loadBooks(); // Refresh to update available quantities
     }
-  } catch (err: any) {
-    alert('Erreur: ' + (err.message || 'Erreur lors de la suppression de l\'emprunt'));
+  } catch (err) {
+    alert('Erreur: ' + (err instanceof Error ? err.message : 'Erreur lors de la suppression de l\'emprunt'));
   } finally {
     loading.value = false;
   }
