@@ -219,12 +219,13 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { api } from '../services/api';
+import type { Class } from '@/types';
 
 const router = useRouter();
 const authStore = useAuthStore();
 
 const loading = ref(true);
-const classes = ref<any[]>([]);
+const classes = ref<Class[]>([]);
 const pagination = ref({
   page: 1,
   limit: 10,
@@ -256,7 +257,14 @@ const debouncedSearch = () => {
 
 const fetchClasses = async () => {
   loading.value = true;
-  const params: any = {
+  const params: {
+    page: number;
+    limit: number;
+    search?: string;
+    level?: string;
+    academicYear?: string;
+    isActive?: boolean;
+  } = {
     page: pagination.value.page,
     limit: pagination.value.limit,
   };
