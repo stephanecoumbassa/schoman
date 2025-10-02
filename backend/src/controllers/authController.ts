@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../models/User';
-import { AuthRequest } from '../middleware/auth';
+import User from '../models/User.js';
+import { AuthRequest } from '../middleware/auth.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default_secret_change_in_production';
 const JWT_EXPIRES_IN = '7d';

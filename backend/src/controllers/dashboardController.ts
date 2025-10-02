@@ -1,8 +1,8 @@
 import { Response } from 'express';
-import User from '../models/User';
-import Student from '../models/Student';
-import Class from '../models/Class';
-import { AuthRequest } from '../middleware/auth';
+import User from '../models/User.js';
+import Student from '../models/Student.js';
+import Class from '../models/Class.js';
+import { AuthRequest } from '../middleware/auth.js';
 
 export const getStats = async (req: AuthRequest, res: Response) => {
   try {

@@ -151,15 +151,18 @@
           <p class="text-sm text-gray-600">Voir, ajouter ou modifier les élèves</p>
         </router-link>
 
-        <div class="bg-white rounded-lg shadow p-6 text-center opacity-50 cursor-not-allowed">
-          <div class="text-gray-400 mb-3">
+        <router-link
+          to="/classes"
+          class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition text-center"
+        >
+          <div class="text-green-600 mb-3">
             <svg class="h-12 w-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
           </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Rapports</h3>
-          <p class="text-sm text-gray-600">À venir prochainement</p>
-        </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Gérer les classes</h3>
+          <p class="text-sm text-gray-600">Organisation et affectation des classes</p>
+        </router-link>
 
         <div class="bg-white rounded-lg shadow p-6 text-center opacity-50 cursor-not-allowed">
           <div class="text-gray-400 mb-3">

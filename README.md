@@ -1,6 +1,8 @@
 # Schoman - Application Full Stack
 
-Application complète de gestion d'école avec authentification, gestion des élèves, et tableau de bord statistique.
+Application complète de gestion d'école avec authentification, gestion des élèves, classes, notes et présences.
+
+> **Note:** L'application est configurée pour utiliser MongoDB Atlas (cloud) par défaut. Aucune installation locale de MongoDB n'est requise.
 
 ## 🎯 Fonctionnalités Implémentées
 
@@ -8,15 +10,18 @@ Application complète de gestion d'école avec authentification, gestion des él
 - ✅ Authentification JWT avec rôles (admin, enseignant, élève, parent)
 - ✅ Gestion des utilisateurs
 - ✅ CRUD complet pour les élèves
+- ✅ Gestion des classes (CRUD complet)
+- ✅ Gestion des notes/bulletins (création, modification, moyennes)
+- ✅ Suivi des présences/absences (enregistrement et statistiques)
 - ✅ Tableau de bord avec statistiques
-- ✅ Recherche et filtrage des élèves
+- ✅ Recherche et filtrage avancés
 - ✅ Pagination des résultats
-- ✅ Gestion des classes
 
 ### Frontend (Interface Web)
 - ✅ Page de connexion sécurisée
 - ✅ Tableau de bord avec statistiques en temps réel
 - ✅ Interface de gestion des élèves
+- ✅ Interface de gestion des classes
 - ✅ Recherche et filtres avancés
 - ✅ Design responsive avec Tailwind CSS
 - ✅ Navigation protégée par rôles
@@ -73,48 +78,52 @@ git clone https://github.com/stephanecoumbassa/schoman.git
 cd schoman
 ```
 
-2. **Installez MongoDB** (si ce n'est pas déjà fait)
-   - Linux/Mac: Suivez les instructions sur [mongodb.com](https://www.mongodb.com/docs/manual/installation/)
+2. **Configurez la base de données MongoDB**
+
+   Vous avez deux options:
+
+   **Option A: MongoDB Atlas (Cloud - Recommandé)**
+   - La configuration est déjà prête avec MongoDB Atlas
+   - Le fichier `.env` dans le dossier `backend/` contient la connexion
+
+   **Option B: MongoDB Local**
+   - Installez MongoDB localement : [mongodb.com](https://www.mongodb.com/docs/manual/installation/)
    - Ou utilisez Docker: `docker run -d -p 27017:27017 mongo`
+   - Modifiez le `.env` pour utiliser: `MONGODB_URI=mongodb://localhost:27017/schoman`
 
-3. **Démarrez MongoDB**
-```bash
-# Sous Linux/Mac
-mongod
-
-# Ou avec Docker
-docker start <container_id>
-```
-
-4. **Configurez le backend**
+3. **Configurez le backend**
 ```bash
 cd backend
 npm install
-# Le fichier .env est déjà créé avec les valeurs par défaut
+
+# Créez le fichier .env en copiant l'exemple
+cp .env.example .env
+
+# Modifiez le .env si nécessaire avec vos propres configurations
 ```
 
-5. **Initialisez la base de données avec des données de test**
+4. **Initialisez la base de données avec des données de test**
 ```bash
 npm run seed
 ```
 
-6. **Démarrez le backend**
+5. **Démarrez le backend**
 ```bash
 npm run dev
 ```
 
-7. **Dans un nouveau terminal, configurez le frontend**
+6. **Dans un nouveau terminal, configurez le frontend**
 ```bash
 cd ../frontend
 npm install
 ```
 
-8. **Démarrez le frontend**
+7. **Démarrez le frontend**
 ```bash
 npm run dev
 ```
 
-9. **Accédez à l'application**
+8. **Accédez à l'application**
    - Frontend: http://localhost:5173
    - Backend API: http://localhost:3000
 
@@ -194,6 +203,31 @@ schoman/
 - `GET /api/students/:id` - Détails d'un élève
 - `PUT /api/students/:id` - Modifier un élève (admin/enseignant)
 - `DELETE /api/students/:id` - Désactiver un élève (admin)
+
+### Classes
+- `GET /api/classes` - Liste des classes (avec pagination, recherche, filtres)
+- `POST /api/classes` - Créer une classe (admin/enseignant)
+- `GET /api/classes/:id` - Détails d'une classe avec élèves
+- `GET /api/classes/:id/statistics` - Statistiques de la classe
+- `PUT /api/classes/:id` - Modifier une classe (admin/enseignant)
+- `DELETE /api/classes/:id` - Désactiver une classe (admin)
+
+### Notes
+- `GET /api/grades` - Liste des notes (avec filtres par élève, classe, matière)
+- `POST /api/grades` - Créer une note (admin/enseignant)
+- `GET /api/grades/:id` - Détails d'une note
+- `GET /api/grades/student/:studentId/summary` - Bulletin de l'élève avec moyennes
+- `PUT /api/grades/:id` - Modifier une note (admin/enseignant)
+- `DELETE /api/grades/:id` - Supprimer une note (admin/enseignant)
+
+### Présences
+- `GET /api/attendance` - Liste des présences (avec filtres)
+- `POST /api/attendance` - Enregistrer une présence (admin/enseignant)
+- `GET /api/attendance/:id` - Détails d'une présence
+- `GET /api/attendance/student/:studentId/stats` - Statistiques de présence d'un élève
+- `GET /api/attendance/class/:classId/date` - Présences d'une classe pour une date
+- `PUT /api/attendance/:id` - Modifier une présence (admin/enseignant)
+- `DELETE /api/attendance/:id` - Supprimer une présence (admin/enseignant)
 
 ### Dashboard
 - `GET /api/dashboard/stats` - Statistiques du tableau de bord

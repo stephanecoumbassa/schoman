@@ -113,6 +113,56 @@ class ApiService {
       enrollmentByLevel: any[];
     }>('/dashboard/stats');
   }
+
+  // Classes endpoints
+  async getClasses(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    level?: string;
+    academicYear?: string;
+    isActive?: boolean;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+    return this.request<{ classes: any[]; pagination: any }>(
+      `/classes?${queryParams}`
+    );
+  }
+
+  async getClass(id: string) {
+    return this.request<{ class: any; students: any[] }>(`/classes/${id}`);
+  }
+
+  async createClass(classData: any) {
+    return this.request<{ class: any }>('/classes', {
+      method: 'POST',
+      body: JSON.stringify(classData),
+    });
+  }
+
+  async updateClass(id: string, classData: any) {
+    return this.request<{ class: any }>(`/classes/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(classData),
+    });
+  }
+
+  async deleteClass(id: string) {
+    return this.request(`/classes/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getClassStatistics(id: string) {
+    return this.request<any>(`/classes/${id}/statistics`);
+  }
 }
 
 export const api = new ApiService();
