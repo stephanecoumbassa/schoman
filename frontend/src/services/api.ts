@@ -163,6 +163,112 @@ class ApiService {
   async getClassStatistics(id: string) {
     return this.request<any>(`/classes/${id}/statistics`);
   }
+
+  // Grades endpoints
+  async getGrades(params?: {
+    page?: number;
+    limit?: number;
+    student?: string;
+    class?: string;
+    subject?: string;
+    semester?: string;
+    academicYear?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+    return this.request<{ grades: any[]; pagination: any }>(
+      `/grades?${queryParams}`
+    );
+  }
+
+  async getGrade(id: string) {
+    return this.request<{ grade: any }>(`/grades/${id}`);
+  }
+
+  async createGrade(gradeData: any) {
+    return this.request<{ grade: any }>('/grades', {
+      method: 'POST',
+      body: JSON.stringify(gradeData),
+    });
+  }
+
+  async updateGrade(id: string, gradeData: any) {
+    return this.request<{ grade: any }>(`/grades/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(gradeData),
+    });
+  }
+
+  async deleteGrade(id: string) {
+    return this.request(`/grades/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getStudentGradesSummary(studentId: string) {
+    return this.request<any>(`/grades/student/${studentId}/summary`);
+  }
+
+  // Attendance endpoints
+  async getAttendances(params?: {
+    page?: number;
+    limit?: number;
+    student?: string;
+    class?: string;
+    status?: string;
+    startDate?: string;
+    endDate?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+    return this.request<{ attendances: any[]; pagination: any }>(
+      `/attendance?${queryParams}`
+    );
+  }
+
+  async getAttendance(id: string) {
+    return this.request<{ attendance: any }>(`/attendance/${id}`);
+  }
+
+  async createAttendance(attendanceData: any) {
+    return this.request<{ attendance: any }>('/attendance', {
+      method: 'POST',
+      body: JSON.stringify(attendanceData),
+    });
+  }
+
+  async updateAttendance(id: string, attendanceData: any) {
+    return this.request<{ attendance: any }>(`/attendance/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(attendanceData),
+    });
+  }
+
+  async deleteAttendance(id: string) {
+    return this.request(`/attendance/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getStudentAttendanceStats(studentId: string) {
+    return this.request<any>(`/attendance/student/${studentId}/stats`);
+  }
+
+  async getClassAttendanceForDate(classId: string, date: string) {
+    return this.request<any>(`/attendance/class/${classId}/date?date=${date}`);
+  }
 }
 
 export const api = new ApiService();
