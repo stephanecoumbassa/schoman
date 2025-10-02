@@ -12,6 +12,7 @@ import gradeRoutes from './routes/gradeRoutes.js';
 import attendanceRoutes from './routes/attendanceRoutes.js';
 import bookRoutes from './routes/bookRoutes.js';
 import loanRoutes from './routes/loanRoutes.js';
+import invoiceRoutes from './routes/invoiceRoutes.js';
 
 // Configuration
 dotenv.config();
@@ -61,6 +62,7 @@ app.use('/api/grades', gradeRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/loans', loanRoutes);
+app.use('/api/invoices', invoiceRoutes);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
