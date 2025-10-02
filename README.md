@@ -2,6 +2,8 @@
 
 Application complète de gestion d'école avec authentification, gestion des élèves, classes, notes et présences.
 
+> **🚀 Installation Rapide:** Consultez [SETUP_GUIDE.md](./SETUP_GUIDE.md) pour un guide complet d'installation pas à pas.
+
 > **Note:** L'application est configurée pour utiliser MongoDB Atlas (cloud) par défaut. Aucune installation locale de MongoDB n'est requise.
 
 ## 🎯 Fonctionnalités Implémentées
