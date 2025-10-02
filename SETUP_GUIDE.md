@@ -318,6 +318,18 @@ Maintenant que votre application est configurée :
 
 ## ✅ Checklist de Vérification
 
+### Vérification Automatique
+
+Utilisez le script de vérification automatique pour contrôler votre installation :
+
+```bash
+./verify-setup.sh
+```
+
+Ce script vérifie automatiquement tous les prérequis et vous indique ce qui manque.
+
+### Vérification Manuelle
+
 Avant de commencer à développer, vérifiez que :
 
 - [ ] Node.js v18+ est installé (`node --version`)

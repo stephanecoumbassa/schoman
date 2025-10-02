@@ -74,6 +74,35 @@ L'API sera accessible sur `http://localhost:3000`
 
 ## 🛠️ Installation complète
 
+### ⚡ Installation Automatique (Recommandé)
+
+Utilisez le script d'installation automatique qui configure tout pour vous :
+
+```bash
+./quick-install.sh
+```
+
+Ce script installe automatiquement :
+- ✓ Toutes les dépendances backend et frontend
+- ✓ Crée les fichiers de configuration nécessaires
+- ✓ Vérifie que le code compile sans erreur
+
+### ⚡ Vérification de l'Installation
+
+Après l'installation, vérifiez que votre environnement est prêt :
+
+```bash
+./verify-setup.sh
+```
+
+Ce script vérifie automatiquement :
+- ✓ Node.js et npm sont installés
+- ✓ Les dépendances sont installées
+- ✓ Les fichiers de configuration existent
+- ✓ Le code compile sans erreur
+
+### 📝 Installation Pas à Pas
+
 1. **Clonez le projet**
 ```bash
 git clone https://github.com/stephanecoumbassa/schoman.git
