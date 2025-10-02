@@ -15,6 +15,8 @@ Application complète de gestion d'école avec authentification, gestion des él
 - ✅ Gestion des classes (CRUD complet)
 - ✅ Gestion des notes/bulletins (création, modification, moyennes)
 - ✅ Suivi des présences/absences (enregistrement et statistiques)
+- ✅ Module bibliothèque (livres et emprunts)
+- ✅ **Module facturation (factures, paiements, statistiques)** 🆕
 - ✅ Tableau de bord avec statistiques
 - ✅ Recherche et filtrage avancés
 - ✅ Pagination des résultats
@@ -24,6 +26,10 @@ Application complète de gestion d'école avec authentification, gestion des él
 - ✅ Tableau de bord avec statistiques en temps réel
 - ✅ Interface de gestion des élèves
 - ✅ Interface de gestion des classes
+- ✅ Interface de gestion des notes
+- ✅ Interface de gestion des présences
+- ✅ Interface de gestion de la bibliothèque
+- ✅ **Interface de gestion des factures** 🆕
 - ✅ Recherche et filtres avancés
 - ✅ Design responsive avec Tailwind CSS
 - ✅ Navigation protégée par rôles
@@ -259,6 +265,30 @@ schoman/
 - `GET /api/attendance/class/:classId/date` - Présences d'une classe pour une date
 - `PUT /api/attendance/:id` - Modifier une présence (admin/enseignant)
 - `DELETE /api/attendance/:id` - Supprimer une présence (admin/enseignant)
+
+### Bibliothèque
+- `GET /api/books` - Liste des livres (avec pagination, recherche, filtres)
+- `POST /api/books` - Créer un livre (admin/enseignant)
+- `GET /api/books/:id` - Détails d'un livre
+- `PUT /api/books/:id` - Modifier un livre (admin/enseignant)
+- `DELETE /api/books/:id` - Supprimer un livre (admin)
+- `GET /api/books/stats` - Statistiques des livres
+
+### Emprunts
+- `GET /api/loans` - Liste des emprunts (avec filtres)
+- `POST /api/loans` - Créer un emprunt (admin/enseignant)
+- `GET /api/loans/:id` - Détails d'un emprunt
+- `PUT /api/loans/:id/return` - Retourner un livre (admin/enseignant)
+- `DELETE /api/loans/:id` - Supprimer un emprunt (admin)
+
+### Factures 🆕
+- `GET /api/invoices` - Liste des factures (avec pagination, recherche, filtres)
+- `POST /api/invoices` - Créer une facture (admin/enseignant)
+- `GET /api/invoices/:id` - Détails d'une facture
+- `PUT /api/invoices/:id` - Modifier une facture (admin/enseignant)
+- `POST /api/invoices/:id/payment` - Enregistrer un paiement (admin/enseignant)
+- `DELETE /api/invoices/:id` - Supprimer une facture (admin)
+- `GET /api/invoices/stats` - Statistiques financières
 
 ### Dashboard
 - `GET /api/dashboard/stats` - Statistiques du tableau de bord
