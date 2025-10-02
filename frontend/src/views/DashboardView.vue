@@ -137,7 +137,7 @@
       </div>
 
       <!-- Quick Actions -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <router-link
           to="/students"
           class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition text-center"
@@ -214,6 +214,32 @@
           </div>
           <h3 class="text-lg font-semibold text-gray-900 mb-2">Gérer les emprunts</h3>
           <p class="text-sm text-gray-600">Suivre les emprunts de livres</p>
+        </router-link>
+
+        <router-link
+          to="/invoices"
+          class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition text-center"
+        >
+          <div class="text-blue-600 mb-3">
+            <svg class="h-12 w-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Gérer les factures</h3>
+          <p class="text-sm text-gray-600">Facturation et suivi des paiements</p>
+        </router-link>
+
+        <router-link
+          to="/payments"
+          class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition text-center"
+        >
+          <div class="text-green-600 mb-3">
+            <svg class="h-12 w-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Gérer les paiements</h3>
+          <p class="text-sm text-gray-600">Enregistrer et suivre les paiements</p>
         </router-link>
       </div>
     </div>

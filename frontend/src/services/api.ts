@@ -380,6 +380,118 @@ class ApiService {
       method: 'POST',
     });
   }
+
+  // Invoice endpoints
+  async getInvoices(params?: {
+    page?: number;
+    limit?: number;
+    student?: string;
+    status?: string;
+    academicYear?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+    return this.request<{ invoices: any[]; pagination: any }>(
+      `/invoices?${queryParams}`
+    );
+  }
+
+  async getInvoice(id: string) {
+    return this.request<{ invoice: any; payments: any[] }>(`/invoices/${id}`);
+  }
+
+  async createInvoice(invoiceData: any) {
+    return this.request<{ invoice: any }>('/invoices', {
+      method: 'POST',
+      body: JSON.stringify(invoiceData),
+    });
+  }
+
+  async updateInvoice(id: string, invoiceData: any) {
+    return this.request<{ invoice: any }>(`/invoices/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(invoiceData),
+    });
+  }
+
+  async deleteInvoice(id: string) {
+    return this.request(`/invoices/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getStudentInvoices(studentId: string) {
+    return this.request<any>(`/invoices/student/${studentId}`);
+  }
+
+  async updateOverdueInvoices() {
+    return this.request<any>('/invoices/update-overdue', {
+      method: 'POST',
+    });
+  }
+
+  async getInvoiceStatistics() {
+    return this.request<any>('/invoices/statistics');
+  }
+
+  // Payment endpoints
+  async getPayments(params?: {
+    page?: number;
+    limit?: number;
+    student?: string;
+    invoice?: string;
+    paymentMethod?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+    return this.request<{ payments: any[]; pagination: any }>(
+      `/payments?${queryParams}`
+    );
+  }
+
+  async getPayment(id: string) {
+    return this.request<{ payment: any }>(`/payments/${id}`);
+  }
+
+  async recordPayment(paymentData: any) {
+    return this.request<{ payment: any }>('/payments', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async updatePayment(id: string, paymentData: any) {
+    return this.request<{ payment: any }>(`/payments/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async deletePayment(id: string) {
+    return this.request(`/payments/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getStudentPayments(studentId: string) {
+    return this.request<any>(`/payments/student/${studentId}`);
+  }
+
+  async getPaymentStatistics() {
+    return this.request<any>('/payments/statistics');
+  }
 }
 
 export const api = new ApiService();

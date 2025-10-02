@@ -1,6 +1,6 @@
 # Schoman - Application Full Stack
 
-Application complète de gestion d'école avec authentification, gestion des élèves, classes, notes et présences.
+Application complète de gestion d'école avec authentification, gestion des élèves, classes, notes, présences, bibliothèque et facturation.
 
 > **🚀 Installation Rapide:** Consultez [SETUP_GUIDE.md](./SETUP_GUIDE.md) pour un guide complet d'installation pas à pas.
 
@@ -15,6 +15,8 @@ Application complète de gestion d'école avec authentification, gestion des él
 - ✅ Gestion des classes (CRUD complet)
 - ✅ Gestion des notes/bulletins (création, modification, moyennes)
 - ✅ Suivi des présences/absences (enregistrement et statistiques)
+- ✅ Gestion de la bibliothèque (livres et emprunts)
+- ✅ Facturation et paiements (factures et suivi des paiements)
 - ✅ Tableau de bord avec statistiques
 - ✅ Recherche et filtrage avancés
 - ✅ Pagination des résultats
@@ -24,6 +26,10 @@ Application complète de gestion d'école avec authentification, gestion des él
 - ✅ Tableau de bord avec statistiques en temps réel
 - ✅ Interface de gestion des élèves
 - ✅ Interface de gestion des classes
+- ✅ Interface de gestion des notes
+- ✅ Interface de gestion des présences
+- ✅ Interface de gestion de la bibliothèque
+- ✅ Interface de facturation et paiements
 - ✅ Recherche et filtres avancés
 - ✅ Design responsive avec Tailwind CSS
 - ✅ Navigation protégée par rôles
@@ -259,6 +265,42 @@ schoman/
 - `GET /api/attendance/class/:classId/date` - Présences d'une classe pour une date
 - `PUT /api/attendance/:id` - Modifier une présence (admin/enseignant)
 - `DELETE /api/attendance/:id` - Supprimer une présence (admin/enseignant)
+
+### Bibliothèque (Livres)
+- `GET /api/books` - Liste des livres (avec pagination, recherche, filtres)
+- `POST /api/books` - Créer un livre (admin/enseignant)
+- `GET /api/books/:id` - Détails d'un livre
+- `GET /api/books/statistics` - Statistiques de la bibliothèque
+- `PUT /api/books/:id` - Modifier un livre (admin/enseignant)
+- `DELETE /api/books/:id` - Supprimer un livre (admin)
+
+### Emprunts
+- `GET /api/loans` - Liste des emprunts (avec filtres)
+- `POST /api/loans` - Créer un emprunt (admin/enseignant)
+- `GET /api/loans/:id` - Détails d'un emprunt
+- `POST /api/loans/:id/return` - Retourner un livre (admin/enseignant)
+- `GET /api/loans/student/:studentId` - Historique d'emprunts d'un élève
+- `PUT /api/loans/:id` - Modifier un emprunt (admin/enseignant)
+- `DELETE /api/loans/:id` - Supprimer un emprunt (admin)
+
+### Factures
+- `GET /api/invoices` - Liste des factures (avec pagination, filtres)
+- `POST /api/invoices` - Créer une facture (admin/enseignant)
+- `GET /api/invoices/:id` - Détails d'une facture
+- `GET /api/invoices/student/:studentId` - Factures d'un élève
+- `GET /api/invoices/statistics` - Statistiques financières
+- `POST /api/invoices/update-overdue` - Mettre à jour les factures en retard (admin/enseignant)
+- `PUT /api/invoices/:id` - Modifier une facture (admin/enseignant)
+- `DELETE /api/invoices/:id` - Supprimer une facture (admin)
+
+### Paiements
+- `GET /api/payments` - Liste des paiements (avec pagination, filtres)
+- `POST /api/payments` - Enregistrer un paiement (admin/enseignant)
+- `GET /api/payments/:id` - Détails d'un paiement
+- `GET /api/payments/student/:studentId` - Paiements d'un élève
+- `GET /api/payments/statistics` - Statistiques des paiements
+- `PUT /api/payments/:id` - Modifier un paiement (admin/enseignant)
+- `DELETE /api/payments/:id` - Supprimer un paiement (admin)
 
 ### Dashboard
 - `GET /api/dashboard/stats` - Statistiques du tableau de bord
