@@ -5,6 +5,8 @@ import Student from '../models/Student.js';
 import Class from '../models/Class.js';
 import Book from '../models/Book.js';
 import Loan from '../models/Loan.js';
+import Invoice from '../models/Invoice.js';
+import Payment from '../models/Payment.js';
 
 dotenv.config();
 
@@ -23,6 +25,8 @@ async function seed() {
     await Class.deleteMany({});
     await Book.deleteMany({});
     await Loan.deleteMany({});
+    await Invoice.deleteMany({});
+    await Payment.deleteMany({});
 
     // Create admin user
     console.log('👤 Création de l\'administrateur...');
@@ -302,6 +306,125 @@ async function seed() {
       availableQuantity: 4,
     });
 
+    // Create sample invoices
+    console.log('💰 Création des factures...');
+    const invoices = [];
+    
+    // Invoice for first student - School fees
+    const invoice1 = await Invoice.create({
+      student: students[0]._id,
+      academicYear: '2024-2025',
+      issueDate: new Date('2024-09-01'),
+      dueDate: new Date('2024-09-30'),
+      items: [
+        {
+          description: 'Frais de scolarité - Trimestre 1',
+          quantity: 1,
+          unitPrice: 150000,
+          amount: 150000,
+        },
+        {
+          description: 'Assurance scolaire',
+          quantity: 1,
+          unitPrice: 10000,
+          amount: 10000,
+        },
+      ],
+      subtotal: 160000,
+      discount: 0,
+      tax: 0,
+      total: 160000,
+      amountPaid: 160000,
+      balance: 0,
+      status: 'paid',
+      notes: 'Paiement complet reçu',
+      createdBy: admin._id,
+    });
+    invoices.push(invoice1);
+
+    // Invoice for second student - Partial payment
+    const invoice2 = await Invoice.create({
+      student: students[1]._id,
+      academicYear: '2024-2025',
+      issueDate: new Date('2024-09-01'),
+      dueDate: new Date('2024-10-15'),
+      items: [
+        {
+          description: 'Frais de scolarité - Trimestre 1',
+          quantity: 1,
+          unitPrice: 150000,
+          amount: 150000,
+        },
+        {
+          description: 'Fournitures scolaires',
+          quantity: 1,
+          unitPrice: 25000,
+          amount: 25000,
+        },
+      ],
+      subtotal: 175000,
+      discount: 5000,
+      tax: 0,
+      total: 170000,
+      amountPaid: 100000,
+      balance: 70000,
+      status: 'partial',
+      notes: 'Acompte reçu, solde à régler',
+      createdBy: admin._id,
+    });
+    invoices.push(invoice2);
+
+    // Invoice for third student - Unpaid
+    const invoice3 = await Invoice.create({
+      student: students[2]._id,
+      academicYear: '2024-2025',
+      issueDate: new Date('2024-10-01'),
+      dueDate: new Date('2024-10-31'),
+      items: [
+        {
+          description: 'Frais de scolarité - Trimestre 1',
+          quantity: 1,
+          unitPrice: 150000,
+          amount: 150000,
+        },
+      ],
+      subtotal: 150000,
+      discount: 0,
+      tax: 0,
+      total: 150000,
+      amountPaid: 0,
+      balance: 150000,
+      status: 'issued',
+      createdBy: admin._id,
+    });
+    invoices.push(invoice3);
+
+    // Create sample payments
+    console.log('💳 Création des paiements...');
+    
+    // Payment for invoice 1 (full payment)
+    await Payment.create({
+      invoice: invoice1._id,
+      student: students[0]._id,
+      amount: 160000,
+      paymentDate: new Date('2024-09-05'),
+      paymentMethod: 'bank_transfer',
+      reference: 'TRF-2024-0001',
+      notes: 'Virement bancaire',
+      receivedBy: admin._id,
+    });
+
+    // Partial payment for invoice 2
+    await Payment.create({
+      invoice: invoice2._id,
+      student: students[1]._id,
+      amount: 100000,
+      paymentDate: new Date('2024-09-10'),
+      paymentMethod: 'cash',
+      notes: 'Acompte en espèces',
+      receivedBy: teacher._id,
+    });
+
     console.log('✅ Données de démonstration créées avec succès!');
     console.log('\n📋 Comptes disponibles:');
     console.log('   Admin: admin@schoman.com / admin123');
@@ -309,6 +432,8 @@ async function seed() {
     console.log('   Élève: student@schoman.com / student123');
     console.log('\n📚 Livres créés: 6 livres avec 19 exemplaires au total');
     console.log('📖 Emprunts: 1 emprunt en cours');
+    console.log('💰 Factures: 3 factures créées (1 payée, 1 partielle, 1 impayée)');
+    console.log('💳 Paiements: 2 paiements enregistrés');
     console.log('\n🎉 Le système est prêt à être utilisé!');
   } catch (error) {
     console.error('❌ Erreur lors du seeding:', error);
