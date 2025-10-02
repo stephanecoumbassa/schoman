@@ -380,6 +380,47 @@ class ApiService {
       method: 'POST',
     });
   }
+
+  // Invoice endpoints
+  async getInvoices(params?: any) {
+    const queryParams = new URLSearchParams(params).toString();
+    return this.request<any>(`/invoices${queryParams ? `?${queryParams}` : ''}`);
+  }
+
+  async getInvoice(id: string) {
+    return this.request<any>(`/invoices/${id}`);
+  }
+
+  async createInvoice(invoiceData: any) {
+    return this.request<any>('/invoices', {
+      method: 'POST',
+      body: JSON.stringify(invoiceData),
+    });
+  }
+
+  async updateInvoice(id: string, invoiceData: any) {
+    return this.request<any>(`/invoices/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(invoiceData),
+    });
+  }
+
+  async deleteInvoice(id: string) {
+    return this.request<any>(`/invoices/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async recordPayment(id: string, paymentData: any) {
+    return this.request<any>(`/invoices/${id}/payment`, {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async getInvoiceStats() {
+    return this.request<any>('/invoices/stats');
+  }
 }
 
 export const api = new ApiService();

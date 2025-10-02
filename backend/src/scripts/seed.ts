@@ -5,6 +5,7 @@ import Student from '../models/Student.js';
 import Class from '../models/Class.js';
 import Book from '../models/Book.js';
 import Loan from '../models/Loan.js';
+import Invoice from '../models/Invoice.js';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ async function seed() {
     await Class.deleteMany({});
     await Book.deleteMany({});
     await Loan.deleteMany({});
+    await Invoice.deleteMany({});
 
     // Create admin user
     console.log('👤 Création de l\'administrateur...');
@@ -302,6 +304,105 @@ async function seed() {
       availableQuantity: 4,
     });
 
+    // Create sample invoices
+    console.log('💰 Création des factures exemple...');
+    
+    // Invoice for first student - Paid
+    const invoice1DueDate = new Date();
+    invoice1DueDate.setDate(invoice1DueDate.getDate() + 30);
+    
+    await Invoice.create({
+      invoiceNumber: 'INV-2024-00001',
+      student: students[0]._id,
+      items: [
+        {
+          description: 'Frais de scolarité - Trimestre 1',
+          category: 'tuition',
+          quantity: 1,
+          unitPrice: 150000,
+          totalPrice: 150000,
+        },
+        {
+          description: 'Fournitures scolaires',
+          category: 'material',
+          quantity: 1,
+          unitPrice: 25000,
+          totalPrice: 25000,
+        },
+      ],
+      subtotal: 175000,
+      taxRate: 0,
+      taxAmount: 0,
+      totalAmount: 175000,
+      issueDate: new Date('2024-09-01'),
+      dueDate: new Date('2024-09-30'),
+      status: 'paid',
+      paymentDate: new Date('2024-09-15'),
+      paymentMethod: 'bank_transfer',
+      paymentReference: 'TRX-2024-001',
+    });
+
+    // Invoice for second student - Sent (not paid yet)
+    await Invoice.create({
+      invoiceNumber: 'INV-2024-00002',
+      student: students[1]._id,
+      items: [
+        {
+          description: 'Frais de scolarité - Trimestre 1',
+          category: 'tuition',
+          quantity: 1,
+          unitPrice: 150000,
+          totalPrice: 150000,
+        },
+      ],
+      subtotal: 150000,
+      taxRate: 0,
+      taxAmount: 0,
+      totalAmount: 150000,
+      issueDate: new Date(),
+      dueDate: invoice1DueDate,
+      status: 'sent',
+    });
+
+    // Invoice for third student - Draft
+    const invoice3DueDate = new Date();
+    invoice3DueDate.setDate(invoice3DueDate.getDate() + 45);
+    
+    await Invoice.create({
+      invoiceNumber: 'INV-2024-00003',
+      student: students[2]._id,
+      items: [
+        {
+          description: 'Frais de scolarité - Trimestre 1',
+          category: 'tuition',
+          quantity: 1,
+          unitPrice: 150000,
+          totalPrice: 150000,
+        },
+        {
+          description: 'Transport scolaire',
+          category: 'transport',
+          quantity: 1,
+          unitPrice: 30000,
+          totalPrice: 30000,
+        },
+        {
+          description: 'Cantine',
+          category: 'cafeteria',
+          quantity: 1,
+          unitPrice: 20000,
+          totalPrice: 20000,
+        },
+      ],
+      subtotal: 200000,
+      taxRate: 0,
+      taxAmount: 0,
+      totalAmount: 200000,
+      issueDate: new Date(),
+      dueDate: invoice3DueDate,
+      status: 'draft',
+    });
+
     console.log('✅ Données de démonstration créées avec succès!');
     console.log('\n📋 Comptes disponibles:');
     console.log('   Admin: admin@schoman.com / admin123');
@@ -309,6 +410,7 @@ async function seed() {
     console.log('   Élève: student@schoman.com / student123');
     console.log('\n📚 Livres créés: 6 livres avec 19 exemplaires au total');
     console.log('📖 Emprunts: 1 emprunt en cours');
+    console.log('💰 Factures créées: 3 factures (1 payée, 1 envoyée, 1 brouillon)');
     console.log('\n🎉 Le système est prêt à être utilisé!');
   } catch (error) {
     console.error('❌ Erreur lors du seeding:', error);
