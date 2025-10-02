@@ -1,6 +1,6 @@
 # Schoman - Application Full Stack
 
-Application complète de gestion d'école avec authentification, gestion des élèves, classes, notes, présences, bibliothèque et facturation.
+Application complète de gestion d'école avec authentification, gestion des élèves, classes, notes, présences, bibliothèque, facturation et dépenses.
 
 > **🚀 Installation Rapide:** Consultez [SETUP_GUIDE.md](./SETUP_GUIDE.md) pour un guide complet d'installation pas à pas.
 
@@ -17,6 +17,7 @@ Application complète de gestion d'école avec authentification, gestion des él
 - ✅ Suivi des présences/absences (enregistrement et statistiques)
 - ✅ Gestion de la bibliothèque (livres et emprunts)
 - ✅ Facturation et paiements (factures et suivi des paiements)
+- ✅ Gestion des dépenses (suivi et catégorisation des dépenses)
 - ✅ Tableau de bord avec statistiques
 - ✅ Recherche et filtrage avancés
 - ✅ Pagination des résultats
@@ -30,6 +31,7 @@ Application complète de gestion d'école avec authentification, gestion des él
 - ✅ Interface de gestion des présences
 - ✅ Interface de gestion de la bibliothèque
 - ✅ Interface de facturation et paiements
+- ✅ Interface de gestion des dépenses
 - ✅ Recherche et filtres avancés
 - ✅ Design responsive avec Tailwind CSS
 - ✅ Navigation protégée par rôles
@@ -301,6 +303,14 @@ schoman/
 - `GET /api/payments/statistics` - Statistiques des paiements
 - `PUT /api/payments/:id` - Modifier un paiement (admin/enseignant)
 - `DELETE /api/payments/:id` - Supprimer un paiement (admin)
+
+### Dépenses
+- `GET /api/expenses` - Liste des dépenses (avec pagination, filtres)
+- `POST /api/expenses` - Enregistrer une dépense (admin/enseignant)
+- `GET /api/expenses/:id` - Détails d'une dépense
+- `GET /api/expenses/statistics` - Statistiques des dépenses
+- `PUT /api/expenses/:id` - Modifier une dépense (admin/enseignant)
+- `DELETE /api/expenses/:id` - Supprimer une dépense (admin)
 
 ### Dashboard
 - `GET /api/dashboard/stats` - Statistiques du tableau de bord
