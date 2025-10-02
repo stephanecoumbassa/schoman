@@ -7,6 +7,7 @@ import Book from '../models/Book.js';
 import Loan from '../models/Loan.js';
 import Invoice from '../models/Invoice.js';
 import Payment from '../models/Payment.js';
+import Expense from '../models/Expense.js';
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ async function seed() {
     await Loan.deleteMany({});
     await Invoice.deleteMany({});
     await Payment.deleteMany({});
+    await Expense.deleteMany({});
 
     // Create admin user
     console.log('👤 Création de l\'administrateur...');
@@ -425,6 +427,67 @@ async function seed() {
       receivedBy: teacher._id,
     });
 
+    // Create sample expenses
+    console.log('📉 Création des dépenses...');
+    
+    await Expense.create({
+      category: 'salaries',
+      description: 'Salaire enseignants - Septembre 2024',
+      amount: 450000,
+      expenseDate: new Date('2024-09-30'),
+      payee: 'Personnel enseignant',
+      paymentMethod: 'bank_transfer',
+      reference: 'SAL-2024-09',
+      receiptNumber: 'REC-001',
+      notes: 'Salaires mensuels',
+      approvedBy: admin._id,
+      recordedBy: admin._id,
+      academicYear: '2024-2025',
+    });
+
+    await Expense.create({
+      category: 'supplies',
+      description: 'Fournitures scolaires et livres',
+      amount: 85000,
+      expenseDate: new Date('2024-09-15'),
+      payee: 'Librairie Moderne',
+      paymentMethod: 'check',
+      reference: 'CHQ-2024-001',
+      receiptNumber: 'REC-002',
+      notes: 'Achat fournitures rentrée',
+      approvedBy: admin._id,
+      recordedBy: teacher._id,
+      academicYear: '2024-2025',
+    });
+
+    await Expense.create({
+      category: 'utilities',
+      description: 'Facture électricité - Septembre 2024',
+      amount: 35000,
+      expenseDate: new Date('2024-09-20'),
+      payee: 'Compagnie d\'électricité',
+      paymentMethod: 'bank_transfer',
+      reference: 'ELEC-2024-09',
+      receiptNumber: 'REC-003',
+      approvedBy: admin._id,
+      recordedBy: admin._id,
+      academicYear: '2024-2025',
+    });
+
+    await Expense.create({
+      category: 'maintenance',
+      description: 'Réparation climatisation salle 3',
+      amount: 45000,
+      expenseDate: new Date('2024-09-25'),
+      payee: 'Service Climatisation Pro',
+      paymentMethod: 'cash',
+      receiptNumber: 'REC-004',
+      notes: 'Réparation urgente',
+      approvedBy: admin._id,
+      recordedBy: admin._id,
+      academicYear: '2024-2025',
+    });
+
     console.log('✅ Données de démonstration créées avec succès!');
     console.log('\n📋 Comptes disponibles:');
     console.log('   Admin: admin@schoman.com / admin123');
@@ -434,6 +497,7 @@ async function seed() {
     console.log('📖 Emprunts: 1 emprunt en cours');
     console.log('💰 Factures: 3 factures créées (1 payée, 1 partielle, 1 impayée)');
     console.log('💳 Paiements: 2 paiements enregistrés');
+    console.log('📉 Dépenses: 4 dépenses enregistrées (615 000 FCFA au total)');
     console.log('\n🎉 Le système est prêt à être utilisé!');
   } catch (error) {
     console.error('❌ Erreur lors du seeding:', error);

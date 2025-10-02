@@ -492,6 +492,41 @@ class ApiService {
   async getPaymentStatistics() {
     return this.request<any>('/payments/statistics');
   }
+
+  // Expense endpoints
+  async getExpenses(params?: any) {
+    const queryString = params ? '?' + new URLSearchParams(params).toString() : '';
+    return this.request<any>(`/expenses${queryString}`);
+  }
+
+  async getExpense(id: string) {
+    return this.request<any>(`/expenses/${id}`);
+  }
+
+  async createExpense(expenseData: any) {
+    return this.request<{ expense: any }>('/expenses', {
+      method: 'POST',
+      body: JSON.stringify(expenseData),
+    });
+  }
+
+  async updateExpense(id: string, expenseData: any) {
+    return this.request<{ expense: any }>(`/expenses/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(expenseData),
+    });
+  }
+
+  async deleteExpense(id: string) {
+    return this.request(`/expenses/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getExpenseStatistics(params?: any) {
+    const queryString = params ? '?' + new URLSearchParams(params).toString() : '';
+    return this.request<any>(`/expenses/statistics${queryString}`);
+  }
 }
 
 export const api = new ApiService();
