@@ -361,13 +361,14 @@
 import { ref, onMounted, computed } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { api } from '../services/api';
+import type { Grade } from '@/types';
 
 const authStore = useAuthStore();
 
-const grades = ref<any[]>([]);
+const grades = ref<Grade[]>([]);
 const loading = ref(false);
 const showAddGradeForm = ref(false);
-const editingGrade = ref<any>(null);
+const editingGrade = ref<Grade | null>(null);
 
 const filters = ref({
   student: '',
@@ -403,7 +404,15 @@ const canManageGrades = computed(() => {
 
 const fetchGrades = async () => {
   loading.value = true;
-  const params: any = {
+  const params: {
+    page: number;
+    limit: number;
+    student?: string;
+    class?: string;
+    subject?: string;
+    semester?: string;
+    academicYear?: string;
+  } = {
     page: pagination.value.page,
     limit: pagination.value.limit,
   };
@@ -421,15 +430,18 @@ const fetchGrades = async () => {
   loading.value = false;
 };
 
-const getStudentName = (grade: any) => {
-  if (grade.student?.userId) {
-    return `${grade.student.userId.firstName} ${grade.student.userId.lastName}`;
+const getStudentName = (grade: Grade) => {
+  if (typeof grade.student !== 'string' && grade.student?.userId) {
+    const userId = grade.student.userId;
+    if (typeof userId !== 'string') {
+      return `${userId.firstName} ${userId.lastName}`;
+    }
   }
   return 'N/A';
 };
 
-const getGradeColor = (grade: any) => {
-  const percentage = (grade.grade / grade.maxGrade) * 100;
+const getGradeColor = (grade: Grade) => {
+  const percentage = (grade.score / grade.maxScore) * 100;
   if (percentage >= 80) return 'text-green-600';
   if (percentage >= 60) return 'text-blue-600';
   if (percentage >= 40) return 'text-yellow-600';
@@ -456,12 +468,12 @@ const saveGrade = async () => {
   fetchGrades();
 };
 
-const editGrade = (grade: any) => {
+const editGrade = (grade: Grade) => {
   editingGrade.value = grade;
   gradeForm.value = {
-    student: grade.student._id,
+    student: typeof grade.student !== 'string' ? grade.student._id : grade.student,
     subject: grade.subject,
-    class: grade.class._id,
+    class: typeof grade.class !== 'string' ? grade.class._id : grade.class,
     evaluationType: grade.evaluationType,
     grade: grade.grade,
     maxGrade: grade.maxGrade,

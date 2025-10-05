@@ -1,3 +1,28 @@
+import type {
+  User,
+  Student,
+  StudentFormData,
+  Class,
+  ClassFormData,
+  Grade,
+  GradeFormData,
+  Attendance,
+  AttendanceFormData,
+  AttendanceStats,
+  Book,
+  BookFormData,
+  BookStatistics,
+  Loan,
+  LoanFormData,
+  Invoice,
+  InvoiceFormData,
+  InvoiceStats,
+  DashboardStats,
+  Pagination,
+  QueryParams,
+  Payment,
+} from '@/types';
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 interface ApiResponse<T> {
@@ -35,29 +60,29 @@ class ApiService {
       }
 
       return { data };
-    } catch (error: any) {
+    } catch (error) {
       console.error('API Error:', error);
-      return { error: error.message };
+      return { error: error instanceof Error ? error.message : 'An error occurred' };
     }
   }
 
   // Auth endpoints
   async login(email: string, password: string) {
-    return this.request<{ token: string; user: any }>('/auth/login', {
+    return this.request<{ token: string; user: User }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
   }
 
-  async register(userData: any) {
-    return this.request<{ token: string; user: any }>('/auth/register', {
+  async register(userData: Partial<User> & { password: string }) {
+    return this.request<{ token: string; user: User }>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
   }
 
   async getProfile() {
-    return this.request<{ user: any }>('/auth/profile');
+    return this.request<{ user: User }>('/auth/profile');
   }
 
   // Student endpoints
@@ -76,24 +101,24 @@ class ApiService {
         }
       });
     }
-    return this.request<{ students: any[]; pagination: any }>(
+    return this.request<{ students: Student[]; pagination: Pagination }>(
       `/students?${queryParams}`
     );
   }
 
   async getStudent(id: string) {
-    return this.request<{ student: any }>(`/students/${id}`);
+    return this.request<{ student: Student }>(`/students/${id}`);
   }
 
-  async createStudent(studentData: any) {
-    return this.request<{ student: any }>('/students', {
+  async createStudent(studentData: StudentFormData) {
+    return this.request<{ student: Student }>('/students', {
       method: 'POST',
       body: JSON.stringify(studentData),
     });
   }
 
-  async updateStudent(id: string, studentData: any) {
-    return this.request<{ student: any }>(`/students/${id}`, {
+  async updateStudent(id: string, studentData: Partial<StudentFormData>) {
+    return this.request<{ student: Student }>(`/students/${id}`, {
       method: 'PUT',
       body: JSON.stringify(studentData),
     });
@@ -107,11 +132,7 @@ class ApiService {
 
   // Dashboard endpoints
   async getDashboardStats() {
-    return this.request<{
-      stats: any;
-      recentStudents: any[];
-      enrollmentByLevel: any[];
-    }>('/dashboard/stats');
+    return this.request<DashboardStats>('/dashboard/stats');
   }
 
   // Classes endpoints
@@ -131,24 +152,24 @@ class ApiService {
         }
       });
     }
-    return this.request<{ classes: any[]; pagination: any }>(
+    return this.request<{ classes: Class[]; pagination: Pagination }>(
       `/classes?${queryParams}`
     );
   }
 
   async getClass(id: string) {
-    return this.request<{ class: any; students: any[] }>(`/classes/${id}`);
+    return this.request<{ class: Class; students: Student[] }>(`/classes/${id}`);
   }
 
-  async createClass(classData: any) {
-    return this.request<{ class: any }>('/classes', {
+  async createClass(classData: ClassFormData) {
+    return this.request<{ class: Class }>('/classes', {
       method: 'POST',
       body: JSON.stringify(classData),
     });
   }
 
-  async updateClass(id: string, classData: any) {
-    return this.request<{ class: any }>(`/classes/${id}`, {
+  async updateClass(id: string, classData: Partial<ClassFormData>) {
+    return this.request<{ class: Class }>(`/classes/${id}`, {
       method: 'PUT',
       body: JSON.stringify(classData),
     });
@@ -161,7 +182,7 @@ class ApiService {
   }
 
   async getClassStatistics(id: string) {
-    return this.request<any>(`/classes/${id}/statistics`);
+    return this.request<Record<string, number>>(`/classes/${id}/statistics`);
   }
 
   // Grades endpoints
@@ -182,24 +203,24 @@ class ApiService {
         }
       });
     }
-    return this.request<{ grades: any[]; pagination: any }>(
+    return this.request<{ grades: Grade[]; pagination: Pagination }>(
       `/grades?${queryParams}`
     );
   }
 
   async getGrade(id: string) {
-    return this.request<{ grade: any }>(`/grades/${id}`);
+    return this.request<{ grade: Grade }>(`/grades/${id}`);
   }
 
-  async createGrade(gradeData: any) {
-    return this.request<{ grade: any }>('/grades', {
+  async createGrade(gradeData: GradeFormData) {
+    return this.request<{ grade: Grade }>('/grades', {
       method: 'POST',
       body: JSON.stringify(gradeData),
     });
   }
 
-  async updateGrade(id: string, gradeData: any) {
-    return this.request<{ grade: any }>(`/grades/${id}`, {
+  async updateGrade(id: string, gradeData: Partial<GradeFormData>) {
+    return this.request<{ grade: Grade }>(`/grades/${id}`, {
       method: 'PUT',
       body: JSON.stringify(gradeData),
     });
@@ -212,7 +233,7 @@ class ApiService {
   }
 
   async getStudentGradesSummary(studentId: string) {
-    return this.request<any>(`/grades/student/${studentId}/summary`);
+    return this.request<Record<string, unknown>>(`/grades/student/${studentId}/summary`);
   }
 
   // Attendance endpoints
@@ -233,24 +254,24 @@ class ApiService {
         }
       });
     }
-    return this.request<{ attendances: any[]; pagination: any }>(
+    return this.request<{ attendances: Attendance[]; pagination: Pagination }>(
       `/attendance?${queryParams}`
     );
   }
 
   async getAttendance(id: string) {
-    return this.request<{ attendance: any }>(`/attendance/${id}`);
+    return this.request<{ attendance: Attendance }>(`/attendance/${id}`);
   }
 
-  async createAttendance(attendanceData: any) {
-    return this.request<{ attendance: any }>('/attendance', {
+  async createAttendance(attendanceData: AttendanceFormData) {
+    return this.request<{ attendance: Attendance }>('/attendance', {
       method: 'POST',
       body: JSON.stringify(attendanceData),
     });
   }
 
-  async updateAttendance(id: string, attendanceData: any) {
-    return this.request<{ attendance: any }>(`/attendance/${id}`, {
+  async updateAttendance(id: string, attendanceData: Partial<AttendanceFormData>) {
+    return this.request<{ attendance: Attendance }>(`/attendance/${id}`, {
       method: 'PUT',
       body: JSON.stringify(attendanceData),
     });
@@ -263,11 +284,11 @@ class ApiService {
   }
 
   async getStudentAttendanceStats(studentId: string) {
-    return this.request<any>(`/attendance/student/${studentId}/stats`);
+    return this.request<AttendanceStats>(`/attendance/student/${studentId}/stats`);
   }
 
   async getClassAttendanceForDate(classId: string, date: string) {
-    return this.request<any>(`/attendance/class/${classId}/date?date=${date}`);
+    return this.request<{ attendances: Attendance[] }>(`/attendance/class/${classId}/date?date=${date}`);
   }
 
   // Books endpoints
@@ -287,24 +308,24 @@ class ApiService {
         }
       });
     }
-    return this.request<{ books: any[]; pagination: any }>(
+    return this.request<{ books: Book[]; pagination: Pagination }>(
       `/books?${queryParams}`
     );
   }
 
   async getBook(id: string) {
-    return this.request<{ book: any }>(`/books/${id}`);
+    return this.request<{ book: Book }>(`/books/${id}`);
   }
 
-  async createBook(bookData: any) {
-    return this.request<{ book: any }>('/books', {
+  async createBook(bookData: BookFormData) {
+    return this.request<{ book: Book }>('/books', {
       method: 'POST',
       body: JSON.stringify(bookData),
     });
   }
 
-  async updateBook(id: string, bookData: any) {
-    return this.request<{ book: any }>(`/books/${id}`, {
+  async updateBook(id: string, bookData: Partial<BookFormData>) {
+    return this.request<{ book: Book }>(`/books/${id}`, {
       method: 'PUT',
       body: JSON.stringify(bookData),
     });
@@ -317,7 +338,7 @@ class ApiService {
   }
 
   async getBookStatistics() {
-    return this.request<any>('/books/statistics');
+    return this.request<BookStatistics>('/books/statistics');
   }
 
   // Loans endpoints
@@ -336,30 +357,30 @@ class ApiService {
         }
       });
     }
-    return this.request<{ loans: any[]; pagination: any }>(
+    return this.request<{ loans: Loan[]; pagination: Pagination }>(
       `/loans?${queryParams}`
     );
   }
 
   async getLoan(id: string) {
-    return this.request<{ loan: any }>(`/loans/${id}`);
+    return this.request<{ loan: Loan }>(`/loans/${id}`);
   }
 
-  async createLoan(loanData: any) {
-    return this.request<{ loan: any }>('/loans', {
+  async createLoan(loanData: LoanFormData) {
+    return this.request<{ loan: Loan }>('/loans', {
       method: 'POST',
       body: JSON.stringify(loanData),
     });
   }
 
   async returnLoan(id: string) {
-    return this.request<{ loan: any }>(`/loans/${id}/return`, {
+    return this.request<{ loan: Loan }>(`/loans/${id}/return`, {
       method: 'POST',
     });
   }
 
-  async updateLoan(id: string, loanData: any) {
-    return this.request<{ loan: any }>(`/loans/${id}`, {
+  async updateLoan(id: string, loanData: Partial<LoanFormData>) {
+    return this.request<{ loan: Loan }>(`/loans/${id}`, {
       method: 'PUT',
       body: JSON.stringify(loanData),
     });
@@ -372,54 +393,54 @@ class ApiService {
   }
 
   async getStudentLoans(studentId: string) {
-    return this.request<any>(`/loans/student/${studentId}`);
+    return this.request<{ loans: Loan[] }>(`/loans/student/${studentId}`);
   }
 
   async updateOverdueLoans() {
-    return this.request<any>('/loans/update-overdue', {
+    return this.request<{ message: string; updated: number }>('/loans/update-overdue', {
       method: 'POST',
     });
   }
 
   // Invoice endpoints
-  async getInvoices(params?: any) {
-    const queryParams = new URLSearchParams(params).toString();
-    return this.request<any>(`/invoices${queryParams ? `?${queryParams}` : ''}`);
+  async getInvoices(params?: QueryParams) {
+    const queryParams = new URLSearchParams(params as Record<string, string>).toString();
+    return this.request<{ invoices: Invoice[]; pagination: Pagination }>(`/invoices${queryParams ? `?${queryParams}` : ''}`);
   }
 
   async getInvoice(id: string) {
-    return this.request<any>(`/invoices/${id}`);
+    return this.request<{ invoice: Invoice }>(`/invoices/${id}`);
   }
 
-  async createInvoice(invoiceData: any) {
-    return this.request<any>('/invoices', {
+  async createInvoice(invoiceData: InvoiceFormData) {
+    return this.request<{ invoice: Invoice }>('/invoices', {
       method: 'POST',
       body: JSON.stringify(invoiceData),
     });
   }
 
-  async updateInvoice(id: string, invoiceData: any) {
-    return this.request<any>(`/invoices/${id}`, {
+  async updateInvoice(id: string, invoiceData: Partial<InvoiceFormData>) {
+    return this.request<{ invoice: Invoice }>(`/invoices/${id}`, {
       method: 'PUT',
       body: JSON.stringify(invoiceData),
     });
   }
 
   async deleteInvoice(id: string) {
-    return this.request<any>(`/invoices/${id}`, {
+    return this.request<{ message: string }>(`/invoices/${id}`, {
       method: 'DELETE',
     });
   }
 
-  async recordPayment(id: string, paymentData: any) {
-    return this.request<any>(`/invoices/${id}/payment`, {
+  async recordPayment(id: string, paymentData: Payment) {
+    return this.request<{ invoice: Invoice }>(`/invoices/${id}/payment`, {
       method: 'POST',
       body: JSON.stringify(paymentData),
     });
   }
 
   async getInvoiceStats() {
-    return this.request<any>('/invoices/stats');
+    return this.request<InvoiceStats>('/invoices/stats');
   }
 }
 
