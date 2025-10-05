@@ -16,7 +16,8 @@ Application complète de gestion d'école avec authentification, gestion des él
 - ✅ Gestion des notes/bulletins (création, modification, moyennes)
 - ✅ Suivi des présences/absences (enregistrement et statistiques)
 - ✅ Module bibliothèque (livres et emprunts)
-- ✅ **Module facturation (factures, paiements, statistiques)** 🆕
+- ✅ Module facturation (factures, paiements, statistiques)
+- ✅ **Module dépenses (suivi des dépenses par catégorie)** 🆕
 - ✅ Tableau de bord avec statistiques
 - ✅ Recherche et filtrage avancés
 - ✅ Pagination des résultats
@@ -29,7 +30,8 @@ Application complète de gestion d'école avec authentification, gestion des él
 - ✅ Interface de gestion des notes
 - ✅ Interface de gestion des présences
 - ✅ Interface de gestion de la bibliothèque
-- ✅ **Interface de gestion des factures** 🆕
+- ✅ Interface de gestion des factures
+- ✅ **Interface de gestion des dépenses** 🆕
 - ✅ Recherche et filtres avancés
 - ✅ Design responsive avec Tailwind CSS
 - ✅ Navigation protégée par rôles
@@ -281,7 +283,7 @@ schoman/
 - `PUT /api/loans/:id/return` - Retourner un livre (admin/enseignant)
 - `DELETE /api/loans/:id` - Supprimer un emprunt (admin)
 
-### Factures 🆕
+### Factures
 - `GET /api/invoices` - Liste des factures (avec pagination, recherche, filtres)
 - `POST /api/invoices` - Créer une facture (admin/enseignant)
 - `GET /api/invoices/:id` - Détails d'une facture
@@ -289,6 +291,14 @@ schoman/
 - `POST /api/invoices/:id/payment` - Enregistrer un paiement (admin/enseignant)
 - `DELETE /api/invoices/:id` - Supprimer une facture (admin)
 - `GET /api/invoices/stats` - Statistiques financières
+
+### Dépenses 🆕
+- `GET /api/expenses` - Liste des dépenses (avec pagination, recherche, filtres)
+- `POST /api/expenses` - Créer une dépense (admin/enseignant)
+- `GET /api/expenses/:id` - Détails d'une dépense
+- `PUT /api/expenses/:id` - Modifier une dépense (admin/enseignant)
+- `DELETE /api/expenses/:id` - Supprimer une dépense (admin)
+- `GET /api/expenses/statistics` - Statistiques des dépenses
 
 ### Dashboard
 - `GET /api/dashboard/stats` - Statistiques du tableau de bord
