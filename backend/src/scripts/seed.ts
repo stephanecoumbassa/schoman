@@ -6,6 +6,7 @@ import Class from '../models/Class.js';
 import Book from '../models/Book.js';
 import Loan from '../models/Loan.js';
 import Invoice from '../models/Invoice.js';
+import Expense from '../models/Expense.js';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ async function seed() {
     await Book.deleteMany({});
     await Loan.deleteMany({});
     await Invoice.deleteMany({});
+    await Expense.deleteMany({});
 
     // Create admin user
     console.log('👤 Création de l\'administrateur...');
@@ -403,6 +405,65 @@ async function seed() {
       status: 'draft',
     });
 
+    // Create sample expenses
+    console.log('💸 Création des dépenses...');
+    
+    const expense1Date = new Date();
+    expense1Date.setDate(expense1Date.getDate() - 5);
+    
+    await Expense.create({
+      description: 'Salaire enseignant - Novembre 2024',
+      category: 'salaries',
+      amount: 450000,
+      date: expense1Date,
+      vendor: 'Marie Dupont',
+      paymentMethod: 'bank_transfer',
+      paymentReference: 'VIR-2024-001',
+      recordedBy: admin._id,
+      notes: 'Salaire mensuel',
+    });
+
+    const expense2Date = new Date();
+    expense2Date.setDate(expense2Date.getDate() - 3);
+    
+    await Expense.create({
+      description: 'Fournitures scolaires (cahiers, stylos)',
+      category: 'supplies',
+      amount: 75000,
+      date: expense2Date,
+      vendor: 'Papeterie Moderne',
+      paymentMethod: 'cash',
+      receiptNumber: 'REC-2024-045',
+      recordedBy: admin._id,
+      notes: 'Stock pour le trimestre',
+    });
+
+    const expense3Date = new Date();
+    expense3Date.setDate(expense3Date.getDate() - 1);
+    
+    await Expense.create({
+      description: 'Réparation climatisation classe CE1-A',
+      category: 'maintenance',
+      amount: 125000,
+      date: expense3Date,
+      vendor: 'ClimaTech Services',
+      paymentMethod: 'check',
+      paymentReference: 'CHQ-2024-112',
+      receiptNumber: 'FAC-2024-789',
+      recordedBy: admin._id,
+    });
+
+    await Expense.create({
+      description: 'Facture électricité - Octobre 2024',
+      category: 'utilities',
+      amount: 95000,
+      date: new Date(),
+      vendor: 'CIE (Électricité)',
+      paymentMethod: 'bank_transfer',
+      paymentReference: 'VIR-2024-002',
+      recordedBy: admin._id,
+    });
+
     console.log('✅ Données de démonstration créées avec succès!');
     console.log('\n📋 Comptes disponibles:');
     console.log('   Admin: admin@schoman.com / admin123');
@@ -411,6 +472,7 @@ async function seed() {
     console.log('\n📚 Livres créés: 6 livres avec 19 exemplaires au total');
     console.log('📖 Emprunts: 1 emprunt en cours');
     console.log('💰 Factures créées: 3 factures (1 payée, 1 envoyée, 1 brouillon)');
+    console.log('💸 Dépenses créées: 4 dépenses (salaires, fournitures, maintenance, utilities)');
     console.log('\n🎉 Le système est prêt à être utilisé!');
   } catch (error) {
     console.error('❌ Erreur lors du seeding:', error);
