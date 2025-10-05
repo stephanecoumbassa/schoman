@@ -17,6 +17,9 @@ import type {
   Invoice,
   InvoiceFormData,
   InvoiceStats,
+  Expense,
+  ExpenseFormData,
+  ExpenseStats,
   DashboardStats,
   Pagination,
   QueryParams,
@@ -441,6 +444,68 @@ class ApiService {
 
   async getInvoiceStats() {
     return this.request<InvoiceStats>('/invoices/stats');
+  }
+
+  // Expense endpoints
+  async getExpenses(params?: {
+    page?: number;
+    limit?: number;
+    category?: string;
+    startDate?: string;
+    endDate?: string;
+    vendor?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+    const queryString = queryParams.toString();
+    return this.request<{ expenses: Expense[]; pagination: Pagination }>(
+      `/expenses${queryString ? `?${queryString}` : ''}`
+    );
+  }
+
+  async getExpense(id: string) {
+    return this.request<{ expense: Expense }>(`/expenses/${id}`);
+  }
+
+  async createExpense(expenseData: ExpenseFormData) {
+    return this.request<{ expense: Expense }>('/expenses', {
+      method: 'POST',
+      body: JSON.stringify(expenseData),
+    });
+  }
+
+  async updateExpense(id: string, expenseData: Partial<ExpenseFormData>) {
+    return this.request<{ expense: Expense }>(`/expenses/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(expenseData),
+    });
+  }
+
+  async deleteExpense(id: string) {
+    return this.request<{ message: string }>(`/expenses/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getExpenseStats(params?: { startDate?: string; endDate?: string }) {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+    const queryString = queryParams.toString();
+    return this.request<ExpenseStats>(
+      `/expenses/statistics${queryString ? `?${queryString}` : ''}`
+    );
   }
 }
 

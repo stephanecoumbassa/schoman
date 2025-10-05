@@ -340,5 +340,54 @@ export interface SingleResponse<T> {
   data?: T;
 }
 
+// Expense types
+export interface Expense {
+  _id: string;
+  description: string;
+  category: 'salaries' | 'supplies' | 'maintenance' | 'utilities' | 'transport' | 'other';
+  amount: number;
+  date: string;
+  vendor?: string;
+  paymentMethod: 'cash' | 'check' | 'bank_transfer' | 'credit_card' | 'mobile_money';
+  paymentReference?: string;
+  receiptNumber?: string;
+  recordedBy: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  } | string;
+  notes?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ExpenseFormData {
+  description: string;
+  category: 'salaries' | 'supplies' | 'maintenance' | 'utilities' | 'transport' | 'other';
+  amount: number;
+  date: string;
+  vendor?: string;
+  paymentMethod: 'cash' | 'check' | 'bank_transfer' | 'credit_card' | 'mobile_money';
+  paymentReference?: string;
+  receiptNumber?: string;
+  notes?: string;
+}
+
+export interface ExpenseStats {
+  totalExpenses: number;
+  totalAmount: number;
+  byCategory: Array<{
+    _id: string;
+    count: number;
+    totalAmount: number;
+  }>;
+  period: {
+    startDate: string;
+    endDate: string;
+  };
+}
+
 // Record type for query parameters
 export type QueryParams = Record<string, string | number | boolean | undefined | null>;

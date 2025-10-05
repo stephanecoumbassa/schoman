@@ -228,6 +228,19 @@
           <h3 class="text-lg font-semibold text-gray-900 mb-2">Gérer les factures</h3>
           <p class="text-sm text-gray-600">Facturation et paiements</p>
         </router-link>
+
+        <router-link
+          to="/expenses"
+          class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition text-center"
+        >
+          <div class="text-red-600 mb-3">
+            <svg class="h-12 w-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Gérer les dépenses</h3>
+          <p class="text-sm text-gray-600">Suivi des dépenses de l'école</p>
+        </router-link>
       </div>
     </div>
   </div>
