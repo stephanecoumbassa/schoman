@@ -20,13 +20,27 @@ export interface Student {
     lastName: string;
     email: string;
   } | string;
+  studentNumber: string;
   matricule: string;
   dateOfBirth: string;
+  placeOfBirth: string;
+  gender: 'M' | 'F';
   address: string;
   level: string;
   class?: string;
-  parentContact: string;
-  emergencyContact: string;
+  enrollmentDate: string;
+  parentContact: {
+    name: string;
+    phone: string;
+    email?: string;
+    relationship: string;
+  } | string;
+  emergencyContact: {
+    name: string;
+    phone: string;
+  } | string;
+  medicalInfo?: string;
+  notes?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -86,13 +100,13 @@ export interface Grade {
   subject: string;
   semester: string;
   academicYear: string;
-  examType: string;
-  score: number;
-  maxScore: number;
-  percentage: number;
-  grade: string;
-  examDate: string;
-  teacherComments?: string;
+  evaluationType: 'Contrôle' | 'Devoir' | 'Examen' | 'Oral' | 'Projet';
+  grade: number;
+  maxGrade: number;
+  coefficient: number;
+  date: string;
+  comments?: string;
+  teacher: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -103,11 +117,12 @@ export interface GradeFormData {
   subject: string;
   semester: string;
   academicYear: string;
-  examType: string;
-  score: number;
-  maxScore: number;
-  examDate: string;
-  teacherComments?: string;
+  evaluationType: 'Contrôle' | 'Devoir' | 'Examen' | 'Oral' | 'Projet';
+  grade: number;
+  maxGrade: number;
+  coefficient: number;
+  date: string;
+  comments?: string;
 }
 
 // Attendance types
@@ -117,8 +132,11 @@ export interface Attendance {
   class: string | Class;
   date: string;
   status: 'present' | 'absent' | 'late' | 'excused';
+  timeIn?: string;
+  timeOut?: string;
   reason?: string;
-  markedBy?: string;
+  recordedBy: string;
+  comments?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -128,7 +146,10 @@ export interface AttendanceFormData {
   class: string;
   date: string;
   status: 'present' | 'absent' | 'late' | 'excused';
+  timeIn?: string;
+  timeOut?: string;
   reason?: string;
+  comments?: string;
 }
 
 export interface AttendanceStats {
@@ -210,6 +231,7 @@ export interface LoanFormData {
   book: string;
   student: string;
   dueDate: string;
+  status?: 'borrowed' | 'returned' | 'overdue';
   notes?: string;
 }
 
@@ -222,9 +244,12 @@ export interface InvoiceItem {
 }
 
 export interface Payment {
-  amount: number;
-  date: string;
-  method: string;
+  amount?: number;
+  paymentDate?: string;
+  date?: string;
+  paymentMethod?: string;
+  method?: string;
+  paymentReference?: string;
   reference?: string;
   _id?: string;
 }
@@ -262,20 +287,30 @@ export interface InvoiceFormData {
   taxRate: number;
   issueDate: string;
   dueDate: string;
+  status?: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
   notes?: string;
 }
 
 export interface InvoiceStats {
   totalInvoices: number;
+  totalRevenue: number;
   totalAmount: number;
   paidAmount: number;
   pendingAmount: number;
   overdueAmount: number;
+  overdueInvoices: number;
+  paymentRate: number;
   recentInvoices: Invoice[];
 }
 
 // Dashboard types
 export interface DashboardStats {
+  stats: {
+    totalStudents: number;
+    totalClasses: number;
+    totalTeachers: number;
+    activeStudents: number;
+  };
   totalStudents: number;
   totalClasses: number;
   totalTeachers: number;
