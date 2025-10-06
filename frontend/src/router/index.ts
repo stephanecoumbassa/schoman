@@ -9,6 +9,8 @@ import AttendanceView from '../views/AttendanceView.vue'
 import BooksView from '../views/BooksView.vue'
 import LoansView from '../views/LoansView.vue'
 import InvoicesView from '../views/InvoicesView.vue'
+import EventsView from '../views/EventsView.vue'
+import ExpensesView from '../views/ExpensesView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -69,6 +71,18 @@ const router = createRouter({
       path: '/invoices',
       name: 'invoices',
       component: InvoicesView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/events',
+      name: 'events',
+      component: EventsView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/expenses',
+      name: 'expenses',
+      component: ExpensesView,
       meta: { requiresAuth: true },
     },
   ],

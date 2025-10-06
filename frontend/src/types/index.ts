@@ -242,11 +242,14 @@ export interface InvoiceItem {
 }
 
 export interface Payment {
-  amount: number;
-  date: string;
-  method: string;
+  amount?: number;
+  date?: string;
+  method?: string;
   reference?: string;
   _id?: string;
+  paymentDate?: string;
+  paymentMethod?: string;
+  paymentReference?: string;
 }
 
 export interface Invoice {
@@ -294,6 +297,124 @@ export interface InvoiceStats {
   recentInvoices: Invoice[];
 }
 
+// Event types
+export interface Event {
+  _id: string;
+  title: string;
+  description?: string;
+  eventType: 'meeting' | 'celebration' | 'outing' | 'conference' | 'exam' | 'holiday' | 'other';
+  startDate: string;
+  endDate: string;
+  location?: string;
+  organizer?: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  targetAudience: ('all' | 'students' | 'teachers' | 'parents' | 'admin')[];
+  classes?: Array<{
+    _id: string;
+    name: string;
+    level: string;
+  }>;
+  maxParticipants?: number;
+  currentParticipants: number;
+  status: 'planned' | 'ongoing' | 'completed' | 'cancelled';
+  notes?: string;
+  createdBy: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EventFormData {
+  title: string;
+  description?: string;
+  eventType: string;
+  startDate: string;
+  endDate: string;
+  location?: string;
+  organizer?: string;
+  targetAudience: string[];
+  classes?: string[];
+  maxParticipants?: number;
+  status?: string;
+  notes?: string;
+}
+
+export interface EventStats {
+  totalEvents: number;
+  upcomingEvents: number;
+  ongoingEvents: number;
+  completedEvents: number;
+  eventsByType: Array<{
+    _id: string;
+    count: number;
+  }>;
+}
+
+// Expense types
+export interface Expense {
+  _id: string;
+  expenseNumber: string;
+  title: string;
+  description?: string;
+  category: 'salary' | 'supplies' | 'maintenance' | 'utilities' | 'transport' | 'food' | 'equipment' | 'other';
+  amount: number;
+  expenseDate: string;
+  paymentDate?: string;
+  paymentMethod?: 'cash' | 'check' | 'bank_transfer' | 'credit_card' | 'mobile_money';
+  paymentReference?: string;
+  supplier?: string;
+  supplierContact?: string;
+  status: 'pending' | 'approved' | 'paid' | 'rejected';
+  approvedBy?: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  approvalDate?: string;
+  notes?: string;
+  createdBy: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ExpenseFormData {
+  title: string;
+  description?: string;
+  category: string;
+  amount: number;
+  expenseDate: string;
+  supplier?: string;
+  supplierContact?: string;
+  notes?: string;
+}
+
+export interface ExpenseStats {
+  totalExpenses: number;
+  pendingExpenses: number;
+  approvedExpenses: number;
+  paidExpenses: number;
+  totalAmount: number;
+  paidAmount: number;
+  expensesByCategory: Array<{
+    _id: string;
+    count: number;
+    totalAmount: number;
+  }>;
+}
+
 // Dashboard types
 export interface DashboardStats {
   totalStudents: number;
@@ -301,6 +422,11 @@ export interface DashboardStats {
   totalTeachers: number;
   totalParents: number;
   activeStudents: number;
+  upcomingEvents?: number;
+  pendingExpenses?: number;
+  totalExpenses?: number;
+  totalRevenue?: number;
+  overdueInvoices?: number;
   recentStudents: Student[];
   enrollmentByLevel: Array<{
     _id: string;

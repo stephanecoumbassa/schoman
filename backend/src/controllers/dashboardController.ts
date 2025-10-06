@@ -2,6 +2,9 @@ import { Response } from 'express';
 import User from '../models/User.js';
 import Student from '../models/Student.js';
 import Class from '../models/Class.js';
+import Event from '../models/Event.js';
+import Expense from '../models/Expense.js';
+import Invoice from '../models/Invoice.js';
 import { AuthRequest } from '../middleware/auth.js';
 
 export const getStats = async (req: AuthRequest, res: Response) => {
@@ -31,6 +34,34 @@ export const getStats = async (req: AuthRequest, res: Response) => {
       { $sort: { _id: 1 } },
     ]);
 
+    // Get events statistics
+    const now = new Date();
+    const upcomingEvents = await Event.countDocuments({
+      status: 'planned',
+      startDate: { $gt: now },
+    });
+
+    // Get expenses statistics
+    const [pendingExpenses, totalExpensesAmount] = await Promise.all([
+      Expense.countDocuments({ status: 'pending' }),
+      Expense.aggregate([
+        { $match: { status: { $ne: 'rejected' } } },
+        { $group: { _id: null, total: { $sum: '$amount' } } },
+      ]),
+    ]);
+
+    // Get invoices statistics
+    const [totalRevenue, overdueInvoices] = await Promise.all([
+      Invoice.aggregate([
+        { $match: { status: 'paid' } },
+        { $group: { _id: null, total: { $sum: '$totalAmount' } } },
+      ]),
+      Invoice.countDocuments({
+        status: { $in: ['sent', 'overdue'] },
+        dueDate: { $lt: now },
+      }),
+    ]);
+
     res.json({
       stats: {
         totalUsers,
@@ -39,6 +70,11 @@ export const getStats = async (req: AuthRequest, res: Response) => {
         totalParents,
         activeStudents,
         totalClasses,
+        upcomingEvents,
+        pendingExpenses,
+        totalExpenses: totalExpensesAmount[0]?.total || 0,
+        totalRevenue: totalRevenue[0]?.total || 0,
+        overdueInvoices,
       },
       recentStudents,
       enrollmentByLevel,

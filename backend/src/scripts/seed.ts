@@ -6,6 +6,8 @@ import Class from '../models/Class.js';
 import Book from '../models/Book.js';
 import Loan from '../models/Loan.js';
 import Invoice from '../models/Invoice.js';
+import Event from '../models/Event.js';
+import Expense from '../models/Expense.js';
 
 dotenv.config();
 
@@ -25,6 +27,8 @@ async function seed() {
     await Book.deleteMany({});
     await Loan.deleteMany({});
     await Invoice.deleteMany({});
+    await Event.deleteMany({});
+    await Expense.deleteMany({});
 
     // Create admin user
     console.log('👤 Création de l\'administrateur...');
@@ -403,6 +407,134 @@ async function seed() {
       status: 'draft',
     });
 
+    // Create events
+    console.log('📆 Création des événements exemple...');
+    
+    const event1Date = new Date();
+    event1Date.setDate(event1Date.getDate() + 7);
+    const event1EndDate = new Date(event1Date);
+    event1EndDate.setHours(event1EndDate.getHours() + 2);
+    
+    await Event.create({
+      title: 'Réunion parents-professeurs',
+      description: 'Rencontre trimestrielle avec les parents pour discuter des progrès des élèves',
+      eventType: 'meeting',
+      startDate: event1Date,
+      endDate: event1EndDate,
+      location: 'Salle polyvalente',
+      organizer: teacher._id,
+      targetAudience: ['parents', 'teachers'],
+      classes: [classCE1._id, classCE2._id],
+      status: 'planned',
+      createdBy: admin._id,
+    });
+
+    const event2Date = new Date();
+    event2Date.setDate(event2Date.getDate() + 14);
+    const event2EndDate = new Date(event2Date);
+    event2EndDate.setHours(event2EndDate.getHours() + 4);
+    
+    await Event.create({
+      title: 'Fête de fin d\'année',
+      description: 'Célébration de fin d\'année scolaire avec spectacles et activités',
+      eventType: 'celebration',
+      startDate: event2Date,
+      endDate: event2EndDate,
+      location: 'Cour de l\'école',
+      organizer: admin._id,
+      targetAudience: ['all'],
+      maxParticipants: 200,
+      currentParticipants: 0,
+      status: 'planned',
+      createdBy: admin._id,
+    });
+
+    const event3Date = new Date();
+    event3Date.setDate(event3Date.getDate() + 21);
+    const event3EndDate = new Date(event3Date);
+    event3EndDate.setDate(event3EndDate.getDate() + 1);
+    
+    await Event.create({
+      title: 'Sortie pédagogique au musée',
+      description: 'Visite guidée du musée des sciences et de la technologie',
+      eventType: 'outing',
+      startDate: event3Date,
+      endDate: event3EndDate,
+      location: 'Musée des Sciences',
+      organizer: teacher._id,
+      targetAudience: ['students', 'teachers'],
+      classes: [classCE1._id],
+      maxParticipants: 30,
+      currentParticipants: 0,
+      status: 'planned',
+      createdBy: teacher._id,
+    });
+
+    // Create expenses
+    console.log('📉 Création des dépenses exemple...');
+    
+    await Expense.create({
+      expenseNumber: 'EXP-2024-00001',
+      title: 'Fournitures scolaires - Trimestre 1',
+      description: 'Achat de cahiers, stylos, et matériel pédagogique',
+      category: 'supplies',
+      amount: 150000,
+      expenseDate: new Date(),
+      supplier: 'Papeterie du Centre',
+      supplierContact: '0601111111',
+      status: 'paid',
+      paymentDate: new Date(),
+      paymentMethod: 'bank_transfer',
+      paymentReference: 'TRANS-2024-001',
+      approvedBy: admin._id,
+      approvalDate: new Date(),
+      createdBy: teacher._id,
+    });
+
+    const expense2Date = new Date();
+    expense2Date.setDate(expense2Date.getDate() - 7);
+    
+    await Expense.create({
+      expenseNumber: 'EXP-2024-00002',
+      title: 'Réparation photocopieuse',
+      description: 'Maintenance et réparation de la photocopieuse de la salle des professeurs',
+      category: 'maintenance',
+      amount: 85000,
+      expenseDate: expense2Date,
+      supplier: 'TechService SA',
+      supplierContact: '0602222222',
+      status: 'approved',
+      approvedBy: admin._id,
+      approvalDate: new Date(),
+      createdBy: admin._id,
+    });
+
+    await Expense.create({
+      expenseNumber: 'EXP-2024-00003',
+      title: 'Facture électricité - Janvier',
+      description: 'Consommation électrique du mois de janvier',
+      category: 'utilities',
+      amount: 200000,
+      expenseDate: new Date(),
+      supplier: 'Compagnie d\'Électricité',
+      supplierContact: '0603333333',
+      status: 'pending',
+      createdBy: admin._id,
+    });
+
+    await Expense.create({
+      expenseNumber: 'EXP-2024-00004',
+      title: 'Transport bus scolaire',
+      description: 'Location de bus pour la sortie pédagogique',
+      category: 'transport',
+      amount: 125000,
+      expenseDate: event3Date,
+      supplier: 'Transport Express',
+      supplierContact: '0604444444',
+      status: 'pending',
+      createdBy: teacher._id,
+    });
+
     console.log('✅ Données de démonstration créées avec succès!');
     console.log('\n📋 Comptes disponibles:');
     console.log('   Admin: admin@schoman.com / admin123');
@@ -411,6 +543,8 @@ async function seed() {
     console.log('\n📚 Livres créés: 6 livres avec 19 exemplaires au total');
     console.log('📖 Emprunts: 1 emprunt en cours');
     console.log('💰 Factures créées: 3 factures (1 payée, 1 envoyée, 1 brouillon)');
+    console.log('📆 Événements créés: 3 événements planifiés');
+    console.log('📉 Dépenses créées: 4 dépenses (1 payée, 1 approuvée, 2 en attente)');
     console.log('\n🎉 Le système est prêt à être utilisé!');
   } catch (error) {
     console.error('❌ Erreur lors du seeding:', error);
