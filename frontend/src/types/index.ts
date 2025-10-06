@@ -21,10 +21,12 @@ export interface Student {
     email: string;
   } | string;
   matricule: string;
+  studentNumber: string;
   dateOfBirth: string;
   address: string;
   level: string;
   class?: string;
+  enrollmentDate: string;
   parentContact: string;
   emergencyContact: string;
   isActive: boolean;
@@ -87,12 +89,17 @@ export interface Grade {
   semester: string;
   academicYear: string;
   examType: string;
+  evaluationType: string;
   score: number;
+  grade: number;
   maxScore: number;
+  maxGrade: number;
+  coefficient: number;
   percentage: number;
-  grade: string;
   examDate: string;
+  date: string;
   teacherComments?: string;
+  comments?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -103,11 +110,17 @@ export interface GradeFormData {
   subject: string;
   semester: string;
   academicYear: string;
-  examType: string;
-  score: number;
-  maxScore: number;
-  examDate: string;
+  examType?: string;
+  evaluationType?: string;
+  score?: number;
+  grade?: number;
+  maxScore?: number;
+  maxGrade?: number;
+  coefficient?: number;
+  examDate?: string;
+  date?: string;
   teacherComments?: string;
+  comments?: string;
 }
 
 // Attendance types
@@ -117,7 +130,10 @@ export interface Attendance {
   class: string | Class;
   date: string;
   status: 'present' | 'absent' | 'late' | 'excused';
+  timeIn?: string;
+  timeOut?: string;
   reason?: string;
+  comments?: string;
   markedBy?: string;
   createdAt: string;
   updatedAt: string;
@@ -128,7 +144,10 @@ export interface AttendanceFormData {
   class: string;
   date: string;
   status: 'present' | 'absent' | 'late' | 'excused';
+  timeIn?: string;
+  timeOut?: string;
   reason?: string;
+  comments?: string;
 }
 
 export interface AttendanceStats {
@@ -210,6 +229,7 @@ export interface LoanFormData {
   book: string;
   student: string;
   dueDate: string;
+  status?: string;
   notes?: string;
 }
 
@@ -279,6 +299,7 @@ export interface DashboardStats {
   totalStudents: number;
   totalClasses: number;
   totalTeachers: number;
+  totalParents: number;
   activeStudents: number;
   recentStudents: Student[];
   enrollmentByLevel: Array<{

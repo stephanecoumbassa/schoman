@@ -39,7 +39,7 @@
           >
             <option value="">Tous les élèves</option>
             <option v-for="student in students" :key="student._id" :value="student._id">
-              {{ student.userId?.firstName }} {{ student.userId?.lastName }}
+              {{ typeof student.userId === 'object' ? student.userId.firstName : '' }} {{ typeof student.userId === 'object' ? student.userId.lastName : '' }}
             </option>
           </select>
         </div>
@@ -74,11 +74,11 @@
       </div>
       <div class="bg-white rounded-lg shadow p-4">
         <h3 class="text-sm font-medium text-gray-500">Revenu Total</h3>
-        <p class="text-2xl font-bold text-green-600 mt-2">{{ formatCurrency(stats.totalRevenue) }}</p>
+        <p class="text-2xl font-bold text-green-600 mt-2">{{ formatCurrency('totalAmount' in stats ? stats.totalAmount : 0) }}</p>
       </div>
       <div class="bg-white rounded-lg shadow p-4">
         <h3 class="text-sm font-medium text-gray-500">En Retard</h3>
-        <p class="text-2xl font-bold text-red-600 mt-2">{{ stats.overdueInvoices || 0 }}</p>
+        <p class="text-2xl font-bold text-red-600 mt-2">{{ 'overdueAmount' in stats ? stats.overdueAmount : 0 }}</p>
       </div>
       <div class="bg-white rounded-lg shadow p-4">
         <h3 class="text-sm font-medium text-gray-500">Taux de Paiement</h3>
@@ -130,7 +130,7 @@
               {{ invoice.invoiceNumber }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ invoice.student?.userId?.firstName }} {{ invoice.student?.userId?.lastName }}
+              {{ typeof invoice.student === 'object' && typeof invoice.student.userId === 'object' ? invoice.student.userId.firstName : '' }} {{ typeof invoice.student === 'object' && typeof invoice.student.userId === 'object' ? invoice.student.userId.lastName : '' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
               {{ formatCurrency(invoice.totalAmount) }}
@@ -233,7 +233,7 @@
               >
                 <option value="">Sélectionner un élève</option>
                 <option v-for="student in students" :key="student._id" :value="student._id">
-                  {{ student.userId?.firstName }} {{ student.userId?.lastName }} ({{ student.studentNumber }})
+                  {{ typeof student.userId === 'object' ? student.userId.firstName : '' }} {{ typeof student.userId === 'object' ? student.userId.lastName : '' }} ({{ student.matricule }})
                 </option>
               </select>
             </div>
@@ -303,7 +303,7 @@
                   </div>
                   <div>
                     <input
-                      :value="formatCurrency(item.totalPrice || 0)"
+                      :value="formatCurrency(item.amount || 0)"
                       type="text"
                       readonly
                       placeholder="Total"
@@ -513,8 +513,9 @@ const editingInvoice = ref<Invoice | null>(null);
 
 const form = ref({
   student: '',
-  items: [{ description: '', category: '', quantity: 1, unitPrice: 0, totalPrice: 0 }],
+  items: [{ description: '', category: '', quantity: 1, unitPrice: 0, amount: 0 }],
   taxRate: 0,
+  issueDate: new Date().toISOString().split('T')[0],
   dueDate: '',
   status: 'draft',
   notes: '',
@@ -528,7 +529,7 @@ const paymentForm = ref({
 });
 
 const subtotal = computed(() => {
-  return form.value.items.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+  return form.value.items.reduce((sum, item) => sum + (item.amount || 0), 0);
 });
 
 const taxAmount = computed(() => {
@@ -594,8 +595,9 @@ const openCreateModal = () => {
   editingInvoice.value = null;
   form.value = {
     student: '',
-    items: [{ description: '', category: '', quantity: 1, unitPrice: 0, totalPrice: 0 }],
+    items: [{ description: '', category: '', quantity: 1, unitPrice: 0, amount: 0 }],
     taxRate: 0,
+    issueDate: new Date().toISOString().split('T')[0],
     dueDate: '',
     status: 'draft',
     notes: '',
@@ -609,7 +611,8 @@ const editInvoice = (invoice: Invoice) => {
     student: typeof invoice.student !== 'string' ? invoice.student._id : invoice.student,
     items: JSON.parse(JSON.stringify(invoice.items)),
     taxRate: invoice.taxRate,
-    dueDate: invoice.dueDate.split('T')[0],
+    issueDate: invoice.issueDate.split('T')[0] || '',
+    dueDate: invoice.dueDate.split('T')[0] || '',
     status: invoice.status,
     notes: invoice.notes || '',
   };
@@ -627,7 +630,7 @@ const closeModal = () => {
 };
 
 const addItem = () => {
-  form.value.items.push({ description: '', category: '', quantity: 1, unitPrice: 0, totalPrice: 0 });
+  form.value.items.push({ description: '', category: '', quantity: 1, unitPrice: 0, amount: 0 });
 };
 
 const removeItem = (index: number) => {
@@ -636,18 +639,29 @@ const removeItem = (index: number) => {
   }
 };
 
-const calculateItemTotal = (item: { quantity: number; unitPrice: number; totalPrice?: number }) => {
-  item.totalPrice = (item.quantity || 0) * (item.unitPrice || 0);
+const calculateItemTotal = (item: { quantity: number; unitPrice: number; amount?: number }) => {
+  item.amount = (item.quantity || 0) * (item.unitPrice || 0);
 };
 
 const saveInvoice = async () => {
   try {
+    if (!form.value.issueDate) {
+      alert('La date d\'émission est requise');
+      return;
+    }
+    
     const invoiceData = {
-      ...form.value,
+      student: form.value.student,
       items: form.value.items.map(item => ({
-        ...item,
-        totalPrice: item.quantity * item.unitPrice,
+        description: item.description,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        amount: item.quantity * item.unitPrice,
       })),
+      taxRate: form.value.taxRate,
+      issueDate: form.value.issueDate,
+      dueDate: form.value.dueDate,
+      notes: form.value.notes,
     };
 
     let response;
@@ -658,7 +672,7 @@ const saveInvoice = async () => {
     }
 
     if (response.data) {
-      alert(response.data.message || 'Facture enregistrée avec succès');
+      alert('Facture enregistrée avec succès');
       closeModal();
       await loadInvoices();
       await loadStats();
@@ -688,9 +702,22 @@ const closePaymentModal = () => {
 
 const savePayment = async () => {
   try {
-    const response = await api.recordPayment(editingInvoice.value._id, paymentForm.value);
+    if (!editingInvoice.value) return;
+    if (!paymentForm.value.paymentDate) {
+      alert('La date de paiement est requise');
+      return;
+    }
+    
+    const paymentData = {
+      amount: paymentForm.value.amount,
+      date: paymentForm.value.paymentDate,
+      method: paymentForm.value.paymentMethod,
+      reference: paymentForm.value.paymentReference,
+    };
+    
+    const response = await api.recordPayment(editingInvoice.value._id, paymentData);
     if (response.data) {
-      alert(response.data.message || 'Paiement enregistré avec succès');
+      alert('Paiement enregistré avec succès');
       closePaymentModal();
       await loadInvoices();
       await loadStats();
