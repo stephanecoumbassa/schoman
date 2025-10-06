@@ -454,3 +454,58 @@ export interface SingleResponse<T> {
 
 // Record type for query parameters
 export type QueryParams = Record<string, string | number | boolean | undefined | null>;
+
+// Message types
+export interface Message {
+  _id: string;
+  subject: string;
+  content: string;
+  sender: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+  };
+  recipients: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+  }[];
+  conversationId?: string;
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  category: 'general' | 'academic' | 'administrative' | 'event' | 'announcement';
+  readBy: {
+    user: string;
+    readAt: string;
+  }[];
+  isArchived: boolean;
+  parentMessage?: {
+    _id: string;
+    subject: string;
+    sender: string;
+    createdAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MessageFormData {
+  subject: string;
+  content: string;
+  recipients: string[];
+  priority?: 'low' | 'normal' | 'high' | 'urgent';
+  category?: 'general' | 'academic' | 'administrative' | 'event' | 'announcement';
+  parentMessage?: string;
+}
+
+export interface MessageStats {
+  totalReceived: number;
+  totalSent: number;
+  unreadCount: number;
+  readPercentage: string;
+  byCategory: Record<string, number>;
+  byPriority: Record<string, number>;
+}

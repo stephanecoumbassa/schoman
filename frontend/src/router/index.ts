@@ -11,6 +11,7 @@ import LoansView from '../views/LoansView.vue'
 import InvoicesView from '../views/InvoicesView.vue'
 import EventsView from '../views/EventsView.vue'
 import ExpensesView from '../views/ExpensesView.vue'
+import MessagesView from '../views/MessagesView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -83,6 +84,12 @@ const router = createRouter({
       path: '/expenses',
       name: 'expenses',
       component: ExpensesView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/messages',
+      name: 'messages',
+      component: MessagesView,
       meta: { requiresAuth: true },
     },
   ],

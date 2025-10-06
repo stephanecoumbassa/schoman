@@ -8,6 +8,8 @@ import Loan from '../models/Loan.js';
 import Invoice from '../models/Invoice.js';
 import Event from '../models/Event.js';
 import Expense from '../models/Expense.js';
+import Message from '../models/Message.js';
+import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
 
@@ -29,6 +31,7 @@ async function seed() {
     await Invoice.deleteMany({});
     await Event.deleteMany({});
     await Expense.deleteMany({});
+    await Message.deleteMany({});
 
     // Create admin user
     console.log('👤 Création de l\'administrateur...');
@@ -535,6 +538,80 @@ async function seed() {
       createdBy: teacher._id,
     });
 
+    // Create messages
+    console.log('📬 Création des messages exemple...');
+    
+    const conversationId1 = uuidv4();
+    const conversationId2 = uuidv4();
+
+    // Get first student user
+    const firstStudent = students[0];
+    const firstStudentUser = await User.findOne({ email: 'student@schoman.com' });
+    
+    // Message 1: Admin welcomes teacher
+    const message1 = await Message.create({
+      subject: 'Bienvenue dans Schoman',
+      content: 'Bonjour Marie,\n\nBienvenue dans notre système de gestion scolaire Schoman. Vous avez maintenant accès à toutes les fonctionnalités de la plateforme.\n\nN\'hésitez pas à me contacter si vous avez des questions.\n\nCordialement,\nL\'administration',
+      sender: admin._id,
+      recipients: [teacher._id],
+      conversationId: conversationId1,
+      priority: 'normal',
+      category: 'administrative',
+      readBy: [{ user: teacher._id, readAt: new Date() }],
+    });
+
+    // Message 2: Teacher replies
+    await Message.create({
+      subject: 'Re: Bienvenue dans Schoman',
+      content: 'Bonjour,\n\nMerci beaucoup pour cet accueil. J\'ai bien exploré la plateforme et tout semble très intuitif.\n\nCordialement,\nMarie',
+      sender: teacher._id,
+      recipients: [admin._id],
+      conversationId: conversationId1,
+      parentMessage: message1._id,
+      priority: 'normal',
+      category: 'administrative',
+      readBy: [{ user: admin._id, readAt: new Date() }],
+    });
+
+    // Message 3: Teacher to student about homework
+    await Message.create({
+      subject: 'Devoirs de mathématiques',
+      content: 'Bonjour Pierre,\n\nN\'oublie pas de faire les exercices de mathématiques pages 45-46 pour lundi prochain.\n\nBon week-end,\nMme Dupont',
+      sender: teacher._id,
+      recipients: [firstStudentUser!._id],
+      conversationId: conversationId2,
+      priority: 'normal',
+      category: 'academic',
+      readBy: [],
+    });
+
+    // Message 4: Admin announcement about event
+    const msg4Date = new Date();
+    msg4Date.setHours(msg4Date.getHours() - 2);
+    
+    await Message.create({
+      subject: 'IMPORTANT: Sortie pédagogique au musée',
+      content: 'Chers enseignants et élèves,\n\nJe vous rappelle que la sortie au musée des sciences est prévue la semaine prochaine. Merci de confirmer votre présence.\n\nL\'autorisation parentale est obligatoire pour tous les élèves.\n\nCordialement,\nL\'administration',
+      sender: admin._id,
+      recipients: [teacher._id, firstStudentUser!._id],
+      priority: 'high',
+      category: 'event',
+      readBy: [],
+      createdAt: msg4Date,
+      updatedAt: msg4Date,
+    });
+
+    // Message 5: Unread message from admin
+    await Message.create({
+      subject: 'Réunion pédagogique',
+      content: 'Bonjour à tous,\n\nUne réunion pédagogique est prévue vendredi prochain à 14h en salle 201. Présence obligatoire.\n\nOrdre du jour:\n1. Bilan du trimestre\n2. Préparation des examens\n3. Organisation des événements\n\nMerci de confirmer votre présence.\n\nCordialement,\nL\'administration',
+      sender: admin._id,
+      recipients: [teacher._id],
+      priority: 'urgent',
+      category: 'administrative',
+      readBy: [],
+    });
+
     console.log('✅ Données de démonstration créées avec succès!');
     console.log('\n📋 Comptes disponibles:');
     console.log('   Admin: admin@schoman.com / admin123');
@@ -545,6 +622,7 @@ async function seed() {
     console.log('💰 Factures créées: 3 factures (1 payée, 1 envoyée, 1 brouillon)');
     console.log('📆 Événements créés: 3 événements planifiés');
     console.log('📉 Dépenses créées: 4 dépenses (1 payée, 1 approuvée, 2 en attente)');
+    console.log('📬 Messages créés: 5 messages (conversations et notifications)');
     console.log('\n🎉 Le système est prêt à être utilisé!');
   } catch (error) {
     console.error('❌ Erreur lors du seeding:', error);

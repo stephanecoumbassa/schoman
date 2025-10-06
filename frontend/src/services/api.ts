@@ -23,6 +23,9 @@ import type {
   Expense,
   ExpenseFormData,
   ExpenseStats,
+  Message,
+  MessageFormData,
+  MessageStats,
   DashboardStats,
   Pagination,
   QueryParams,
@@ -528,6 +531,60 @@ class ApiService {
 
   async getExpenseStats() {
     return this.request<ExpenseStats>('/expenses/stats');
+  }
+
+  // Messages
+  async getMessages(params?: QueryParams) {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+    return this.request<{ messages: Message[]; pagination: Pagination }>(
+      `/messages?${queryParams}`
+    );
+  }
+
+  async getMessage(id: string) {
+    return this.request<{ message: Message }>(`/messages/${id}`);
+  }
+
+  async createMessage(data: MessageFormData) {
+    return this.request<{ message: string; data: Message }>('/messages', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async markMessageAsRead(id: string) {
+    return this.request<{ message: string; data: Message }>(`/messages/${id}/read`, {
+      method: 'PATCH',
+    });
+  }
+
+  async archiveMessage(id: string) {
+    return this.request<{ message: string }>(`/messages/${id}/archive`, {
+      method: 'PATCH',
+    });
+  }
+
+  async deleteMessage(id: string) {
+    return this.request<{ message: string }>(`/messages/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getConversation(conversationId: string) {
+    return this.request<{ messages: Message[]; conversationId: string }>(
+      `/messages/conversation/${conversationId}`
+    );
+  }
+
+  async getMessageStats() {
+    return this.request<MessageStats>('/messages/stats');
   }
 }
 
