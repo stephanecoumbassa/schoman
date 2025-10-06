@@ -9,6 +9,8 @@ import Invoice from '../models/Invoice.js';
 import Event from '../models/Event.js';
 import Expense from '../models/Expense.js';
 import Message from '../models/Message.js';
+import Transaction from '../models/Transaction.js';
+import Budget from '../models/Budget.js';
 import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
@@ -32,6 +34,8 @@ async function seed() {
     await Event.deleteMany({});
     await Expense.deleteMany({});
     await Message.deleteMany({});
+    await Transaction.deleteMany({});
+    await Budget.deleteMany({});
 
     // Create admin user
     console.log('👤 Création de l\'administrateur...');
@@ -612,6 +616,160 @@ async function seed() {
       readBy: [],
     });
 
+    // Create transactions
+    console.log('💵 Création des transactions...');
+    const fiscalYear = '2024';
+    
+    // Income transactions
+    await Transaction.create({
+      type: 'income',
+      amount: 150000,
+      category: 'Frais de scolarité',
+      description: 'Paiement frais de scolarité - Premier trimestre',
+      transactionDate: new Date('2024-09-15'),
+      paymentMethod: 'bank_transfer',
+      reference: 'PAY-2024-001',
+      fiscalYear,
+      createdBy: admin._id,
+    });
+
+    await Transaction.create({
+      type: 'income',
+      amount: 50000,
+      category: 'Frais de cantine',
+      description: 'Paiement frais de cantine - Septembre',
+      transactionDate: new Date('2024-09-20'),
+      paymentMethod: 'mobile_money',
+      reference: 'PAY-2024-002',
+      fiscalYear,
+      createdBy: admin._id,
+    });
+
+    await Transaction.create({
+      type: 'income',
+      amount: 30000,
+      category: 'Activités extra-scolaires',
+      description: 'Inscription activités sportives',
+      transactionDate: new Date('2024-10-01'),
+      paymentMethod: 'cash',
+      fiscalYear,
+      createdBy: admin._id,
+    });
+
+    // Expense transactions
+    await Transaction.create({
+      type: 'expense',
+      amount: 80000,
+      category: 'Salaires',
+      description: 'Salaires enseignants - Septembre',
+      transactionDate: new Date('2024-09-30'),
+      paymentMethod: 'bank_transfer',
+      reference: 'SAL-2024-09',
+      fiscalYear,
+      createdBy: admin._id,
+    });
+
+    await Transaction.create({
+      type: 'expense',
+      amount: 25000,
+      category: 'Fournitures scolaires',
+      description: 'Achat cahiers et stylos',
+      transactionDate: new Date('2024-09-10'),
+      paymentMethod: 'cash',
+      reference: 'FORN-2024-001',
+      fiscalYear,
+      createdBy: admin._id,
+    });
+
+    await Transaction.create({
+      type: 'expense',
+      amount: 15000,
+      category: 'Maintenance',
+      description: 'Réparation système électrique',
+      transactionDate: new Date('2024-09-25'),
+      paymentMethod: 'check',
+      reference: 'MAINT-2024-001',
+      fiscalYear,
+      createdBy: admin._id,
+    });
+
+    // Create budget
+    console.log('📊 Création du budget...');
+    await Budget.create({
+      name: 'Budget Annuel 2024-2025',
+      fiscalYear: '2024',
+      startDate: new Date('2024-09-01'),
+      endDate: new Date('2025-08-31'),
+      totalBudget: 2500000,
+      incomeItems: [
+        {
+          category: 'Frais de scolarité',
+          allocatedAmount: 1800000,
+          spentAmount: 0,
+          description: 'Inscription et frais de scolarité annuels',
+        },
+        {
+          category: 'Frais de cantine',
+          allocatedAmount: 400000,
+          spentAmount: 0,
+          description: 'Frais de restauration scolaire',
+        },
+        {
+          category: 'Activités extra-scolaires',
+          allocatedAmount: 200000,
+          spentAmount: 0,
+          description: 'Sports, musique, arts',
+        },
+        {
+          category: 'Autres revenus',
+          allocatedAmount: 100000,
+          spentAmount: 0,
+          description: 'Dons, subventions, etc.',
+        },
+      ],
+      expenseItems: [
+        {
+          category: 'Salaires',
+          allocatedAmount: 1200000,
+          spentAmount: 0,
+          description: 'Salaires du personnel enseignant et administratif',
+        },
+        {
+          category: 'Fournitures scolaires',
+          allocatedAmount: 300000,
+          spentAmount: 0,
+          description: 'Livres, cahiers, matériel pédagogique',
+        },
+        {
+          category: 'Maintenance',
+          allocatedAmount: 200000,
+          spentAmount: 0,
+          description: 'Entretien des bâtiments et équipements',
+        },
+        {
+          category: 'Électricité et eau',
+          allocatedAmount: 150000,
+          spentAmount: 0,
+          description: 'Factures d\'électricité et d\'eau',
+        },
+        {
+          category: 'Transport',
+          allocatedAmount: 100000,
+          spentAmount: 0,
+          description: 'Transport scolaire et sorties',
+        },
+        {
+          category: 'Autres dépenses',
+          allocatedAmount: 50000,
+          spentAmount: 0,
+          description: 'Dépenses diverses',
+        },
+      ],
+      status: 'active',
+      notes: 'Budget prévisionnel pour l\'année scolaire 2024-2025',
+      createdBy: admin._id,
+    });
+
     console.log('✅ Données de démonstration créées avec succès!');
     console.log('\n📋 Comptes disponibles:');
     console.log('   Admin: admin@schoman.com / admin123');
@@ -623,6 +781,8 @@ async function seed() {
     console.log('📆 Événements créés: 3 événements planifiés');
     console.log('📉 Dépenses créées: 4 dépenses (1 payée, 1 approuvée, 2 en attente)');
     console.log('📬 Messages créés: 5 messages (conversations et notifications)');
+    console.log('💵 Transactions créées: 6 transactions (3 revenus, 3 dépenses)');
+    console.log('📊 Budgets créés: 1 budget actif pour 2024-2025');
     console.log('\n🎉 Le système est prêt à être utilisé!');
   } catch (error) {
     console.error('❌ Erreur lors du seeding:', error);

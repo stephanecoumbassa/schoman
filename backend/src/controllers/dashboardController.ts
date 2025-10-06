@@ -5,6 +5,8 @@ import Class from '../models/Class.js';
 import Event from '../models/Event.js';
 import Expense from '../models/Expense.js';
 import Invoice from '../models/Invoice.js';
+import Transaction from '../models/Transaction.js';
+import Budget from '../models/Budget.js';
 import { AuthRequest } from '../middleware/auth.js';
 
 export const getStats = async (req: AuthRequest, res: Response) => {
@@ -62,6 +64,24 @@ export const getStats = async (req: AuthRequest, res: Response) => {
       }),
     ]);
 
+    // Get accounting statistics
+    const currentYear = new Date().getFullYear().toString();
+    const [transactionIncome, transactionExpenses, activeBudgets] = await Promise.all([
+      Transaction.aggregate([
+        { $match: { type: 'income', fiscalYear: currentYear } },
+        { $group: { _id: null, total: { $sum: '$amount' } } },
+      ]),
+      Transaction.aggregate([
+        { $match: { type: 'expense', fiscalYear: currentYear } },
+        { $group: { _id: null, total: { $sum: '$amount' } } },
+      ]),
+      Budget.countDocuments({ status: 'active' }),
+    ]);
+
+    const accountingIncome = transactionIncome[0]?.total || 0;
+    const accountingExpenses = transactionExpenses[0]?.total || 0;
+    const accountingBalance = accountingIncome - accountingExpenses;
+
     res.json({
       stats: {
         totalUsers,
@@ -75,6 +95,10 @@ export const getStats = async (req: AuthRequest, res: Response) => {
         totalExpenses: totalExpensesAmount[0]?.total || 0,
         totalRevenue: totalRevenue[0]?.total || 0,
         overdueInvoices,
+        accountingIncome,
+        accountingExpenses,
+        accountingBalance,
+        activeBudgets,
       },
       recentStudents,
       enrollmentByLevel,
