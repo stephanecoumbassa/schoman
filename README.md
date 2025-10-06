@@ -81,15 +81,36 @@ L'API sera accessible sur `http://localhost:3000`
 - Node.js (version 18 ou supérieure)
 - MongoDB (local ou distant)
 - Git
+- Docker et Docker Compose (optionnel, pour le déploiement conteneurisé)
 
 ## 🛠️ Installation complète
 
-### ⚡ Installation Automatique (Recommandé)
+### 🐳 Déploiement Docker (Le plus simple)
+
+Le moyen le plus rapide pour démarrer l'application complète :
+
+```bash
+# Cloner le projet
+git clone https://github.com/stephanecoumbassa/schoman.git
+cd schoman
+
+# Démarrer tous les services (MongoDB, Backend, Frontend)
+docker-compose up -d
+
+# Initialiser la base de données
+docker-compose exec backend npm run seed
+
+# Accéder à l'application sur http://localhost:5173
+```
+
+Pour plus d'informations sur le déploiement, consultez [DEPLOYMENT.md](./DEPLOYMENT.md).
+
+### ⚡ Installation Automatique (Recommandé pour développement)
 
 Utilisez le script d'installation automatique qui configure tout pour vous :
 
 ```bash
-./quick-install.sh
+./setup.sh
 ```
 
 Ce script installe automatiquement :
@@ -326,6 +347,23 @@ schoman/
 - Routes protégées par middleware
 - Validation des données d'entrée
 - Autorisation basée sur les rôles
+
+## 🔄 CI/CD et Qualité du Code
+
+Le projet inclut une pipeline CI/CD automatisée avec GitHub Actions qui :
+- ✅ Vérifie la compilation TypeScript du backend et frontend
+- ✅ Exécute les tests automatisés
+- ✅ Construit les images Docker
+- ✅ Teste l'intégration avec MongoDB
+
+Voir [.github/workflows/ci.yml](.github/workflows/ci.yml) pour plus de détails.
+
+## 📚 Documentation
+
+- [SETUP_GUIDE.md](./SETUP_GUIDE.md) - Guide d'installation détaillé
+- [DEPLOYMENT.md](./DEPLOYMENT.md) - Guide de déploiement en production
+- [IMPLEMENTATION.md](./IMPLEMENTATION.md) - Documentation technique de l'architecture
+- [USAGE.md](./USAGE.md) - Guide d'utilisation de l'application
 
 ## 📝 Licence
 
