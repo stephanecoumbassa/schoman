@@ -346,11 +346,20 @@ const pagination = ref({
   limit: 10,
 });
 
-const attendanceForm = ref({
+const attendanceForm = ref<{
+  student: string;
+  class: string;
+  date: string;
+  status: 'present' | 'absent' | 'late' | 'excused';
+  timeIn: string;
+  timeOut: string;
+  reason: string;
+  comments: string;
+}>({
   student: '',
   class: '',
-  date: new Date().toISOString().split('T')[0],
-  status: 'Présent',
+  date: new Date().toISOString().split('T')[0] || '',
+  status: 'present',
   timeIn: '',
   timeOut: '',
   reason: '',
@@ -445,7 +454,7 @@ const editAttendance = (attendance: Attendance) => {
   attendanceForm.value = {
     student: typeof attendance.student !== 'string' ? attendance.student._id : attendance.student,
     class: typeof attendance.class !== 'string' ? attendance.class._id : attendance.class,
-    date: new Date(attendance.date).toISOString().split('T')[0],
+    date: new Date(attendance.date).toISOString().split('T')[0] || '',
     status: attendance.status,
     timeIn: attendance.timeIn || '',
     timeOut: attendance.timeOut || '',
@@ -461,8 +470,8 @@ const cancelAttendanceForm = () => {
   attendanceForm.value = {
     student: '',
     class: '',
-    date: new Date().toISOString().split('T')[0],
-    status: 'Présent',
+    date: new Date().toISOString().split('T')[0] || '',
+    status: 'present',
     timeIn: '',
     timeOut: '',
     reason: '',

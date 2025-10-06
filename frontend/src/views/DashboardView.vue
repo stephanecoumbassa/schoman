@@ -116,11 +116,11 @@
               <tr v-for="student in recentStudents" :key="student._id">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm font-medium text-gray-900">
-                    {{ student.userId?.firstName }} {{ student.userId?.lastName }}
+                    {{ typeof student.userId === 'object' ? student.userId.firstName : '' }} {{ typeof student.userId === 'object' ? student.userId.lastName : '' }}
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-500">{{ student.userId?.email }}</div>
+                  <div class="text-sm text-gray-500">{{ typeof student.userId === 'object' ? student.userId.email : '' }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
@@ -237,18 +237,18 @@
 import { ref, onMounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { api } from '../services/api';
-import type { Student } from '@/types';
+import type { Student, DashboardStats } from '@/types';
 
 const authStore = useAuthStore();
 
 const loading = ref(true);
-const stats = ref<Record<string, number> | null>(null);
+const stats = ref<DashboardStats | null>(null);
 const recentStudents = ref<Student[]>([]);
 
 onMounted(async () => {
   const response = await api.getDashboardStats();
   if (response.data) {
-    stats.value = response.data.stats;
+    stats.value = response.data;
     recentStudents.value = response.data.recentStudents;
   }
   loading.value = false;

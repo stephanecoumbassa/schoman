@@ -30,7 +30,7 @@
           >
             <option value="">Tous les élèves</option>
             <option v-for="student in students" :key="student._id" :value="student._id">
-              {{ student.userId?.firstName }} {{ student.userId?.lastName }}
+              {{ typeof student.userId === 'object' ? student.userId.firstName : '' }} {{ typeof student.userId === 'object' ? student.userId.lastName : '' }}
             </option>
           </select>
           <select
@@ -106,7 +106,7 @@
                 >
                   <option value="">Sélectionner un élève</option>
                   <option v-for="student in students" :key="student._id" :value="student._id">
-                    {{ student.userId?.firstName }} {{ student.userId?.lastName }}
+                    {{ typeof student.userId === 'object' ? student.userId.firstName : '' }} {{ typeof student.userId === 'object' ? student.userId.lastName : '' }}
                   </option>
                 </select>
               </div>
@@ -193,9 +193,9 @@
             <tbody class="divide-y divide-gray-200">
               <tr v-for="loan in loans" :key="loan._id" class="hover:bg-gray-50">
                 <td class="px-6 py-4 text-sm font-medium text-gray-900">
-                  {{ loan.student?.userId?.firstName }} {{ loan.student?.userId?.lastName }}
+                  {{ typeof loan.student === 'object' && typeof loan.student.userId === 'object' ? loan.student.userId.firstName : '' }} {{ typeof loan.student === 'object' && typeof loan.student.userId === 'object' ? loan.student.userId.lastName : '' }}
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-500">{{ loan.book?.title }}</td>
+                <td class="px-6 py-4 text-sm text-gray-500">{{ typeof loan.book === 'object' ? loan.book.title : '' }}</td>
                 <td class="px-6 py-4 text-sm text-gray-500">{{ formatDate(loan.borrowDate) }}</td>
                 <td class="px-6 py-4 text-sm text-gray-500">{{ formatDate(loan.dueDate) }}</td>
                 <td class="px-6 py-4 text-sm text-gray-500">
@@ -420,7 +420,6 @@ const updateLoan = async () => {
   try {
     const response = await api.updateLoan(editingId.value, {
       dueDate: formData.value.dueDate,
-      status: formData.value.status,
       notes: formData.value.notes,
     });
     if (response.error) {
