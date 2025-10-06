@@ -17,6 +17,12 @@ import type {
   Invoice,
   InvoiceFormData,
   InvoiceStats,
+  Event,
+  EventFormData,
+  EventStats,
+  Expense,
+  ExpenseFormData,
+  ExpenseStats,
   DashboardStats,
   Pagination,
   QueryParams,
@@ -441,6 +447,87 @@ class ApiService {
 
   async getInvoiceStats() {
     return this.request<InvoiceStats>('/invoices/stats');
+  }
+
+  // Event endpoints
+  async getEvents(params?: QueryParams) {
+    const queryString = params ? '?' + new URLSearchParams(params as Record<string, string>).toString() : '';
+    return this.request<{ events: Event[]; pagination: Pagination }>(`/events${queryString}`);
+  }
+
+  async getEventById(id: string) {
+    return this.request<{ event: Event }>(`/events/${id}`);
+  }
+
+  async createEvent(eventData: EventFormData) {
+    return this.request<{ event: Event }>('/events', {
+      method: 'POST',
+      body: JSON.stringify(eventData),
+    });
+  }
+
+  async updateEvent(id: string, eventData: Partial<EventFormData>) {
+    return this.request<{ event: Event }>(`/events/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(eventData),
+    });
+  }
+
+  async deleteEvent(id: string) {
+    return this.request<{ message: string }>(`/events/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getEventStats() {
+    return this.request<EventStats>('/events/stats');
+  }
+
+  // Expense endpoints
+  async getExpenses(params?: QueryParams) {
+    const queryString = params ? '?' + new URLSearchParams(params as Record<string, string>).toString() : '';
+    return this.request<{ expenses: Expense[]; pagination: Pagination }>(`/expenses${queryString}`);
+  }
+
+  async getExpenseById(id: string) {
+    return this.request<{ expense: Expense }>(`/expenses/${id}`);
+  }
+
+  async createExpense(expenseData: ExpenseFormData) {
+    return this.request<{ expense: Expense }>('/expenses', {
+      method: 'POST',
+      body: JSON.stringify(expenseData),
+    });
+  }
+
+  async updateExpense(id: string, expenseData: Partial<ExpenseFormData>) {
+    return this.request<{ expense: Expense }>(`/expenses/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(expenseData),
+    });
+  }
+
+  async approveExpense(id: string) {
+    return this.request<{ expense: Expense }>(`/expenses/${id}/approve`, {
+      method: 'POST',
+    });
+  }
+
+  async recordExpensePayment(id: string, paymentData: Payment) {
+    return this.request<{ expense: Expense }>(`/expenses/${id}/payment`, {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async deleteExpense(id: string) {
+    return this.request<{ message: string }>(`/expenses/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getExpenseStats() {
+    return this.request<ExpenseStats>('/expenses/stats');
   }
 }
 
