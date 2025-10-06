@@ -26,6 +26,12 @@ import type {
   Message,
   MessageFormData,
   MessageStats,
+  Transaction,
+  TransactionFormData,
+  TransactionStats,
+  Budget,
+  BudgetFormData,
+  BudgetComparison,
   DashboardStats,
   Pagination,
   QueryParams,
@@ -585,6 +591,109 @@ class ApiService {
 
   async getMessageStats() {
     return this.request<MessageStats>('/messages/stats');
+  }
+
+  // Transaction endpoints
+  async getTransactions(params?: {
+    page?: number;
+    limit?: number;
+    type?: string;
+    category?: string;
+    fiscalYear?: string;
+    startDate?: string;
+    endDate?: string;
+    search?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+    return this.request<{
+      transactions: any[];
+      pagination: Pagination;
+    }>(`/transactions?${queryParams}`);
+  }
+
+  async getTransaction(id: string) {
+    return this.request<{ transaction: any }>(`/transactions/${id}`);
+  }
+
+  async createTransaction(data: any) {
+    return this.request<{ message: string; transaction: any }>('/transactions', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateTransaction(id: string, data: any) {
+    return this.request<{ message: string; transaction: any }>(`/transactions/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteTransaction(id: string) {
+    return this.request<{ message: string }>(`/transactions/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getTransactionStats(fiscalYear?: string) {
+    const queryParams = fiscalYear ? `?fiscalYear=${fiscalYear}` : '';
+    return this.request<any>(`/transactions/stats${queryParams}`);
+  }
+
+  // Budget endpoints
+  async getBudgets(params?: {
+    page?: number;
+    limit?: number;
+    fiscalYear?: string;
+    status?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+    return this.request<{
+      budgets: any[];
+      pagination: Pagination;
+    }>(`/budgets?${queryParams}`);
+  }
+
+  async getBudget(id: string) {
+    return this.request<{ budget: any }>(`/budgets/${id}`);
+  }
+
+  async createBudget(data: any) {
+    return this.request<{ message: string; budget: any }>('/budgets', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateBudget(id: string, data: any) {
+    return this.request<{ message: string; budget: any }>(`/budgets/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteBudget(id: string) {
+    return this.request<{ message: string }>(`/budgets/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getBudgetComparison(id: string) {
+    return this.request<any>(`/budgets/${id}/comparison`);
   }
 }
 
