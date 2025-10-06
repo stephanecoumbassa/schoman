@@ -254,6 +254,19 @@
           <h3 class="text-lg font-semibold text-gray-900 mb-2">Gérer les dépenses</h3>
           <p class="text-sm text-gray-600">Suivi des dépenses et paiements</p>
         </router-link>
+
+        <router-link
+          to="/messages"
+          class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition text-center"
+        >
+          <div class="text-teal-600 mb-3">
+            <svg class="h-12 w-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Messagerie</h3>
+          <p class="text-sm text-gray-600">Communication interne et notifications</p>
+        </router-link>
       </div>
     </div>
   </div>
