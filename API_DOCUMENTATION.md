@@ -41,7 +41,9 @@ Most endpoints require authentication using JWT (JSON Web Token).
 10. [Events](#events-endpoints)
 11. [Expenses](#expenses-endpoints)
 12. [Messages](#messages-endpoints)
-13. [Dashboard](#dashboard-endpoints)
+13. [Budgets](#budgets-endpoints)
+14. [Transactions](#transactions-endpoints)
+15. [Dashboard](#dashboard-endpoints)
 
 ---
 
@@ -871,7 +873,172 @@ Add a book to the library.
 
 **Endpoint:** `POST /api/books`
 
-**Authentication:** Required (admin or teacher)
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:**
+```json
+{
+  "title": "Le Petit Prince",
+  "author": "Antoine de Saint-Exupéry",
+  "isbn": "978-2070408504",
+  "category": "Fiction",
+  "publisher": "Gallimard",
+  "publishedYear": 1943,
+  "description": "Un conte philosophique et poétique",
+  "totalQuantity": 5,
+  "location": "Étagère A1"
+}
+```
+
+**Required Fields:** `title`, `author`, `category`
+
+**Response (201 Created):**
+```json
+{
+  "message": "Livre créé avec succès",
+  "book": {
+    "_id": "507f1f77bcf86cd799439011",
+    "title": "Le Petit Prince",
+    "author": "Antoine de Saint-Exupéry",
+    "isbn": "978-2070408504",
+    "category": "Fiction",
+    "publisher": "Gallimard",
+    "publishedYear": 1943,
+    "description": "Un conte philosophique et poétique",
+    "totalQuantity": 5,
+    "availableQuantity": 5,
+    "location": "Étagère A1",
+    "isActive": true,
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "updatedAt": "2024-01-15T10:30:00.000Z"
+  }
+}
+```
+
+### Get Book
+
+Get details of a specific book.
+
+**Endpoint:** `GET /api/books/:id`
+
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+  "book": {
+    "_id": "507f1f77bcf86cd799439011",
+    "title": "Le Petit Prince",
+    "author": "Antoine de Saint-Exupéry",
+    "isbn": "978-2070408504",
+    "category": "Fiction",
+    "publisher": "Gallimard",
+    "publishedYear": 1943,
+    "description": "Un conte philosophique et poétique",
+    "totalQuantity": 5,
+    "availableQuantity": 3,
+    "location": "Étagère A1",
+    "isActive": true,
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "updatedAt": "2024-01-15T10:30:00.000Z"
+  }
+}
+```
+
+### Update Book
+
+Update book information.
+
+**Endpoint:** `PUT /api/books/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:** (all fields optional)
+```json
+{
+  "title": "Le Petit Prince",
+  "author": "Antoine de Saint-Exupéry",
+  "isbn": "978-2070408504",
+  "category": "Fiction",
+  "publisher": "Gallimard",
+  "publishedYear": 1943,
+  "description": "Updated description",
+  "totalQuantity": 6,
+  "availableQuantity": 4,
+  "location": "Étagère A2",
+  "isActive": true
+}
+```
+
+**Note:** `availableQuantity` cannot exceed `totalQuantity`
+
+**Response (200 OK):**
+```json
+{
+  "message": "Livre mis à jour avec succès",
+  "book": {
+    /* updated book object */
+  }
+}
+```
+
+### Delete Book
+
+Soft delete (deactivate) a book.
+
+**Endpoint:** `DELETE /api/books/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Note:** This is a soft delete. The book is marked as inactive but not removed from the database.
+
+**Response (200 OK):**
+```json
+{
+  "message": "Livre désactivé avec succès",
+  "book": {
+    /* book object with isActive: false */
+  }
+}
+```
+
+### Get Book Statistics
+
+Get library statistics.
+
+**Endpoint:** `GET /api/books/statistics`
+
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+  "totalBooks": 45,
+  "totalCopies": 156,
+  "availableCopies": 98,
+  "borrowedCopies": 58,
+  "booksByCategory": [
+    {
+      "_id": "Fiction",
+      "count": 15
+    },
+    {
+      "_id": "Jeunesse",
+      "count": 12
+    },
+    {
+      "_id": "Aventure",
+      "count": 8
+    }
+  ]
+}
+```
 
 ---
 
@@ -879,15 +1046,23 @@ Add a book to the library.
 
 ### List Loans
 
-Get book loans.
+Get book loans with filters.
 
 **Endpoint:** `GET /api/loans`
 
 **Authentication:** Required
 
 **Query Parameters:**
-- `student`, `book` - Filter by student or book
-- `status` - Filter by status (`borrowed`, `returned`, `overdue`)
+- `page` (number, default: 1) - Page number
+- `limit` (number, default: 10, max: 100) - Results per page
+- `student` (ObjectId) - Filter by student ID
+- `book` (ObjectId) - Filter by book ID
+- `status` (string) - Filter by status (`borrowed`, `returned`, `overdue`)
+
+**Statuses:**
+- `borrowed` - Currently borrowed
+- `returned` - Returned to library
+- `overdue` - Past due date and not returned
 
 **Response (200 OK):**
 ```json
@@ -896,23 +1071,282 @@ Get book loans.
     {
       "_id": "507f1f77bcf86cd799439011",
       "book": {
-        "title": "Le Petit Prince"
+        "_id": "507f1f77bcf86cd799439012",
+        "title": "Le Petit Prince",
+        "author": "Antoine de Saint-Exupéry",
+        "isbn": "978-2070408504"
       },
       "student": {
+        "_id": "507f1f77bcf86cd799439013",
         "userId": {
           "firstName": "John",
           "lastName": "Doe"
         }
       },
-      "borrowDate": "2024-01-15",
-      "dueDate": "2024-01-29",
+      "borrowDate": "2024-01-15T10:00:00.000Z",
+      "dueDate": "2024-01-29T10:00:00.000Z",
       "returnDate": null,
-      "status": "borrowed"
+      "status": "borrowed",
+      "notes": "Premier emprunt de l'année",
+      "createdAt": "2024-01-15T10:00:00.000Z",
+      "updatedAt": "2024-01-15T10:00:00.000Z"
     }
   ],
-  "pagination": { /* pagination info */ }
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 45,
+    "pages": 5
+  }
 }
 ```
+
+### Create Loan
+
+Record a new book loan.
+
+**Endpoint:** `POST /api/loans`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:**
+```json
+{
+  "book": "507f1f77bcf86cd799439012",
+  "student": "507f1f77bcf86cd799439013",
+  "dueDate": "2024-01-29",
+  "notes": "Premier emprunt de l'année"
+}
+```
+
+**Required Fields:** `book`, `student`, `dueDate`
+
+**Validation:**
+- Book must exist and have available copies
+- Student must exist
+- Due date must be a valid future date
+
+**Response (201 Created):**
+```json
+{
+  "message": "Emprunt enregistré avec succès",
+  "loan": {
+    "_id": "507f1f77bcf86cd799439011",
+    "book": {
+      "_id": "507f1f77bcf86cd799439012",
+      "title": "Le Petit Prince",
+      "author": "Antoine de Saint-Exupéry",
+      "isbn": "978-2070408504"
+    },
+    "student": {
+      "userId": {
+        "firstName": "John",
+        "lastName": "Doe"
+      }
+    },
+    "borrowDate": "2024-01-15T10:00:00.000Z",
+    "dueDate": "2024-01-29T10:00:00.000Z",
+    "status": "borrowed",
+    "notes": "Premier emprunt de l'année"
+  }
+}
+```
+
+**Note:** When a loan is created, the book's `availableQuantity` is automatically decremented.
+
+### Get Loan
+
+Get details of a specific loan.
+
+**Endpoint:** `GET /api/loans/:id`
+
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+  "loan": {
+    "_id": "507f1f77bcf86cd799439011",
+    "book": {
+      "_id": "507f1f77bcf86cd799439012",
+      "title": "Le Petit Prince",
+      "author": "Antoine de Saint-Exupéry",
+      "isbn": "978-2070408504"
+    },
+    "student": {
+      "_id": "507f1f77bcf86cd799439013",
+      "userId": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "john.doe@school.com"
+      }
+    },
+    "borrowDate": "2024-01-15T10:00:00.000Z",
+    "dueDate": "2024-01-29T10:00:00.000Z",
+    "returnDate": null,
+    "status": "borrowed",
+    "notes": "Premier emprunt de l'année"
+  }
+}
+```
+
+### Return Loan
+
+Mark a loan as returned.
+
+**Endpoint:** `POST /api/loans/:id/return`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:** None required
+
+**Response (200 OK):**
+```json
+{
+  "message": "Livre retourné avec succès",
+  "loan": {
+    "_id": "507f1f77bcf86cd799439011",
+    "book": {
+      "title": "Le Petit Prince"
+    },
+    "student": {
+      "userId": {
+        "firstName": "John",
+        "lastName": "Doe"
+      }
+    },
+    "borrowDate": "2024-01-15T10:00:00.000Z",
+    "dueDate": "2024-01-29T10:00:00.000Z",
+    "returnDate": "2024-01-25T14:30:00.000Z",
+    "status": "returned"
+  }
+}
+```
+
+**Note:** When a loan is returned, the book's `availableQuantity` is automatically incremented.
+
+### Update Loan
+
+Update loan information.
+
+**Endpoint:** `PUT /api/loans/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:** (all fields optional)
+```json
+{
+  "dueDate": "2024-02-05",
+  "notes": "Extension accordée",
+  "status": "borrowed"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Emprunt mis à jour avec succès",
+  "loan": {
+    /* updated loan object */
+  }
+}
+```
+
+### Delete Loan
+
+Delete a loan record.
+
+**Endpoint:** `DELETE /api/loans/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Note:** If the loan is not returned, the book's `availableQuantity` will be automatically incremented before deletion.
+
+**Response (200 OK):**
+```json
+{
+  "message": "Emprunt supprimé avec succès"
+}
+```
+
+### Get Student Loans
+
+Get loan history and statistics for a specific student.
+
+**Endpoint:** `GET /api/loans/student/:studentId`
+
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+  "currentLoans": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "book": {
+        "title": "Le Petit Prince",
+        "author": "Antoine de Saint-Exupéry",
+        "dueDate": "2024-01-29T10:00:00.000Z"
+      }
+    }
+  ],
+  "loanHistory": [
+    {
+      "_id": "507f1f77bcf86cd799439014",
+      "book": {
+        "title": "Harry Potter",
+        "author": "J.K. Rowling"
+      },
+      "returnDate": "2024-01-10T14:00:00.000Z"
+    }
+  ],
+  "overdueLoans": [
+    {
+      "_id": "507f1f77bcf86cd799439015",
+      "book": {
+        "title": "Le Lion",
+        "author": "Joseph Kessel",
+        "dueDate": "2024-01-05T10:00:00.000Z"
+      }
+    }
+  ],
+  "stats": {
+    "currentLoansCount": 1,
+    "totalLoansCount": 15,
+    "overdueCount": 1
+  }
+}
+```
+
+### Update Overdue Loans
+
+Automatically update the status of all loans past their due date to 'overdue'.
+
+**Endpoint:** `POST /api/loans/update-overdue`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:** None required
+
+**Response (200 OK):**
+```json
+{
+  "message": "Statuts des emprunts en retard mis à jour",
+  "updated": 5
+}
+```
+
+**Note:** This endpoint is useful for batch processing overdue loans, typically run as a scheduled task.
 
 ---
 
@@ -920,19 +1354,310 @@ Get book loans.
 
 ### List Invoices
 
-Get invoices with filters.
+Get invoices with filters and pagination.
 
 **Endpoint:** `GET /api/invoices`
 
 **Authentication:** Required
 
 **Query Parameters:**
-- `student` - Filter by student
-- `status` - Filter by status
-- `startDate`, `endDate` - Date range
-- `page`, `limit` - Pagination
+- `page` (number, default: 1) - Page number
+- `limit` (number, default: 10, max: 100) - Results per page
+- `student` (ObjectId) - Filter by student ID
+- `status` (string) - Filter by status
+- `startDate` (ISO date) - Filter by issue date (from)
+- `endDate` (ISO date) - Filter by issue date (to)
 
 **Statuses:** `draft`, `sent`, `paid`, `overdue`, `cancelled`
+
+**Response (200 OK):**
+```json
+{
+  "invoices": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "invoiceNumber": "INV-2024-00001",
+      "student": {
+        "_id": "507f1f77bcf86cd799439012",
+        "userId": {
+          "firstName": "John",
+          "lastName": "Doe"
+        }
+      },
+      "items": [
+        {
+          "description": "Frais de scolarité - Trimestre 1",
+          "quantity": 1,
+          "unitPrice": 50000,
+          "totalPrice": 50000
+        }
+      ],
+      "subtotal": 50000,
+      "taxRate": 0,
+      "taxAmount": 0,
+      "totalAmount": 50000,
+      "issueDate": "2024-01-15T10:00:00.000Z",
+      "dueDate": "2024-02-15T10:00:00.000Z",
+      "status": "sent",
+      "notes": "Paiement avant le 15 février",
+      "createdAt": "2024-01-15T10:00:00.000Z",
+      "updatedAt": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 25,
+    "pages": 3
+  }
+}
+```
+
+### Create Invoice
+
+Create a new invoice for a student.
+
+**Endpoint:** `POST /api/invoices`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:**
+```json
+{
+  "student": "507f1f77bcf86cd799439012",
+  "items": [
+    {
+      "description": "Frais de scolarité - Trimestre 1",
+      "quantity": 1,
+      "unitPrice": 50000
+    },
+    {
+      "description": "Fournitures scolaires",
+      "quantity": 1,
+      "unitPrice": 5000
+    }
+  ],
+  "taxRate": 0,
+  "dueDate": "2024-02-15",
+  "notes": "Paiement avant le 15 février"
+}
+```
+
+**Required Fields:** `student`, `items` (array with at least one item), `dueDate`
+
+**Item Fields:**
+- `description` (string, required) - Item description
+- `quantity` (number, required) - Quantity
+- `unitPrice` (number, required) - Unit price in FCFA
+
+**Note:** Invoice number is automatically generated. Amounts are automatically calculated.
+
+**Response (201 Created):**
+```json
+{
+  "message": "Facture créée avec succès",
+  "invoice": {
+    "_id": "507f1f77bcf86cd799439011",
+    "invoiceNumber": "INV-2024-00001",
+    "student": {
+      "_id": "507f1f77bcf86cd799439012",
+      "userId": {
+        "firstName": "John",
+        "lastName": "Doe"
+      }
+    },
+    "items": [
+      {
+        "description": "Frais de scolarité - Trimestre 1",
+        "quantity": 1,
+        "unitPrice": 50000,
+        "totalPrice": 50000
+      },
+      {
+        "description": "Fournitures scolaires",
+        "quantity": 1,
+        "unitPrice": 5000,
+        "totalPrice": 5000
+      }
+    ],
+    "subtotal": 55000,
+    "taxRate": 0,
+    "taxAmount": 0,
+    "totalAmount": 55000,
+    "issueDate": "2024-01-15T10:00:00.000Z",
+    "dueDate": "2024-02-15T10:00:00.000Z",
+    "status": "draft"
+  }
+}
+```
+
+### Get Invoice
+
+Get details of a specific invoice.
+
+**Endpoint:** `GET /api/invoices/:id`
+
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+  "invoice": {
+    "_id": "507f1f77bcf86cd799439011",
+    "invoiceNumber": "INV-2024-00001",
+    "student": {
+      "_id": "507f1f77bcf86cd799439012",
+      "userId": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "john.doe@school.com"
+      }
+    },
+    "items": [ /* items array */ ],
+    "subtotal": 55000,
+    "taxRate": 0,
+    "taxAmount": 0,
+    "totalAmount": 55000,
+    "issueDate": "2024-01-15T10:00:00.000Z",
+    "dueDate": "2024-02-15T10:00:00.000Z",
+    "status": "sent",
+    "notes": "Paiement avant le 15 février"
+  }
+}
+```
+
+### Update Invoice
+
+Update invoice information.
+
+**Endpoint:** `PUT /api/invoices/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:** (all fields optional)
+```json
+{
+  "items": [
+    {
+      "description": "Frais de scolarité - Trimestre 1",
+      "quantity": 1,
+      "unitPrice": 52000
+    }
+  ],
+  "taxRate": 0,
+  "dueDate": "2024-02-20",
+  "status": "sent",
+  "notes": "Date limite prolongée"
+}
+```
+
+**Note:** Cannot modify paid or cancelled invoices. Amounts are automatically recalculated when items are updated.
+
+**Response (200 OK):**
+```json
+{
+  "message": "Facture mise à jour avec succès",
+  "invoice": {
+    /* updated invoice object */
+  }
+}
+```
+
+### Record Payment
+
+Record payment for an invoice.
+
+**Endpoint:** `POST /api/invoices/:id/payment`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:**
+```json
+{
+  "paymentDate": "2024-02-10",
+  "paymentMethod": "Espèces",
+  "paymentReference": "REF-2024-001"
+}
+```
+
+**Payment Methods:** `Espèces`, `Chèque`, `Virement bancaire`, `Mobile Money`, `Autre`
+
+**Response (200 OK):**
+```json
+{
+  "message": "Paiement enregistré avec succès",
+  "invoice": {
+    "_id": "507f1f77bcf86cd799439011",
+    "invoiceNumber": "INV-2024-00001",
+    "status": "paid",
+    "paymentDate": "2024-02-10T10:00:00.000Z",
+    "paymentMethod": "Espèces",
+    "paymentReference": "REF-2024-001",
+    "totalAmount": 55000
+  }
+}
+```
+
+### Delete Invoice
+
+Delete an invoice.
+
+**Endpoint:** `DELETE /api/invoices/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Note:** Cannot delete paid invoices. Cancel them instead by updating status to `cancelled`.
+
+**Response (200 OK):**
+```json
+{
+  "message": "Facture supprimée avec succès"
+}
+```
+
+### Get Invoice Statistics
+
+Get invoice statistics and revenue information.
+
+**Endpoint:** `GET /api/invoices/stats`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Response (200 OK):**
+```json
+{
+  "stats": [
+    {
+      "_id": "paid",
+      "count": 45,
+      "totalAmount": 2250000
+    },
+    {
+      "_id": "sent",
+      "count": 12,
+      "totalAmount": 600000
+    },
+    {
+      "_id": "draft",
+      "count": 3,
+      "totalAmount": 150000
+    }
+  ],
+  "totalInvoices": 60,
+  "totalRevenue": 2250000,
+  "overdueInvoices": 5
+}
+```
 
 ---
 
@@ -940,18 +1665,292 @@ Get invoices with filters.
 
 ### List Events
 
-Get school events.
+Get school events with filters and pagination.
 
 **Endpoint:** `GET /api/events`
 
 **Authentication:** Required
 
 **Query Parameters:**
-- `type` - Filter by type
-- `startDate`, `endDate` - Date range
-- `page`, `limit` - Pagination
+- `page` (number, default: 1) - Page number
+- `limit` (number, default: 10, max: 100) - Results per page
+- `eventType` (string) - Filter by event type
+- `status` (string) - Filter by status
+- `startDate` (ISO date) - Filter events starting from this date
+- `endDate` (ISO date) - Filter events ending before this date
+- `search` (string) - Search in title or description
 
 **Event Types:** `meeting`, `celebration`, `trip`, `training`, `parent_meeting`, `other`
+
+**Event Statuses:** `planned`, `ongoing`, `completed`, `cancelled`
+
+**Response (200 OK):**
+```json
+{
+  "events": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "title": "Réunion parents-professeurs",
+      "description": "Rencontre avec les parents d'élèves",
+      "eventType": "parent_meeting",
+      "startDate": "2024-02-15T14:00:00.000Z",
+      "endDate": "2024-02-15T17:00:00.000Z",
+      "location": "Salle polyvalente",
+      "organizer": {
+        "_id": "507f1f77bcf86cd799439012",
+        "firstName": "Marie",
+        "lastName": "Dupont",
+        "email": "marie.dupont@school.com"
+      },
+      "targetAudience": ["parents", "teachers"],
+      "classes": [
+        {
+          "_id": "507f1f77bcf86cd799439013",
+          "name": "CE1-A",
+          "level": "CE1"
+        }
+      ],
+      "maxParticipants": 50,
+      "currentParticipants": 32,
+      "status": "planned",
+      "notes": "Prévoir un espace pour les questions",
+      "createdBy": {
+        "_id": "507f1f77bcf86cd799439014",
+        "firstName": "Admin",
+        "lastName": "User"
+      },
+      "createdAt": "2024-01-15T10:00:00.000Z",
+      "updatedAt": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+  "pagination": {
+    "total": 15,
+    "page": 1,
+    "pages": 2,
+    "limit": 10
+  }
+}
+```
+
+### Create Event
+
+Create a new school event.
+
+**Endpoint:** `POST /api/events`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:**
+```json
+{
+  "title": "Réunion parents-professeurs",
+  "description": "Rencontre avec les parents d'élèves",
+  "eventType": "parent_meeting",
+  "startDate": "2024-02-15T14:00:00.000Z",
+  "endDate": "2024-02-15T17:00:00.000Z",
+  "location": "Salle polyvalente",
+  "organizer": "507f1f77bcf86cd799439012",
+  "targetAudience": ["parents", "teachers"],
+  "classes": ["507f1f77bcf86cd799439013"],
+  "maxParticipants": 50,
+  "notes": "Prévoir un espace pour les questions"
+}
+```
+
+**Required Fields:** `title`, `eventType`, `startDate`, `endDate`
+
+**Target Audience Options:** `all`, `students`, `teachers`, `parents`, `staff`
+
+**Validation:**
+- End date must be after start date
+- Classes must exist if provided
+
+**Response (201 Created):**
+```json
+{
+  "message": "Événement créé avec succès",
+  "event": {
+    "_id": "507f1f77bcf86cd799439011",
+    "title": "Réunion parents-professeurs",
+    "description": "Rencontre avec les parents d'élèves",
+    "eventType": "parent_meeting",
+    "startDate": "2024-02-15T14:00:00.000Z",
+    "endDate": "2024-02-15T17:00:00.000Z",
+    "location": "Salle polyvalente",
+    "organizer": {
+      "_id": "507f1f77bcf86cd799439012",
+      "firstName": "Marie",
+      "lastName": "Dupont",
+      "email": "marie.dupont@school.com"
+    },
+    "targetAudience": ["parents", "teachers"],
+    "classes": [
+      {
+        "_id": "507f1f77bcf86cd799439013",
+        "name": "CE1-A",
+        "level": "CE1"
+      }
+    ],
+    "maxParticipants": 50,
+    "currentParticipants": 0,
+    "status": "planned",
+    "createdBy": {
+      "_id": "507f1f77bcf86cd799439014",
+      "firstName": "Admin",
+      "lastName": "User"
+    }
+  }
+}
+```
+
+### Get Event
+
+Get details of a specific event.
+
+**Endpoint:** `GET /api/events/:id`
+
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+  "event": {
+    "_id": "507f1f77bcf86cd799439011",
+    "title": "Réunion parents-professeurs",
+    "description": "Rencontre avec les parents d'élèves",
+    "eventType": "parent_meeting",
+    "startDate": "2024-02-15T14:00:00.000Z",
+    "endDate": "2024-02-15T17:00:00.000Z",
+    "location": "Salle polyvalente",
+    "organizer": {
+      "_id": "507f1f77bcf86cd799439012",
+      "firstName": "Marie",
+      "lastName": "Dupont",
+      "email": "marie.dupont@school.com",
+      "phone": "0601020304"
+    },
+    "targetAudience": ["parents", "teachers"],
+    "classes": [
+      {
+        "_id": "507f1f77bcf86cd799439013",
+        "name": "CE1-A",
+        "level": "CE1",
+        "academicYear": "2024-2025"
+      }
+    ],
+    "maxParticipants": 50,
+    "currentParticipants": 32,
+    "status": "planned",
+    "notes": "Prévoir un espace pour les questions",
+    "createdBy": {
+      "_id": "507f1f77bcf86cd799439014",
+      "firstName": "Admin",
+      "lastName": "User"
+    }
+  }
+}
+```
+
+### Update Event
+
+Update event information.
+
+**Endpoint:** `PUT /api/events/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:** (all fields optional)
+```json
+{
+  "title": "Réunion parents-professeurs - Modifié",
+  "description": "Description mise à jour",
+  "eventType": "parent_meeting",
+  "startDate": "2024-02-15T15:00:00.000Z",
+  "endDate": "2024-02-15T18:00:00.000Z",
+  "location": "Grande salle",
+  "organizer": "507f1f77bcf86cd799439012",
+  "targetAudience": ["parents", "teachers", "students"],
+  "classes": ["507f1f77bcf86cd799439013"],
+  "maxParticipants": 60,
+  "status": "ongoing",
+  "notes": "Mise à jour des informations"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Événement mis à jour avec succès",
+  "event": {
+    /* updated event object */
+  }
+}
+```
+
+### Delete Event
+
+Delete an event.
+
+**Endpoint:** `DELETE /api/events/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Note:** This is a permanent deletion.
+
+**Response (200 OK):**
+```json
+{
+  "message": "Événement supprimé avec succès"
+}
+```
+
+### Get Event Statistics
+
+Get event statistics.
+
+**Endpoint:** `GET /api/events/stats`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Response (200 OK):**
+```json
+{
+  "totalEvents": 25,
+  "upcomingEvents": 8,
+  "ongoingEvents": 2,
+  "completedEvents": 12,
+  "eventsByType": [
+    {
+      "_id": "parent_meeting",
+      "count": 8
+    },
+    {
+      "_id": "celebration",
+      "count": 6
+    },
+    {
+      "_id": "trip",
+      "count": 5
+    },
+    {
+      "_id": "training",
+      "count": 4
+    },
+    {
+      "_id": "meeting",
+      "count": 2
+    }
+  ]
+}
+```
 
 ---
 
@@ -959,16 +1958,351 @@ Get school events.
 
 ### List Expenses
 
-Get expense records.
+Get expense records with filters and pagination.
 
 **Endpoint:** `GET /api/expenses`
 
-**Authentication:** Required (admin or teacher)
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
 
 **Query Parameters:**
-- `category`, `status` - Filters
-- `startDate`, `endDate` - Date range
-- `page`, `limit` - Pagination
+- `page` (number, default: 1) - Page number
+- `limit` (number, default: 10, max: 100) - Results per page
+- `category` (string) - Filter by category
+- `status` (string) - Filter by status
+- `startDate` (ISO date) - Filter by expense date (from)
+- `endDate` (ISO date) - Filter by expense date (to)
+- `search` (string) - Search in title or description
+
+**Categories:** `Salaires`, `Fournitures`, `Entretien`, `Électricité et eau`, `Transport`, `Autres dépenses`
+
+**Statuses:** `pending`, `approved`, `paid`, `rejected`
+
+**Response (200 OK):**
+```json
+{
+  "expenses": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "expenseNumber": "EXP-2024-00001",
+      "title": "Achat de fournitures scolaires",
+      "description": "Cahiers, stylos et crayons",
+      "category": "Fournitures",
+      "amount": 75000,
+      "expenseDate": "2024-01-15T10:00:00.000Z",
+      "supplier": "Librairie Moderne",
+      "supplierContact": "0601020304",
+      "status": "approved",
+      "approvedBy": {
+        "_id": "507f1f77bcf86cd799439012",
+        "firstName": "Admin",
+        "lastName": "User",
+        "email": "admin@school.com"
+      },
+      "approvalDate": "2024-01-16T10:00:00.000Z",
+      "createdBy": {
+        "_id": "507f1f77bcf86cd799439013",
+        "firstName": "Marie",
+        "lastName": "Dupont",
+        "email": "marie@school.com"
+      },
+      "notes": "Pour les classes CE1 et CE2",
+      "createdAt": "2024-01-15T10:00:00.000Z",
+      "updatedAt": "2024-01-16T10:00:00.000Z"
+    }
+  ],
+  "pagination": {
+    "total": 45,
+    "page": 1,
+    "pages": 5,
+    "limit": 10
+  }
+}
+```
+
+### Create Expense
+
+Create a new expense record.
+
+**Endpoint:** `POST /api/expenses`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:**
+```json
+{
+  "title": "Achat de fournitures scolaires",
+  "description": "Cahiers, stylos et crayons",
+  "category": "Fournitures",
+  "amount": 75000,
+  "expenseDate": "2024-01-15",
+  "supplier": "Librairie Moderne",
+  "supplierContact": "0601020304",
+  "notes": "Pour les classes CE1 et CE2"
+}
+```
+
+**Required Fields:** `title`, `category`, `amount`, `expenseDate`
+
+**Note:** Expense number is automatically generated. Status is set to `pending` by default.
+
+**Response (201 Created):**
+```json
+{
+  "message": "Dépense créée avec succès",
+  "expense": {
+    "_id": "507f1f77bcf86cd799439011",
+    "expenseNumber": "EXP-2024-00001",
+    "title": "Achat de fournitures scolaires",
+    "description": "Cahiers, stylos et crayons",
+    "category": "Fournitures",
+    "amount": 75000,
+    "expenseDate": "2024-01-15T10:00:00.000Z",
+    "supplier": "Librairie Moderne",
+    "supplierContact": "0601020304",
+    "status": "pending",
+    "createdBy": {
+      "_id": "507f1f77bcf86cd799439013",
+      "firstName": "Marie",
+      "lastName": "Dupont",
+      "email": "marie@school.com"
+    },
+    "notes": "Pour les classes CE1 et CE2"
+  }
+}
+```
+
+### Get Expense
+
+Get details of a specific expense.
+
+**Endpoint:** `GET /api/expenses/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Response (200 OK):**
+```json
+{
+  "expense": {
+    "_id": "507f1f77bcf86cd799439011",
+    "expenseNumber": "EXP-2024-00001",
+    "title": "Achat de fournitures scolaires",
+    "description": "Cahiers, stylos et crayons",
+    "category": "Fournitures",
+    "amount": 75000,
+    "expenseDate": "2024-01-15T10:00:00.000Z",
+    "supplier": "Librairie Moderne",
+    "supplierContact": "0601020304",
+    "status": "approved",
+    "approvedBy": {
+      "_id": "507f1f77bcf86cd799439012",
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@school.com"
+    },
+    "approvalDate": "2024-01-16T10:00:00.000Z",
+    "createdBy": {
+      "_id": "507f1f77bcf86cd799439013",
+      "firstName": "Marie",
+      "lastName": "Dupont",
+      "email": "marie@school.com",
+      "phone": "0601020304"
+    },
+    "notes": "Pour les classes CE1 et CE2"
+  }
+}
+```
+
+### Update Expense
+
+Update expense information.
+
+**Endpoint:** `PUT /api/expenses/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:** (all fields optional)
+```json
+{
+  "title": "Achat de fournitures scolaires - Modifié",
+  "description": "Description mise à jour",
+  "category": "Fournitures",
+  "amount": 80000,
+  "expenseDate": "2024-01-15",
+  "supplier": "Nouveau Fournisseur",
+  "supplierContact": "0602030405",
+  "status": "pending",
+  "notes": "Mise à jour des informations"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Dépense mise à jour avec succès",
+  "expense": {
+    /* updated expense object */
+  }
+}
+```
+
+### Approve Expense
+
+Approve a pending expense.
+
+**Endpoint:** `POST /api/expenses/:id/approve`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Request Body:** None required
+
+**Validation:**
+- Expense must exist
+- Expense status must be `pending`
+
+**Response (200 OK):**
+```json
+{
+  "message": "Dépense approuvée avec succès",
+  "expense": {
+    "_id": "507f1f77bcf86cd799439011",
+    "expenseNumber": "EXP-2024-00001",
+    "title": "Achat de fournitures scolaires",
+    "status": "approved",
+    "approvedBy": {
+      "_id": "507f1f77bcf86cd799439012",
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@school.com"
+    },
+    "approvalDate": "2024-01-16T10:00:00.000Z"
+  }
+}
+```
+
+### Record Payment
+
+Record payment for an approved expense.
+
+**Endpoint:** `POST /api/expenses/:id/payment`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Request Body:**
+```json
+{
+  "paymentDate": "2024-01-17",
+  "paymentMethod": "Virement bancaire",
+  "paymentReference": "REF-2024-001"
+}
+```
+
+**Payment Methods:** `Espèces`, `Chèque`, `Virement bancaire`, `Mobile Money`, `Autre`
+
+**Validation:**
+- Expense must exist
+- Expense status must be `approved`
+
+**Response (200 OK):**
+```json
+{
+  "message": "Paiement enregistré avec succès",
+  "expense": {
+    "_id": "507f1f77bcf86cd799439011",
+    "expenseNumber": "EXP-2024-00001",
+    "title": "Achat de fournitures scolaires",
+    "status": "paid",
+    "amount": 75000,
+    "paymentDate": "2024-01-17T10:00:00.000Z",
+    "paymentMethod": "Virement bancaire",
+    "paymentReference": "REF-2024-001"
+  }
+}
+```
+
+### Delete Expense
+
+Delete an expense.
+
+**Endpoint:** `DELETE /api/expenses/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Note:** Cannot delete paid expenses. Only pending or rejected expenses can be deleted.
+
+**Response (200 OK):**
+```json
+{
+  "message": "Dépense supprimée avec succès"
+}
+```
+
+### Get Expense Statistics
+
+Get expense statistics.
+
+**Endpoint:** `GET /api/expenses/stats`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Response (200 OK):**
+```json
+{
+  "totalExpenses": 125,
+  "pendingExpenses": 15,
+  "approvedExpenses": 8,
+  "paidExpenses": 98,
+  "totalAmount": 5250000,
+  "paidAmount": 4800000,
+  "expensesByCategory": [
+    {
+      "_id": "Salaires",
+      "count": 45,
+      "totalAmount": 3000000
+    },
+    {
+      "_id": "Fournitures",
+      "count": 32,
+      "totalAmount": 850000
+    },
+    {
+      "_id": "Entretien",
+      "count": 20,
+      "totalAmount": 600000
+    },
+    {
+      "_id": "Électricité et eau",
+      "count": 15,
+      "totalAmount": 450000
+    },
+    {
+      "_id": "Transport",
+      "count": 10,
+      "totalAmount": 250000
+    },
+    {
+      "_id": "Autres dépenses",
+      "count": 3,
+      "totalAmount": 100000
+    }
+  ]
+}
+```
 
 ---
 
@@ -976,16 +2310,906 @@ Get expense records.
 
 ### List Messages
 
-Get messages for the authenticated user.
+Get messages for the authenticated user (inbox or sent).
 
 **Endpoint:** `GET /api/messages`
 
 **Authentication:** Required
 
 **Query Parameters:**
-- `category`, `priority` - Filters
-- `isArchived` (boolean) - Show archived
-- `page`, `limit` - Pagination
+- `page` (number, default: 1) - Page number
+- `limit` (number, default: 20, max: 100) - Results per page
+- `box` (string, default: 'inbox') - Message box (`inbox` or `sent`)
+- `category` (string) - Filter by category
+- `priority` (string) - Filter by priority
+- `unreadOnly` (boolean) - Show only unread messages (inbox only)
+- `search` (string) - Search in subject and content
+
+**Categories:** `general`, `urgent`, `information`, `administrative`, `pedagogical`
+
+**Priorities:** `low`, `normal`, `high`
+
+**Response (200 OK):**
+```json
+{
+  "messages": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "subject": "Réunion pédagogique",
+      "content": "Réunion prévue le vendredi 20 janvier",
+      "sender": {
+        "_id": "507f1f77bcf86cd799439012",
+        "firstName": "Admin",
+        "lastName": "User",
+        "email": "admin@school.com",
+        "role": "admin"
+      },
+      "recipients": [
+        {
+          "_id": "507f1f77bcf86cd799439013",
+          "firstName": "Marie",
+          "lastName": "Dupont",
+          "email": "marie@school.com",
+          "role": "teacher"
+        }
+      ],
+      "conversationId": "550e8400-e29b-41d4-a716-446655440000",
+      "priority": "high",
+      "category": "pedagogical",
+      "parentMessage": null,
+      "isArchived": false,
+      "readBy": [
+        {
+          "user": "507f1f77bcf86cd799439013",
+          "readAt": "2024-01-16T14:30:00.000Z"
+        }
+      ],
+      "createdAt": "2024-01-15T10:00:00.000Z",
+      "updatedAt": "2024-01-16T14:30:00.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 45,
+    "pages": 3
+  }
+}
+```
+
+### Create Message
+
+Send a new message.
+
+**Endpoint:** `POST /api/messages`
+
+**Authentication:** Required
+
+**Request Body:**
+```json
+{
+  "subject": "Réunion pédagogique",
+  "content": "Réunion prévue le vendredi 20 janvier à 14h00 en salle des professeurs.",
+  "recipients": [
+    "507f1f77bcf86cd799439013",
+    "507f1f77bcf86cd799439014"
+  ],
+  "priority": "high",
+  "category": "pedagogical",
+  "parentMessage": null
+}
+```
+
+**Required Fields:** `subject`, `content`, `recipients` (array with at least one user ID)
+
+**Note:** When replying to a message, include the `parentMessage` field with the ID of the original message. The conversation ID is automatically managed.
+
+**Response (201 Created):**
+```json
+{
+  "message": "Message envoyé avec succès",
+  "data": {
+    "_id": "507f1f77bcf86cd799439011",
+    "subject": "Réunion pédagogique",
+    "content": "Réunion prévue le vendredi 20 janvier à 14h00 en salle des professeurs.",
+    "sender": {
+      "_id": "507f1f77bcf86cd799439012",
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@school.com",
+      "role": "admin"
+    },
+    "recipients": [
+      {
+        "_id": "507f1f77bcf86cd799439013",
+        "firstName": "Marie",
+        "lastName": "Dupont",
+        "email": "marie@school.com",
+        "role": "teacher"
+      }
+    ],
+    "conversationId": "550e8400-e29b-41d4-a716-446655440000",
+    "priority": "high",
+    "category": "pedagogical",
+    "parentMessage": null,
+    "isArchived": false,
+    "readBy": []
+  }
+}
+```
+
+### Get Message
+
+Get details of a specific message.
+
+**Endpoint:** `GET /api/messages/:id`
+
+**Authentication:** Required
+
+**Authorization:** Sender, recipients, or admin only
+
+**Response (200 OK):**
+```json
+{
+  "message": {
+    "_id": "507f1f77bcf86cd799439011",
+    "subject": "Réunion pédagogique",
+    "content": "Réunion prévue le vendredi 20 janvier à 14h00 en salle des professeurs.",
+    "sender": {
+      "_id": "507f1f77bcf86cd799439012",
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@school.com",
+      "role": "admin"
+    },
+    "recipients": [
+      {
+        "_id": "507f1f77bcf86cd799439013",
+        "firstName": "Marie",
+        "lastName": "Dupont",
+        "email": "marie@school.com",
+        "role": "teacher"
+      }
+    ],
+    "conversationId": "550e8400-e29b-41d4-a716-446655440000",
+    "priority": "high",
+    "category": "pedagogical",
+    "parentMessage": {
+      "_id": "507f1f77bcf86cd799439010",
+      "subject": "Re: Planning",
+      "sender": "507f1f77bcf86cd799439013",
+      "createdAt": "2024-01-14T10:00:00.000Z"
+    },
+    "isArchived": false,
+    "readBy": [
+      {
+        "user": "507f1f77bcf86cd799439013",
+        "readAt": "2024-01-16T14:30:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+### Mark as Read
+
+Mark a message as read by the authenticated user.
+
+**Endpoint:** `PATCH /api/messages/:id/read`
+
+**Authentication:** Required
+
+**Authorization:** Recipients only
+
+**Request Body:** None required
+
+**Response (200 OK):**
+```json
+{
+  "message": "Message marqué comme lu",
+  "data": {
+    "_id": "507f1f77bcf86cd799439011",
+    "subject": "Réunion pédagogique",
+    "readBy": [
+      {
+        "user": "507f1f77bcf86cd799439013",
+        "readAt": "2024-01-16T14:30:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+### Archive Message
+
+Archive a message.
+
+**Endpoint:** `PATCH /api/messages/:id/archive`
+
+**Authentication:** Required
+
+**Authorization:** Sender, recipients, or admin only
+
+**Request Body:** None required
+
+**Response (200 OK):**
+```json
+{
+  "message": "Message archivé avec succès"
+}
+```
+
+### Delete Message
+
+Delete a message.
+
+**Endpoint:** `DELETE /api/messages/:id`
+
+**Authentication:** Required
+
+**Authorization:** Sender or admin only
+
+**Note:** Only the sender or an admin can delete a message. This is a permanent deletion.
+
+**Response (200 OK):**
+```json
+{
+  "message": "Message supprimé avec succès"
+}
+```
+
+### Get Conversation
+
+Get all messages in a conversation thread.
+
+**Endpoint:** `GET /api/messages/conversation/:conversationId`
+
+**Authentication:** Required
+
+**Authorization:** Users who are sender or recipient of any message in the conversation
+
+**Response (200 OK):**
+```json
+{
+  "messages": [
+    {
+      "_id": "507f1f77bcf86cd799439010",
+      "subject": "Planning",
+      "content": "Pouvez-vous partager le planning?",
+      "sender": {
+        "_id": "507f1f77bcf86cd799439013",
+        "firstName": "Marie",
+        "lastName": "Dupont",
+        "email": "marie@school.com",
+        "role": "teacher"
+      },
+      "recipients": [
+        {
+          "_id": "507f1f77bcf86cd799439012",
+          "firstName": "Admin",
+          "lastName": "User",
+          "email": "admin@school.com",
+          "role": "admin"
+        }
+      ],
+      "conversationId": "550e8400-e29b-41d4-a716-446655440000",
+      "createdAt": "2024-01-14T10:00:00.000Z"
+    },
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "subject": "Re: Planning",
+      "content": "Voici le planning demandé.",
+      "sender": {
+        "_id": "507f1f77bcf86cd799439012",
+        "firstName": "Admin",
+        "lastName": "User",
+        "email": "admin@school.com",
+        "role": "admin"
+      },
+      "recipients": [
+        {
+          "_id": "507f1f77bcf86cd799439013",
+          "firstName": "Marie",
+          "lastName": "Dupont",
+          "email": "marie@school.com",
+          "role": "teacher"
+        }
+      ],
+      "conversationId": "550e8400-e29b-41d4-a716-446655440000",
+      "parentMessage": "507f1f77bcf86cd799439010",
+      "createdAt": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+  "conversationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+### Get Message Statistics
+
+Get message statistics for the authenticated user.
+
+**Endpoint:** `GET /api/messages/stats`
+
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+  "totalReceived": 125,
+  "totalSent": 45,
+  "unreadCount": 12,
+  "readPercentage": "90.4",
+  "byCategory": {
+    "general": 35,
+    "pedagogical": 28,
+    "administrative": 42,
+    "urgent": 15,
+    "information": 5
+  },
+  "byPriority": {
+    "low": 20,
+    "normal": 85,
+    "high": 20
+  }
+}
+```
+
+---
+
+## Budgets Endpoints
+
+### List Budgets
+
+Get budgets with filters and pagination.
+
+**Endpoint:** `GET /api/budgets`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Query Parameters:**
+- `page` (number, default: 1) - Page number
+- `limit` (number, default: 10, max: 100) - Results per page
+- `fiscalYear` (string) - Filter by fiscal year (e.g., "2024")
+- `status` (string) - Filter by status
+
+**Statuses:** `draft`, `active`, `closed`
+
+**Response (200 OK):**
+```json
+{
+  "budgets": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "name": "Budget 2024-2025",
+      "fiscalYear": "2024",
+      "startDate": "2024-01-01T00:00:00.000Z",
+      "endDate": "2024-12-31T23:59:59.000Z",
+      "totalBudget": 10000000,
+      "incomeItems": [
+        {
+          "category": "Frais de scolarité",
+          "allocatedAmount": 8000000,
+          "spentAmount": 5000000,
+          "description": "Frais de scolarité des élèves"
+        }
+      ],
+      "expenseItems": [
+        {
+          "category": "Salaires",
+          "allocatedAmount": 6000000,
+          "spentAmount": 3500000,
+          "description": "Salaires du personnel"
+        }
+      ],
+      "status": "active",
+      "notes": "Budget prévisionnel pour l'année scolaire 2024-2025",
+      "createdBy": {
+        "_id": "507f1f77bcf86cd799439012",
+        "firstName": "Admin",
+        "lastName": "User",
+        "email": "admin@school.com"
+      },
+      "createdAt": "2024-01-01T10:00:00.000Z",
+      "updatedAt": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 3,
+    "pages": 1
+  }
+}
+```
+
+### Create Budget
+
+Create a new budget for a fiscal year.
+
+**Endpoint:** `POST /api/budgets`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:**
+```json
+{
+  "name": "Budget 2024-2025",
+  "fiscalYear": "2024",
+  "startDate": "2024-01-01",
+  "endDate": "2024-12-31",
+  "totalBudget": 10000000,
+  "incomeItems": [
+    {
+      "category": "Frais de scolarité",
+      "allocatedAmount": 8000000,
+      "spentAmount": 0,
+      "description": "Frais de scolarité des élèves"
+    },
+    {
+      "category": "Subventions",
+      "allocatedAmount": 2000000,
+      "spentAmount": 0,
+      "description": "Subventions gouvernementales"
+    }
+  ],
+  "expenseItems": [
+    {
+      "category": "Salaires",
+      "allocatedAmount": 6000000,
+      "spentAmount": 0,
+      "description": "Salaires du personnel"
+    },
+    {
+      "category": "Fournitures",
+      "allocatedAmount": 1500000,
+      "spentAmount": 0,
+      "description": "Fournitures scolaires"
+    },
+    {
+      "category": "Entretien",
+      "allocatedAmount": 800000,
+      "spentAmount": 0,
+      "description": "Entretien des bâtiments et équipements"
+    }
+  ],
+  "status": "draft",
+  "notes": "Budget prévisionnel pour l'année scolaire 2024-2025"
+}
+```
+
+**Required Fields:** `name`, `fiscalYear`, `startDate`, `endDate`, `totalBudget`
+
+**Response (201 Created):**
+```json
+{
+  "message": "Budget créé avec succès",
+  "budget": {
+    "_id": "507f1f77bcf86cd799439011",
+    "name": "Budget 2024-2025",
+    "fiscalYear": "2024",
+    "startDate": "2024-01-01T00:00:00.000Z",
+    "endDate": "2024-12-31T23:59:59.000Z",
+    "totalBudget": 10000000,
+    "incomeItems": [ /* ... */ ],
+    "expenseItems": [ /* ... */ ],
+    "status": "draft",
+    "createdBy": {
+      "_id": "507f1f77bcf86cd799439012",
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@school.com"
+    }
+  }
+}
+```
+
+### Get Budget
+
+Get details of a specific budget.
+
+**Endpoint:** `GET /api/budgets/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Response (200 OK):**
+```json
+{
+  "budget": {
+    "_id": "507f1f77bcf86cd799439011",
+    "name": "Budget 2024-2025",
+    "fiscalYear": "2024",
+    "startDate": "2024-01-01T00:00:00.000Z",
+    "endDate": "2024-12-31T23:59:59.000Z",
+    "totalBudget": 10000000,
+    "incomeItems": [ /* ... */ ],
+    "expenseItems": [ /* ... */ ],
+    "status": "active",
+    "notes": "Budget prévisionnel pour l'année scolaire 2024-2025",
+    "createdBy": {
+      "_id": "507f1f77bcf86cd799439012",
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@school.com"
+    }
+  }
+}
+```
+
+### Update Budget
+
+Update budget information.
+
+**Endpoint:** `PUT /api/budgets/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:** (all fields optional)
+```json
+{
+  "name": "Budget 2024-2025 - Révisé",
+  "totalBudget": 11000000,
+  "incomeItems": [ /* updated items */ ],
+  "expenseItems": [ /* updated items */ ],
+  "status": "active",
+  "notes": "Budget révisé en février"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Budget mis à jour avec succès",
+  "budget": {
+    /* updated budget object */
+  }
+}
+```
+
+### Delete Budget
+
+Delete a budget.
+
+**Endpoint:** `DELETE /api/budgets/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Response (200 OK):**
+```json
+{
+  "message": "Budget supprimé avec succès"
+}
+```
+
+### Get Budget Comparison
+
+Compare budget allocations with actual transactions.
+
+**Endpoint:** `GET /api/budgets/:id/comparison`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Response (200 OK):**
+```json
+{
+  "budget": {
+    "_id": "507f1f77bcf86cd799439011",
+    "name": "Budget 2024-2025",
+    "fiscalYear": "2024"
+  },
+  "incomeItems": [
+    {
+      "category": "Frais de scolarité",
+      "allocatedAmount": 8000000,
+      "spentAmount": 5000000,
+      "actualAmount": 5200000,
+      "variance": -2800000,
+      "description": "Frais de scolarité des élèves"
+    }
+  ],
+  "expenseItems": [
+    {
+      "category": "Salaires",
+      "allocatedAmount": 6000000,
+      "spentAmount": 3500000,
+      "actualAmount": 3600000,
+      "variance": 2400000,
+      "description": "Salaires du personnel"
+    }
+  ],
+  "summary": {
+    "totalAllocatedIncome": 10000000,
+    "totalActualIncome": 5200000,
+    "incomeVariance": -4800000,
+    "totalAllocatedExpenses": 8300000,
+    "totalActualExpenses": 3600000,
+    "expenseVariance": 4700000,
+    "projectedBalance": 1700000,
+    "actualBalance": 1600000
+  }
+}
+```
+
+**Note:** Variance for income is actual - allocated (positive = exceeded target). Variance for expenses is allocated - actual (positive = under budget).
+
+---
+
+## Transactions Endpoints
+
+### List Transactions
+
+Get financial transactions with filters and pagination.
+
+**Endpoint:** `GET /api/transactions`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Query Parameters:**
+- `page` (number, default: 1) - Page number
+- `limit` (number, default: 20, max: 100) - Results per page
+- `type` (string) - Filter by type (`income` or `expense`)
+- `category` (string) - Filter by category
+- `fiscalYear` (string) - Filter by fiscal year
+- `startDate` (ISO date) - Filter by transaction date (from)
+- `endDate` (ISO date) - Filter by transaction date (to)
+- `search` (string) - Search in description, reference, or transaction number
+
+**Transaction Types:** `income`, `expense`
+
+**Response (200 OK):**
+```json
+{
+  "transactions": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "transactionNumber": "TRX-2024-00001",
+      "type": "income",
+      "amount": 50000,
+      "category": "Frais de scolarité",
+      "description": "Paiement frais de scolarité - Trimestre 1",
+      "transactionDate": "2024-01-15T10:00:00.000Z",
+      "paymentMethod": "Virement bancaire",
+      "reference": "REF-2024-001",
+      "relatedInvoice": {
+        "_id": "507f1f77bcf86cd799439012",
+        "invoiceNumber": "INV-2024-00001"
+      },
+      "relatedExpense": null,
+      "fiscalYear": "2024",
+      "notes": "Premier paiement de l'année",
+      "createdBy": {
+        "_id": "507f1f77bcf86cd799439013",
+        "firstName": "Admin",
+        "lastName": "User",
+        "email": "admin@school.com"
+      },
+      "createdAt": "2024-01-15T10:00:00.000Z",
+      "updatedAt": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 125,
+    "pages": 7
+  }
+}
+```
+
+### Create Transaction
+
+Record a new financial transaction.
+
+**Endpoint:** `POST /api/transactions`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:**
+```json
+{
+  "type": "income",
+  "amount": 50000,
+  "category": "Frais de scolarité",
+  "description": "Paiement frais de scolarité - Trimestre 1",
+  "transactionDate": "2024-01-15",
+  "paymentMethod": "Virement bancaire",
+  "reference": "REF-2024-001",
+  "relatedInvoice": "507f1f77bcf86cd799439012",
+  "relatedExpense": null,
+  "fiscalYear": "2024",
+  "notes": "Premier paiement de l'année"
+}
+```
+
+**Required Fields:** `type`, `amount`, `category`, `description`
+
+**Payment Methods:** `Espèces`, `Chèque`, `Virement bancaire`, `Mobile Money`, `Carte bancaire`, `Autre`
+
+**Note:** Transaction number is automatically generated. If `transactionDate` is not provided, current date is used. If `fiscalYear` is not provided, current year is used.
+
+**Response (201 Created):**
+```json
+{
+  "message": "Transaction créée avec succès",
+  "transaction": {
+    "_id": "507f1f77bcf86cd799439011",
+    "transactionNumber": "TRX-2024-00001",
+    "type": "income",
+    "amount": 50000,
+    "category": "Frais de scolarité",
+    "description": "Paiement frais de scolarité - Trimestre 1",
+    "transactionDate": "2024-01-15T10:00:00.000Z",
+    "paymentMethod": "Virement bancaire",
+    "reference": "REF-2024-001",
+    "fiscalYear": "2024",
+    "createdBy": {
+      "_id": "507f1f77bcf86cd799439013",
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@school.com"
+    }
+  }
+}
+```
+
+### Get Transaction
+
+Get details of a specific transaction.
+
+**Endpoint:** `GET /api/transactions/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Response (200 OK):**
+```json
+{
+  "transaction": {
+    "_id": "507f1f77bcf86cd799439011",
+    "transactionNumber": "TRX-2024-00001",
+    "type": "income",
+    "amount": 50000,
+    "category": "Frais de scolarité",
+    "description": "Paiement frais de scolarité - Trimestre 1",
+    "transactionDate": "2024-01-15T10:00:00.000Z",
+    "paymentMethod": "Virement bancaire",
+    "reference": "REF-2024-001",
+    "relatedInvoice": {
+      "_id": "507f1f77bcf86cd799439012",
+      "invoiceNumber": "INV-2024-00001",
+      "amount": 50000
+    },
+    "relatedExpense": null,
+    "fiscalYear": "2024",
+    "notes": "Premier paiement de l'année",
+    "createdBy": {
+      "_id": "507f1f77bcf86cd799439013",
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@school.com"
+    }
+  }
+}
+```
+
+### Update Transaction
+
+Update transaction information.
+
+**Endpoint:** `PUT /api/transactions/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:** (all fields optional)
+```json
+{
+  "type": "income",
+  "amount": 52000,
+  "category": "Frais de scolarité",
+  "description": "Description mise à jour",
+  "transactionDate": "2024-01-15",
+  "paymentMethod": "Espèces",
+  "reference": "REF-2024-001-UPDATED",
+  "fiscalYear": "2024",
+  "notes": "Montant corrigé"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Transaction mise à jour avec succès",
+  "transaction": {
+    /* updated transaction object */
+  }
+}
+```
+
+### Delete Transaction
+
+Delete a transaction.
+
+**Endpoint:** `DELETE /api/transactions/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Response (200 OK):**
+```json
+{
+  "message": "Transaction supprimée avec succès"
+}
+```
+
+### Get Transaction Statistics
+
+Get financial statistics for a fiscal year.
+
+**Endpoint:** `GET /api/transactions/stats`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Query Parameters:**
+- `fiscalYear` (string, optional) - Fiscal year to get stats for (default: current year)
+
+**Response (200 OK):**
+```json
+{
+  "fiscalYear": "2024",
+  "totalIncome": 8500000,
+  "totalExpenses": 6200000,
+  "balance": 2300000,
+  "transactionCount": 245,
+  "incomeByCategory": {
+    "Frais de scolarité": 7500000,
+    "Subventions": 800000,
+    "Autres revenus": 200000
+  },
+  "expensesByCategory": {
+    "Salaires": 4000000,
+    "Fournitures": 850000,
+    "Entretien": 600000,
+    "Électricité et eau": 450000,
+    "Transport": 250000,
+    "Autres dépenses": 50000
+  },
+  "monthlyData": {
+    "2024-01": {
+      "income": 800000,
+      "expenses": 550000
+    },
+    "2024-02": {
+      "income": 750000,
+      "expenses": 520000
+    },
+    "2024-03": {
+      "income": 720000,
+      "expenses": 530000
+    }
+  }
+}
+```
 
 ---
 
