@@ -16,6 +16,8 @@ import invoiceRoutes from './routes/invoiceRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import expenseRoutes from './routes/expenseRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
+import transactionRoutes from './routes/transactionRoutes.js';
+import budgetRoutes from './routes/budgetRoutes.js';
 
 // Configuration
 dotenv.config();
@@ -69,6 +71,8 @@ app.use('/api/invoices', invoiceRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/budgets', budgetRoutes);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

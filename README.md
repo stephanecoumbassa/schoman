@@ -19,6 +19,8 @@ Application complète de gestion d'école avec authentification, gestion des él
 - ✅ Module facturation (factures, paiements, statistiques)
 - ✅ **Module événements (réunions, célébrations, sorties)** 🆕
 - ✅ **Module dépenses (catégories, approbation, paiements)** 🆕
+- ✅ **Module communication (messagerie interne)** 🆕
+- ✅ **Module comptabilité (transactions, budgets, rapports)** 🆕
 - ✅ Tableau de bord avec statistiques
 - ✅ Recherche et filtrage avancés
 - ✅ Pagination des résultats
@@ -34,6 +36,8 @@ Application complète de gestion d'école avec authentification, gestion des él
 - ✅ Interface de gestion des factures
 - ✅ **Interface de gestion des événements** 🆕
 - ✅ **Interface de gestion des dépenses** 🆕
+- ✅ **Interface de messagerie interne** 🆕
+- ✅ **Interface de comptabilité et budgets** 🆕
 - ✅ Recherche et filtres avancés
 - ✅ Design responsive avec Tailwind CSS
 - ✅ Navigation protégée par rôles
@@ -332,6 +336,32 @@ schoman/
 - `POST /api/expenses/:id/payment` - Enregistrer un paiement (admin)
 - `DELETE /api/expenses/:id` - Supprimer une dépense (admin)
 - `GET /api/expenses/stats` - Statistiques des dépenses (admin/enseignant)
+
+### Messages 🆕
+- `GET /api/messages` - Liste des messages (inbox/sent avec pagination et filtres)
+- `POST /api/messages` - Envoyer un message
+- `GET /api/messages/:id` - Détails d'un message
+- `PATCH /api/messages/:id/read` - Marquer comme lu
+- `PATCH /api/messages/:id/archive` - Archiver un message
+- `DELETE /api/messages/:id` - Supprimer un message (sender/admin)
+- `GET /api/messages/conversation/:conversationId` - Messages d'une conversation
+- `GET /api/messages/stats` - Statistiques de messagerie
+
+### Transactions (Comptabilité) 🆕
+- `GET /api/transactions` - Liste des transactions (avec pagination, recherche, filtres) (admin/enseignant)
+- `POST /api/transactions` - Créer une transaction (admin/enseignant)
+- `GET /api/transactions/:id` - Détails d'une transaction (admin/enseignant)
+- `PUT /api/transactions/:id` - Modifier une transaction (admin/enseignant)
+- `DELETE /api/transactions/:id` - Supprimer une transaction (admin)
+- `GET /api/transactions/stats` - Statistiques financières (admin/enseignant)
+
+### Budgets 🆕
+- `GET /api/budgets` - Liste des budgets (avec pagination et filtres) (admin/enseignant)
+- `POST /api/budgets` - Créer un budget (admin/enseignant)
+- `GET /api/budgets/:id` - Détails d'un budget (admin/enseignant)
+- `PUT /api/budgets/:id` - Modifier un budget (admin/enseignant)
+- `DELETE /api/budgets/:id` - Supprimer un budget (admin)
+- `GET /api/budgets/:id/comparison` - Comparaison budget vs réalisé (admin/enseignant)
 
 ### Dashboard
 - `GET /api/dashboard/stats` - Statistiques du tableau de bord

@@ -12,6 +12,8 @@ import InvoicesView from '../views/InvoicesView.vue'
 import EventsView from '../views/EventsView.vue'
 import ExpensesView from '../views/ExpensesView.vue'
 import MessagesView from '../views/MessagesView.vue'
+import AccountingView from '../views/AccountingView.vue'
+import BudgetView from '../views/BudgetView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -90,6 +92,18 @@ const router = createRouter({
       path: '/messages',
       name: 'messages',
       component: MessagesView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/accounting',
+      name: 'accounting',
+      component: AccountingView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/budgets',
+      name: 'budgets',
+      component: BudgetView,
       meta: { requiresAuth: true },
     },
   ],

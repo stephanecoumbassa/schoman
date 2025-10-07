@@ -509,3 +509,119 @@ export interface MessageStats {
   byCategory: Record<string, number>;
   byPriority: Record<string, number>;
 }
+
+// Transaction types
+export interface Transaction {
+  _id: string;
+  transactionNumber: string;
+  type: 'income' | 'expense';
+  amount: number;
+  category: string;
+  description: string;
+  transactionDate: string;
+  paymentMethod?: 'cash' | 'check' | 'bank_transfer' | 'mobile_money' | 'other';
+  reference?: string;
+  relatedInvoice?: {
+    _id: string;
+    invoiceNumber: string;
+  };
+  relatedExpense?: {
+    _id: string;
+    expenseNumber: string;
+  };
+  fiscalYear: string;
+  notes?: string;
+  createdBy: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TransactionFormData {
+  type: 'income' | 'expense';
+  amount: number;
+  category: string;
+  description: string;
+  transactionDate?: string;
+  paymentMethod?: string;
+  reference?: string;
+  fiscalYear?: string;
+  notes?: string;
+}
+
+export interface TransactionStats {
+  fiscalYear: string;
+  totalIncome: number;
+  totalExpenses: number;
+  balance: number;
+  transactionCount: number;
+  incomeByCategory: Record<string, number>;
+  expensesByCategory: Record<string, number>;
+  monthlyData: Record<string, { income: number; expenses: number }>;
+}
+
+// Budget types
+export interface BudgetItem {
+  category: string;
+  allocatedAmount: number;
+  spentAmount: number;
+  description?: string;
+}
+
+export interface Budget {
+  _id: string;
+  name: string;
+  fiscalYear: string;
+  startDate: string;
+  endDate: string;
+  totalBudget: number;
+  incomeItems: BudgetItem[];
+  expenseItems: BudgetItem[];
+  status: 'draft' | 'active' | 'closed';
+  notes?: string;
+  createdBy: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BudgetFormData {
+  name: string;
+  fiscalYear: string;
+  startDate: string;
+  endDate: string;
+  totalBudget: number;
+  incomeItems?: BudgetItem[];
+  expenseItems?: BudgetItem[];
+  status?: 'draft' | 'active' | 'closed';
+  notes?: string;
+}
+
+export interface BudgetComparisonItem extends BudgetItem {
+  actualAmount: number;
+  variance: number;
+}
+
+export interface BudgetComparison {
+  budget: Budget;
+  incomeItems: BudgetComparisonItem[];
+  expenseItems: BudgetComparisonItem[];
+  summary: {
+    totalAllocatedIncome: number;
+    totalActualIncome: number;
+    incomeVariance: number;
+    totalAllocatedExpenses: number;
+    totalActualExpenses: number;
+    expenseVariance: number;
+    projectedBalance: number;
+    actualBalance: number;
+  };
+}
