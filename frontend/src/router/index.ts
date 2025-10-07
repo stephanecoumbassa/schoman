@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
+import UsersView from '../views/UsersView.vue'
 import StudentsView from '../views/StudentsView.vue'
 import ClassesView from '../views/ClassesView.vue'
 import GradesView from '../views/GradesView.vue'
@@ -33,6 +34,12 @@ const router = createRouter({
       name: 'dashboard',
       component: DashboardView,
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: UsersView,
+      meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
       path: '/students',
