@@ -871,7 +871,172 @@ Add a book to the library.
 
 **Endpoint:** `POST /api/books`
 
-**Authentication:** Required (admin or teacher)
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:**
+```json
+{
+  "title": "Le Petit Prince",
+  "author": "Antoine de Saint-Exupéry",
+  "isbn": "978-2070408504",
+  "category": "Fiction",
+  "publisher": "Gallimard",
+  "publishedYear": 1943,
+  "description": "Un conte philosophique et poétique",
+  "totalQuantity": 5,
+  "location": "Étagère A1"
+}
+```
+
+**Required Fields:** `title`, `author`, `category`
+
+**Response (201 Created):**
+```json
+{
+  "message": "Livre créé avec succès",
+  "book": {
+    "_id": "507f1f77bcf86cd799439011",
+    "title": "Le Petit Prince",
+    "author": "Antoine de Saint-Exupéry",
+    "isbn": "978-2070408504",
+    "category": "Fiction",
+    "publisher": "Gallimard",
+    "publishedYear": 1943,
+    "description": "Un conte philosophique et poétique",
+    "totalQuantity": 5,
+    "availableQuantity": 5,
+    "location": "Étagère A1",
+    "isActive": true,
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "updatedAt": "2024-01-15T10:30:00.000Z"
+  }
+}
+```
+
+### Get Book
+
+Get details of a specific book.
+
+**Endpoint:** `GET /api/books/:id`
+
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+  "book": {
+    "_id": "507f1f77bcf86cd799439011",
+    "title": "Le Petit Prince",
+    "author": "Antoine de Saint-Exupéry",
+    "isbn": "978-2070408504",
+    "category": "Fiction",
+    "publisher": "Gallimard",
+    "publishedYear": 1943,
+    "description": "Un conte philosophique et poétique",
+    "totalQuantity": 5,
+    "availableQuantity": 3,
+    "location": "Étagère A1",
+    "isActive": true,
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "updatedAt": "2024-01-15T10:30:00.000Z"
+  }
+}
+```
+
+### Update Book
+
+Update book information.
+
+**Endpoint:** `PUT /api/books/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:** (all fields optional)
+```json
+{
+  "title": "Le Petit Prince",
+  "author": "Antoine de Saint-Exupéry",
+  "isbn": "978-2070408504",
+  "category": "Fiction",
+  "publisher": "Gallimard",
+  "publishedYear": 1943,
+  "description": "Updated description",
+  "totalQuantity": 6,
+  "availableQuantity": 4,
+  "location": "Étagère A2",
+  "isActive": true
+}
+```
+
+**Note:** `availableQuantity` cannot exceed `totalQuantity`
+
+**Response (200 OK):**
+```json
+{
+  "message": "Livre mis à jour avec succès",
+  "book": {
+    /* updated book object */
+  }
+}
+```
+
+### Delete Book
+
+Soft delete (deactivate) a book.
+
+**Endpoint:** `DELETE /api/books/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Note:** This is a soft delete. The book is marked as inactive but not removed from the database.
+
+**Response (200 OK):**
+```json
+{
+  "message": "Livre désactivé avec succès",
+  "book": {
+    /* book object with isActive: false */
+  }
+}
+```
+
+### Get Book Statistics
+
+Get library statistics.
+
+**Endpoint:** `GET /api/books/statistics`
+
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+  "totalBooks": 45,
+  "totalCopies": 156,
+  "availableCopies": 98,
+  "borrowedCopies": 58,
+  "booksByCategory": [
+    {
+      "_id": "Fiction",
+      "count": 15
+    },
+    {
+      "_id": "Jeunesse",
+      "count": 12
+    },
+    {
+      "_id": "Aventure",
+      "count": 8
+    }
+  ]
+}
+```
 
 ---
 
@@ -879,15 +1044,23 @@ Add a book to the library.
 
 ### List Loans
 
-Get book loans.
+Get book loans with filters.
 
 **Endpoint:** `GET /api/loans`
 
 **Authentication:** Required
 
 **Query Parameters:**
-- `student`, `book` - Filter by student or book
-- `status` - Filter by status (`borrowed`, `returned`, `overdue`)
+- `page` (number, default: 1) - Page number
+- `limit` (number, default: 10, max: 100) - Results per page
+- `student` (ObjectId) - Filter by student ID
+- `book` (ObjectId) - Filter by book ID
+- `status` (string) - Filter by status (`borrowed`, `returned`, `overdue`)
+
+**Statuses:**
+- `borrowed` - Currently borrowed
+- `returned` - Returned to library
+- `overdue` - Past due date and not returned
 
 **Response (200 OK):**
 ```json
@@ -896,23 +1069,282 @@ Get book loans.
     {
       "_id": "507f1f77bcf86cd799439011",
       "book": {
-        "title": "Le Petit Prince"
+        "_id": "507f1f77bcf86cd799439012",
+        "title": "Le Petit Prince",
+        "author": "Antoine de Saint-Exupéry",
+        "isbn": "978-2070408504"
       },
       "student": {
+        "_id": "507f1f77bcf86cd799439013",
         "userId": {
           "firstName": "John",
           "lastName": "Doe"
         }
       },
-      "borrowDate": "2024-01-15",
-      "dueDate": "2024-01-29",
+      "borrowDate": "2024-01-15T10:00:00.000Z",
+      "dueDate": "2024-01-29T10:00:00.000Z",
       "returnDate": null,
-      "status": "borrowed"
+      "status": "borrowed",
+      "notes": "Premier emprunt de l'année",
+      "createdAt": "2024-01-15T10:00:00.000Z",
+      "updatedAt": "2024-01-15T10:00:00.000Z"
     }
   ],
-  "pagination": { /* pagination info */ }
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 45,
+    "pages": 5
+  }
 }
 ```
+
+### Create Loan
+
+Record a new book loan.
+
+**Endpoint:** `POST /api/loans`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:**
+```json
+{
+  "book": "507f1f77bcf86cd799439012",
+  "student": "507f1f77bcf86cd799439013",
+  "dueDate": "2024-01-29",
+  "notes": "Premier emprunt de l'année"
+}
+```
+
+**Required Fields:** `book`, `student`, `dueDate`
+
+**Validation:**
+- Book must exist and have available copies
+- Student must exist
+- Due date must be a valid future date
+
+**Response (201 Created):**
+```json
+{
+  "message": "Emprunt enregistré avec succès",
+  "loan": {
+    "_id": "507f1f77bcf86cd799439011",
+    "book": {
+      "_id": "507f1f77bcf86cd799439012",
+      "title": "Le Petit Prince",
+      "author": "Antoine de Saint-Exupéry",
+      "isbn": "978-2070408504"
+    },
+    "student": {
+      "userId": {
+        "firstName": "John",
+        "lastName": "Doe"
+      }
+    },
+    "borrowDate": "2024-01-15T10:00:00.000Z",
+    "dueDate": "2024-01-29T10:00:00.000Z",
+    "status": "borrowed",
+    "notes": "Premier emprunt de l'année"
+  }
+}
+```
+
+**Note:** When a loan is created, the book's `availableQuantity` is automatically decremented.
+
+### Get Loan
+
+Get details of a specific loan.
+
+**Endpoint:** `GET /api/loans/:id`
+
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+  "loan": {
+    "_id": "507f1f77bcf86cd799439011",
+    "book": {
+      "_id": "507f1f77bcf86cd799439012",
+      "title": "Le Petit Prince",
+      "author": "Antoine de Saint-Exupéry",
+      "isbn": "978-2070408504"
+    },
+    "student": {
+      "_id": "507f1f77bcf86cd799439013",
+      "userId": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "john.doe@school.com"
+      }
+    },
+    "borrowDate": "2024-01-15T10:00:00.000Z",
+    "dueDate": "2024-01-29T10:00:00.000Z",
+    "returnDate": null,
+    "status": "borrowed",
+    "notes": "Premier emprunt de l'année"
+  }
+}
+```
+
+### Return Loan
+
+Mark a loan as returned.
+
+**Endpoint:** `POST /api/loans/:id/return`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:** None required
+
+**Response (200 OK):**
+```json
+{
+  "message": "Livre retourné avec succès",
+  "loan": {
+    "_id": "507f1f77bcf86cd799439011",
+    "book": {
+      "title": "Le Petit Prince"
+    },
+    "student": {
+      "userId": {
+        "firstName": "John",
+        "lastName": "Doe"
+      }
+    },
+    "borrowDate": "2024-01-15T10:00:00.000Z",
+    "dueDate": "2024-01-29T10:00:00.000Z",
+    "returnDate": "2024-01-25T14:30:00.000Z",
+    "status": "returned"
+  }
+}
+```
+
+**Note:** When a loan is returned, the book's `availableQuantity` is automatically incremented.
+
+### Update Loan
+
+Update loan information.
+
+**Endpoint:** `PUT /api/loans/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:** (all fields optional)
+```json
+{
+  "dueDate": "2024-02-05",
+  "notes": "Extension accordée",
+  "status": "borrowed"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Emprunt mis à jour avec succès",
+  "loan": {
+    /* updated loan object */
+  }
+}
+```
+
+### Delete Loan
+
+Delete a loan record.
+
+**Endpoint:** `DELETE /api/loans/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Note:** If the loan is not returned, the book's `availableQuantity` will be automatically incremented before deletion.
+
+**Response (200 OK):**
+```json
+{
+  "message": "Emprunt supprimé avec succès"
+}
+```
+
+### Get Student Loans
+
+Get loan history and statistics for a specific student.
+
+**Endpoint:** `GET /api/loans/student/:studentId`
+
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+  "currentLoans": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "book": {
+        "title": "Le Petit Prince",
+        "author": "Antoine de Saint-Exupéry",
+        "dueDate": "2024-01-29T10:00:00.000Z"
+      }
+    }
+  ],
+  "loanHistory": [
+    {
+      "_id": "507f1f77bcf86cd799439014",
+      "book": {
+        "title": "Harry Potter",
+        "author": "J.K. Rowling"
+      },
+      "returnDate": "2024-01-10T14:00:00.000Z"
+    }
+  ],
+  "overdueLoans": [
+    {
+      "_id": "507f1f77bcf86cd799439015",
+      "book": {
+        "title": "Le Lion",
+        "author": "Joseph Kessel",
+        "dueDate": "2024-01-05T10:00:00.000Z"
+      }
+    }
+  ],
+  "stats": {
+    "currentLoansCount": 1,
+    "totalLoansCount": 15,
+    "overdueCount": 1
+  }
+}
+```
+
+### Update Overdue Loans
+
+Automatically update the status of all loans past their due date to 'overdue'.
+
+**Endpoint:** `POST /api/loans/update-overdue`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:** None required
+
+**Response (200 OK):**
+```json
+{
+  "message": "Statuts des emprunts en retard mis à jour",
+  "updated": 5
+}
+```
+
+**Note:** This endpoint is useful for batch processing overdue loans, typically run as a scheduled task.
 
 ---
 
@@ -920,19 +1352,310 @@ Get book loans.
 
 ### List Invoices
 
-Get invoices with filters.
+Get invoices with filters and pagination.
 
 **Endpoint:** `GET /api/invoices`
 
 **Authentication:** Required
 
 **Query Parameters:**
-- `student` - Filter by student
-- `status` - Filter by status
-- `startDate`, `endDate` - Date range
-- `page`, `limit` - Pagination
+- `page` (number, default: 1) - Page number
+- `limit` (number, default: 10, max: 100) - Results per page
+- `student` (ObjectId) - Filter by student ID
+- `status` (string) - Filter by status
+- `startDate` (ISO date) - Filter by issue date (from)
+- `endDate` (ISO date) - Filter by issue date (to)
 
 **Statuses:** `draft`, `sent`, `paid`, `overdue`, `cancelled`
+
+**Response (200 OK):**
+```json
+{
+  "invoices": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "invoiceNumber": "INV-2024-00001",
+      "student": {
+        "_id": "507f1f77bcf86cd799439012",
+        "userId": {
+          "firstName": "John",
+          "lastName": "Doe"
+        }
+      },
+      "items": [
+        {
+          "description": "Frais de scolarité - Trimestre 1",
+          "quantity": 1,
+          "unitPrice": 50000,
+          "totalPrice": 50000
+        }
+      ],
+      "subtotal": 50000,
+      "taxRate": 0,
+      "taxAmount": 0,
+      "totalAmount": 50000,
+      "issueDate": "2024-01-15T10:00:00.000Z",
+      "dueDate": "2024-02-15T10:00:00.000Z",
+      "status": "sent",
+      "notes": "Paiement avant le 15 février",
+      "createdAt": "2024-01-15T10:00:00.000Z",
+      "updatedAt": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 25,
+    "pages": 3
+  }
+}
+```
+
+### Create Invoice
+
+Create a new invoice for a student.
+
+**Endpoint:** `POST /api/invoices`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:**
+```json
+{
+  "student": "507f1f77bcf86cd799439012",
+  "items": [
+    {
+      "description": "Frais de scolarité - Trimestre 1",
+      "quantity": 1,
+      "unitPrice": 50000
+    },
+    {
+      "description": "Fournitures scolaires",
+      "quantity": 1,
+      "unitPrice": 5000
+    }
+  ],
+  "taxRate": 0,
+  "dueDate": "2024-02-15",
+  "notes": "Paiement avant le 15 février"
+}
+```
+
+**Required Fields:** `student`, `items` (array with at least one item), `dueDate`
+
+**Item Fields:**
+- `description` (string, required) - Item description
+- `quantity` (number, required) - Quantity
+- `unitPrice` (number, required) - Unit price in FCFA
+
+**Note:** Invoice number is automatically generated. Amounts are automatically calculated.
+
+**Response (201 Created):**
+```json
+{
+  "message": "Facture créée avec succès",
+  "invoice": {
+    "_id": "507f1f77bcf86cd799439011",
+    "invoiceNumber": "INV-2024-00001",
+    "student": {
+      "_id": "507f1f77bcf86cd799439012",
+      "userId": {
+        "firstName": "John",
+        "lastName": "Doe"
+      }
+    },
+    "items": [
+      {
+        "description": "Frais de scolarité - Trimestre 1",
+        "quantity": 1,
+        "unitPrice": 50000,
+        "totalPrice": 50000
+      },
+      {
+        "description": "Fournitures scolaires",
+        "quantity": 1,
+        "unitPrice": 5000,
+        "totalPrice": 5000
+      }
+    ],
+    "subtotal": 55000,
+    "taxRate": 0,
+    "taxAmount": 0,
+    "totalAmount": 55000,
+    "issueDate": "2024-01-15T10:00:00.000Z",
+    "dueDate": "2024-02-15T10:00:00.000Z",
+    "status": "draft"
+  }
+}
+```
+
+### Get Invoice
+
+Get details of a specific invoice.
+
+**Endpoint:** `GET /api/invoices/:id`
+
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+  "invoice": {
+    "_id": "507f1f77bcf86cd799439011",
+    "invoiceNumber": "INV-2024-00001",
+    "student": {
+      "_id": "507f1f77bcf86cd799439012",
+      "userId": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "john.doe@school.com"
+      }
+    },
+    "items": [ /* items array */ ],
+    "subtotal": 55000,
+    "taxRate": 0,
+    "taxAmount": 0,
+    "totalAmount": 55000,
+    "issueDate": "2024-01-15T10:00:00.000Z",
+    "dueDate": "2024-02-15T10:00:00.000Z",
+    "status": "sent",
+    "notes": "Paiement avant le 15 février"
+  }
+}
+```
+
+### Update Invoice
+
+Update invoice information.
+
+**Endpoint:** `PUT /api/invoices/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:** (all fields optional)
+```json
+{
+  "items": [
+    {
+      "description": "Frais de scolarité - Trimestre 1",
+      "quantity": 1,
+      "unitPrice": 52000
+    }
+  ],
+  "taxRate": 0,
+  "dueDate": "2024-02-20",
+  "status": "sent",
+  "notes": "Date limite prolongée"
+}
+```
+
+**Note:** Cannot modify paid or cancelled invoices. Amounts are automatically recalculated when items are updated.
+
+**Response (200 OK):**
+```json
+{
+  "message": "Facture mise à jour avec succès",
+  "invoice": {
+    /* updated invoice object */
+  }
+}
+```
+
+### Record Payment
+
+Record payment for an invoice.
+
+**Endpoint:** `POST /api/invoices/:id/payment`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:**
+```json
+{
+  "paymentDate": "2024-02-10",
+  "paymentMethod": "Espèces",
+  "paymentReference": "REF-2024-001"
+}
+```
+
+**Payment Methods:** `Espèces`, `Chèque`, `Virement bancaire`, `Mobile Money`, `Autre`
+
+**Response (200 OK):**
+```json
+{
+  "message": "Paiement enregistré avec succès",
+  "invoice": {
+    "_id": "507f1f77bcf86cd799439011",
+    "invoiceNumber": "INV-2024-00001",
+    "status": "paid",
+    "paymentDate": "2024-02-10T10:00:00.000Z",
+    "paymentMethod": "Espèces",
+    "paymentReference": "REF-2024-001",
+    "totalAmount": 55000
+  }
+}
+```
+
+### Delete Invoice
+
+Delete an invoice.
+
+**Endpoint:** `DELETE /api/invoices/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Note:** Cannot delete paid invoices. Cancel them instead by updating status to `cancelled`.
+
+**Response (200 OK):**
+```json
+{
+  "message": "Facture supprimée avec succès"
+}
+```
+
+### Get Invoice Statistics
+
+Get invoice statistics and revenue information.
+
+**Endpoint:** `GET /api/invoices/stats`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Response (200 OK):**
+```json
+{
+  "stats": [
+    {
+      "_id": "paid",
+      "count": 45,
+      "totalAmount": 2250000
+    },
+    {
+      "_id": "sent",
+      "count": 12,
+      "totalAmount": 600000
+    },
+    {
+      "_id": "draft",
+      "count": 3,
+      "totalAmount": 150000
+    }
+  ],
+  "totalInvoices": 60,
+  "totalRevenue": 2250000,
+  "overdueInvoices": 5
+}
+```
 
 ---
 
@@ -940,18 +1663,292 @@ Get invoices with filters.
 
 ### List Events
 
-Get school events.
+Get school events with filters and pagination.
 
 **Endpoint:** `GET /api/events`
 
 **Authentication:** Required
 
 **Query Parameters:**
-- `type` - Filter by type
-- `startDate`, `endDate` - Date range
-- `page`, `limit` - Pagination
+- `page` (number, default: 1) - Page number
+- `limit` (number, default: 10, max: 100) - Results per page
+- `eventType` (string) - Filter by event type
+- `status` (string) - Filter by status
+- `startDate` (ISO date) - Filter events starting from this date
+- `endDate` (ISO date) - Filter events ending before this date
+- `search` (string) - Search in title or description
 
 **Event Types:** `meeting`, `celebration`, `trip`, `training`, `parent_meeting`, `other`
+
+**Event Statuses:** `planned`, `ongoing`, `completed`, `cancelled`
+
+**Response (200 OK):**
+```json
+{
+  "events": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "title": "Réunion parents-professeurs",
+      "description": "Rencontre avec les parents d'élèves",
+      "eventType": "parent_meeting",
+      "startDate": "2024-02-15T14:00:00.000Z",
+      "endDate": "2024-02-15T17:00:00.000Z",
+      "location": "Salle polyvalente",
+      "organizer": {
+        "_id": "507f1f77bcf86cd799439012",
+        "firstName": "Marie",
+        "lastName": "Dupont",
+        "email": "marie.dupont@school.com"
+      },
+      "targetAudience": ["parents", "teachers"],
+      "classes": [
+        {
+          "_id": "507f1f77bcf86cd799439013",
+          "name": "CE1-A",
+          "level": "CE1"
+        }
+      ],
+      "maxParticipants": 50,
+      "currentParticipants": 32,
+      "status": "planned",
+      "notes": "Prévoir un espace pour les questions",
+      "createdBy": {
+        "_id": "507f1f77bcf86cd799439014",
+        "firstName": "Admin",
+        "lastName": "User"
+      },
+      "createdAt": "2024-01-15T10:00:00.000Z",
+      "updatedAt": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+  "pagination": {
+    "total": 15,
+    "page": 1,
+    "pages": 2,
+    "limit": 10
+  }
+}
+```
+
+### Create Event
+
+Create a new school event.
+
+**Endpoint:** `POST /api/events`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:**
+```json
+{
+  "title": "Réunion parents-professeurs",
+  "description": "Rencontre avec les parents d'élèves",
+  "eventType": "parent_meeting",
+  "startDate": "2024-02-15T14:00:00.000Z",
+  "endDate": "2024-02-15T17:00:00.000Z",
+  "location": "Salle polyvalente",
+  "organizer": "507f1f77bcf86cd799439012",
+  "targetAudience": ["parents", "teachers"],
+  "classes": ["507f1f77bcf86cd799439013"],
+  "maxParticipants": 50,
+  "notes": "Prévoir un espace pour les questions"
+}
+```
+
+**Required Fields:** `title`, `eventType`, `startDate`, `endDate`
+
+**Target Audience Options:** `all`, `students`, `teachers`, `parents`, `staff`
+
+**Validation:**
+- End date must be after start date
+- Classes must exist if provided
+
+**Response (201 Created):**
+```json
+{
+  "message": "Événement créé avec succès",
+  "event": {
+    "_id": "507f1f77bcf86cd799439011",
+    "title": "Réunion parents-professeurs",
+    "description": "Rencontre avec les parents d'élèves",
+    "eventType": "parent_meeting",
+    "startDate": "2024-02-15T14:00:00.000Z",
+    "endDate": "2024-02-15T17:00:00.000Z",
+    "location": "Salle polyvalente",
+    "organizer": {
+      "_id": "507f1f77bcf86cd799439012",
+      "firstName": "Marie",
+      "lastName": "Dupont",
+      "email": "marie.dupont@school.com"
+    },
+    "targetAudience": ["parents", "teachers"],
+    "classes": [
+      {
+        "_id": "507f1f77bcf86cd799439013",
+        "name": "CE1-A",
+        "level": "CE1"
+      }
+    ],
+    "maxParticipants": 50,
+    "currentParticipants": 0,
+    "status": "planned",
+    "createdBy": {
+      "_id": "507f1f77bcf86cd799439014",
+      "firstName": "Admin",
+      "lastName": "User"
+    }
+  }
+}
+```
+
+### Get Event
+
+Get details of a specific event.
+
+**Endpoint:** `GET /api/events/:id`
+
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+  "event": {
+    "_id": "507f1f77bcf86cd799439011",
+    "title": "Réunion parents-professeurs",
+    "description": "Rencontre avec les parents d'élèves",
+    "eventType": "parent_meeting",
+    "startDate": "2024-02-15T14:00:00.000Z",
+    "endDate": "2024-02-15T17:00:00.000Z",
+    "location": "Salle polyvalente",
+    "organizer": {
+      "_id": "507f1f77bcf86cd799439012",
+      "firstName": "Marie",
+      "lastName": "Dupont",
+      "email": "marie.dupont@school.com",
+      "phone": "0601020304"
+    },
+    "targetAudience": ["parents", "teachers"],
+    "classes": [
+      {
+        "_id": "507f1f77bcf86cd799439013",
+        "name": "CE1-A",
+        "level": "CE1",
+        "academicYear": "2024-2025"
+      }
+    ],
+    "maxParticipants": 50,
+    "currentParticipants": 32,
+    "status": "planned",
+    "notes": "Prévoir un espace pour les questions",
+    "createdBy": {
+      "_id": "507f1f77bcf86cd799439014",
+      "firstName": "Admin",
+      "lastName": "User"
+    }
+  }
+}
+```
+
+### Update Event
+
+Update event information.
+
+**Endpoint:** `PUT /api/events/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Request Body:** (all fields optional)
+```json
+{
+  "title": "Réunion parents-professeurs - Modifié",
+  "description": "Description mise à jour",
+  "eventType": "parent_meeting",
+  "startDate": "2024-02-15T15:00:00.000Z",
+  "endDate": "2024-02-15T18:00:00.000Z",
+  "location": "Grande salle",
+  "organizer": "507f1f77bcf86cd799439012",
+  "targetAudience": ["parents", "teachers", "students"],
+  "classes": ["507f1f77bcf86cd799439013"],
+  "maxParticipants": 60,
+  "status": "ongoing",
+  "notes": "Mise à jour des informations"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Événement mis à jour avec succès",
+  "event": {
+    /* updated event object */
+  }
+}
+```
+
+### Delete Event
+
+Delete an event.
+
+**Endpoint:** `DELETE /api/events/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Note:** This is a permanent deletion.
+
+**Response (200 OK):**
+```json
+{
+  "message": "Événement supprimé avec succès"
+}
+```
+
+### Get Event Statistics
+
+Get event statistics.
+
+**Endpoint:** `GET /api/events/stats`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin and teachers only
+
+**Response (200 OK):**
+```json
+{
+  "totalEvents": 25,
+  "upcomingEvents": 8,
+  "ongoingEvents": 2,
+  "completedEvents": 12,
+  "eventsByType": [
+    {
+      "_id": "parent_meeting",
+      "count": 8
+    },
+    {
+      "_id": "celebration",
+      "count": 6
+    },
+    {
+      "_id": "trip",
+      "count": 5
+    },
+    {
+      "_id": "training",
+      "count": 4
+    },
+    {
+      "_id": "meeting",
+      "count": 2
+    }
+  ]
+}
+```
 
 ---
 
