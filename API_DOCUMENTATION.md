@@ -30,17 +30,18 @@ Most endpoints require authentication using JWT (JSON Web Token).
 ## 📋 Table of Contents
 
 1. [Authentication](#authentication-endpoints)
-2. [Students](#students-endpoints)
-3. [Classes](#classes-endpoints)
-4. [Grades](#grades-endpoints)
-5. [Attendance](#attendance-endpoints)
-6. [Books](#books-endpoints)
-7. [Loans](#loans-endpoints)
-8. [Invoices](#invoices-endpoints)
-9. [Events](#events-endpoints)
-10. [Expenses](#expenses-endpoints)
-11. [Messages](#messages-endpoints)
-12. [Dashboard](#dashboard-endpoints)
+2. [Users](#users-endpoints)
+3. [Students](#students-endpoints)
+4. [Classes](#classes-endpoints)
+5. [Grades](#grades-endpoints)
+6. [Attendance](#attendance-endpoints)
+7. [Books](#books-endpoints)
+8. [Loans](#loans-endpoints)
+9. [Invoices](#invoices-endpoints)
+10. [Events](#events-endpoints)
+11. [Expenses](#expenses-endpoints)
+12. [Messages](#messages-endpoints)
+13. [Dashboard](#dashboard-endpoints)
 
 ---
 
@@ -133,6 +134,243 @@ Get the profile of the authenticated user.
     "phone": "0601020304",
     "isActive": true,
     "createdAt": "2024-01-15T10:30:00.000Z"
+  }
+}
+```
+
+---
+
+## Users Endpoints
+
+### List Users
+
+Get a paginated list of users (teachers, admins, parents) with optional filters.
+
+**Endpoint:** `GET /api/users`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin (full access), Teacher (read-only)
+
+**Query Parameters:**
+- `page` (number, optional) - Page number (default: 1)
+- `limit` (number, optional) - Results per page (default: 10, max: 100)
+- `search` (string, optional) - Search by name or email
+- `role` (string, optional) - Filter by role: `admin`, `teacher`, `parent`
+- `isActive` (boolean, optional) - Filter by active status
+
+**Example Request:**
+```bash
+GET /api/users?page=1&limit=10&role=teacher&isActive=true
+```
+
+**Response (200 OK):**
+```json
+{
+  "users": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "email": "teacher@schoman.com",
+      "firstName": "Marie",
+      "lastName": "Dupont",
+      "role": "teacher",
+      "phone": "0601020304",
+      "address": "123 Main St",
+      "isActive": true,
+      "createdAt": "2024-01-15T10:30:00.000Z",
+      "updatedAt": "2024-01-15T10:30:00.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 25,
+    "pages": 3
+  }
+}
+```
+
+### Create User
+
+Create a new user account (teacher, admin, or parent).
+
+**Endpoint:** `POST /api/users`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Request Body:**
+```json
+{
+  "email": "teacher@school.com",
+  "password": "secure123",
+  "firstName": "John",
+  "lastName": "Smith",
+  "role": "teacher",
+  "phone": "0601020304",
+  "address": "123 School Street"
+}
+```
+
+**Required Fields:** `email`, `password`, `firstName`, `lastName`, `role`
+
+**Response (201 Created):**
+```json
+{
+  "message": "Utilisateur créé avec succès",
+  "user": {
+    "_id": "507f1f77bcf86cd799439011",
+    "email": "teacher@school.com",
+    "firstName": "John",
+    "lastName": "Smith",
+    "role": "teacher",
+    "phone": "0601020304",
+    "address": "123 School Street",
+    "isActive": true
+  }
+}
+```
+
+### Get User
+
+Get details of a specific user.
+
+**Endpoint:** `GET /api/users/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Response (200 OK):**
+```json
+{
+  "user": {
+    "_id": "507f1f77bcf86cd799439011",
+    "email": "teacher@school.com",
+    "firstName": "John",
+    "lastName": "Smith",
+    "role": "teacher",
+    "phone": "0601020304",
+    "address": "123 School Street",
+    "isActive": true,
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "updatedAt": "2024-01-20T14:45:00.000Z"
+  }
+}
+```
+
+### Update User
+
+Update user information.
+
+**Endpoint:** `PUT /api/users/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Request Body:**
+```json
+{
+  "email": "newemail@school.com",
+  "firstName": "John",
+  "lastName": "Smith",
+  "role": "teacher",
+  "phone": "0602030405",
+  "address": "456 New Street",
+  "isActive": true
+}
+```
+
+**Note:** Password cannot be changed via this endpoint. Use the password endpoint instead.
+
+**Response (200 OK):**
+```json
+{
+  "message": "Utilisateur mis à jour avec succès",
+  "user": {
+    "_id": "507f1f77bcf86cd799439011",
+    "email": "newemail@school.com",
+    "firstName": "John",
+    "lastName": "Smith",
+    "role": "teacher",
+    "phone": "0602030405",
+    "address": "456 New Street",
+    "isActive": true
+  }
+}
+```
+
+### Update User Password
+
+Change a user's password.
+
+**Endpoint:** `PUT /api/users/:id/password`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Request Body:**
+```json
+{
+  "password": "newpassword123"
+}
+```
+
+**Note:** Password must be at least 6 characters long.
+
+**Response (200 OK):**
+```json
+{
+  "message": "Mot de passe mis à jour avec succès"
+}
+```
+
+### Delete User
+
+Delete a user account.
+
+**Endpoint:** `DELETE /api/users/:id`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Note:** 
+- Cannot delete the last admin account
+- Cannot delete student users (use student management instead)
+- This is a permanent deletion, not a soft delete
+
+**Response (200 OK):**
+```json
+{
+  "message": "Utilisateur supprimé avec succès"
+}
+```
+
+### Get User Statistics
+
+Get statistics about users in the system.
+
+**Endpoint:** `GET /api/users/stats`
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Admin only
+
+**Response (200 OK):**
+```json
+{
+  "totalUsers": 50,
+  "activeUsers": 48,
+  "inactiveUsers": 2,
+  "usersByRole": {
+    "admin": 3,
+    "teacher": 15,
+    "parent": 30,
+    "student": 2
   }
 }
 ```

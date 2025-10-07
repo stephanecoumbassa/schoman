@@ -100,6 +100,67 @@ class ApiService {
     return this.request<{ user: User }>('/auth/profile');
   }
 
+  // User endpoints
+  async getUsers(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    role?: string;
+    isActive?: boolean;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+    return this.request<{ users: User[]; pagination: Pagination }>(
+      `/users?${queryParams}`
+    );
+  }
+
+  async getUser(id: string) {
+    return this.request<{ user: User }>(`/users/${id}`);
+  }
+
+  async createUser(userData: Partial<User> & { password: string }) {
+    return this.request<{ user: User }>('/users', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  async updateUser(id: string, userData: Partial<User>) {
+    return this.request<{ user: User }>(`/users/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  async updateUserPassword(id: string, password: string) {
+    return this.request<{ message: string }>(`/users/${id}/password`, {
+      method: 'PUT',
+      body: JSON.stringify({ password }),
+    });
+  }
+
+  async deleteUser(id: string) {
+    return this.request(`/users/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getUserStats() {
+    return this.request<{
+      totalUsers: number;
+      activeUsers: number;
+      inactiveUsers: number;
+      usersByRole: Record<string, number>;
+    }>('/users/stats');
+  }
+
   // Student endpoints
   async getStudents(params?: {
     page?: number;

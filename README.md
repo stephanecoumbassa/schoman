@@ -10,17 +10,17 @@ Application complète de gestion d'école avec authentification, gestion des él
 
 ### Backend (API REST)
 - ✅ Authentification JWT avec rôles (admin, enseignant, élève, parent)
-- ✅ Gestion des utilisateurs
+- ✅ **Module utilisateurs (gestion des enseignants, admins, parents)** 🆕
 - ✅ CRUD complet pour les élèves
 - ✅ Gestion des classes (CRUD complet)
 - ✅ Gestion des notes/bulletins (création, modification, moyennes)
 - ✅ Suivi des présences/absences (enregistrement et statistiques)
 - ✅ Module bibliothèque (livres et emprunts)
 - ✅ Module facturation (factures, paiements, statistiques)
-- ✅ **Module événements (réunions, célébrations, sorties)** 🆕
-- ✅ **Module dépenses (catégories, approbation, paiements)** 🆕
-- ✅ **Module communication (messagerie interne)** 🆕
-- ✅ **Module comptabilité (transactions, budgets, rapports)** 🆕
+- ✅ Module événements (réunions, célébrations, sorties)
+- ✅ Module dépenses (catégories, approbation, paiements)
+- ✅ Module communication (messagerie interne)
+- ✅ Module comptabilité (transactions, budgets, rapports)
 - ✅ Tableau de bord avec statistiques
 - ✅ Recherche et filtrage avancés
 - ✅ Pagination des résultats
@@ -28,16 +28,17 @@ Application complète de gestion d'école avec authentification, gestion des él
 ### Frontend (Interface Web)
 - ✅ Page de connexion sécurisée
 - ✅ Tableau de bord avec statistiques en temps réel
+- ✅ **Interface de gestion des utilisateurs (enseignants, admins, parents)** 🆕
 - ✅ Interface de gestion des élèves
 - ✅ Interface de gestion des classes
 - ✅ Interface de gestion des notes
 - ✅ Interface de gestion des présences
 - ✅ Interface de gestion de la bibliothèque
 - ✅ Interface de gestion des factures
-- ✅ **Interface de gestion des événements** 🆕
-- ✅ **Interface de gestion des dépenses** 🆕
-- ✅ **Interface de messagerie interne** 🆕
-- ✅ **Interface de comptabilité et budgets** 🆕
+- ✅ Interface de gestion des événements
+- ✅ Interface de gestion des dépenses
+- ✅ Interface de messagerie interne
+- ✅ Interface de comptabilité et budgets
 - ✅ Recherche et filtres avancés
 - ✅ Design responsive avec Tailwind CSS
 - ✅ Navigation protégée par rôles
