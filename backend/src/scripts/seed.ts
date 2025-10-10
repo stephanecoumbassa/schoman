@@ -4,6 +4,7 @@ import User from '../models/User.js';
 import Student from '../models/Student.js';
 import Class from '../models/Class.js';
 import Subject from '../models/Subject.js';
+import Schedule from '../models/Schedule.js';
 import Book from '../models/Book.js';
 import Loan from '../models/Loan.js';
 import Invoice from '../models/Invoice.js';
@@ -30,6 +31,7 @@ async function seed() {
     await Student.deleteMany({});
     await Class.deleteMany({});
     await Subject.deleteMany({});
+    await Schedule.deleteMany({});
     await Book.deleteMany({});
     await Loan.deleteMany({});
     await Invoice.deleteMany({});
@@ -174,6 +176,158 @@ async function seed() {
         defaultCoefficient: 1,
         color: '#EC4899',
         isActive: true,
+      },
+    ]);
+
+    // Get created subjects for schedules
+    const subjects = await Subject.find();
+    const mathCE1 = subjects.find(s => s.code === 'MATH');
+    const frCE1 = subjects.find(s => s.code === 'FR');
+    const sciCE1 = subjects.find(s => s.code === 'SCI');
+    const histgeoCE1 = subjects.find(s => s.code === 'HISTGEO');
+    const epsCE1 = subjects.find(s => s.code === 'EPS');
+    const mathCE2 = subjects.find(s => s.code === 'MATH-CE2');
+    const frCE2 = subjects.find(s => s.code === 'FR-CE2');
+
+    // Create schedules
+    console.log('📅 Création des emplois du temps...');
+    await Schedule.create([
+      // CE1 Schedule - Monday
+      {
+        class: classCE1._id,
+        subject: mathCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Lundi',
+        startTime: '08:00',
+        endTime: '09:30',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      {
+        class: classCE1._id,
+        subject: frCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Lundi',
+        startTime: '10:00',
+        endTime: '11:30',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      {
+        class: classCE1._id,
+        subject: sciCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Lundi',
+        startTime: '14:00',
+        endTime: '15:00',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      // CE1 Schedule - Tuesday
+      {
+        class: classCE1._id,
+        subject: frCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Mardi',
+        startTime: '08:00',
+        endTime: '09:30',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      {
+        class: classCE1._id,
+        subject: mathCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Mardi',
+        startTime: '10:00',
+        endTime: '11:30',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      {
+        class: classCE1._id,
+        subject: epsCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Mardi',
+        startTime: '14:00',
+        endTime: '15:30',
+        room: 'Gymnase',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      // CE1 Schedule - Thursday
+      {
+        class: classCE1._id,
+        subject: mathCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Jeudi',
+        startTime: '08:00',
+        endTime: '09:30',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      {
+        class: classCE1._id,
+        subject: histgeoCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Jeudi',
+        startTime: '10:00',
+        endTime: '11:00',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      // CE1 Schedule - Friday
+      {
+        class: classCE1._id,
+        subject: frCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Vendredi',
+        startTime: '08:00',
+        endTime: '09:30',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      {
+        class: classCE1._id,
+        subject: sciCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Vendredi',
+        startTime: '10:00',
+        endTime: '11:00',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      // CE2 Schedule - Monday
+      {
+        class: classCE2._id,
+        subject: mathCE2?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Lundi',
+        startTime: '08:00',
+        endTime: '09:30',
+        room: 'Salle 102',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      {
+        class: classCE2._id,
+        subject: frCE2?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Lundi',
+        startTime: '10:00',
+        endTime: '11:30',
+        room: 'Salle 102',
+        academicYear: '2024-2025',
+        isRecurring: true,
       },
     ]);
 
@@ -873,6 +1027,7 @@ async function seed() {
     console.log('   Enseignant: teacher@schoman.com / teacher123');
     console.log('   Élève: student@schoman.com / student123');
     console.log('\n📚 Matières créées: 10 matières (5 pour CE1, 5 pour CE2)');
+    console.log('📅 Emplois du temps créés: 12 créneaux horaires');
     console.log('📚 Livres créés: 6 livres avec 19 exemplaires au total');
     console.log('📖 Emprunts: 1 emprunt en cours');
     console.log('💰 Factures créées: 3 factures (1 payée, 1 envoyée, 1 brouillon)');

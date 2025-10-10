@@ -6,6 +6,7 @@ import UsersView from '../views/UsersView.vue'
 import StudentsView from '../views/StudentsView.vue'
 import ClassesView from '../views/ClassesView.vue'
 import SubjectsView from '../views/SubjectsView.vue'
+import ScheduleView from '../views/ScheduleView.vue'
 import GradesView from '../views/GradesView.vue'
 import AttendanceView from '../views/AttendanceView.vue'
 import BooksView from '../views/BooksView.vue'
@@ -58,6 +59,12 @@ const router = createRouter({
       path: '/subjects',
       name: 'subjects',
       component: SubjectsView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/schedule',
+      name: 'schedule',
+      component: ScheduleView,
       meta: { requiresAuth: true },
     },
     {
