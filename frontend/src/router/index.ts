@@ -5,6 +5,7 @@ import DashboardView from '../views/DashboardView.vue'
 import UsersView from '../views/UsersView.vue'
 import StudentsView from '../views/StudentsView.vue'
 import ClassesView from '../views/ClassesView.vue'
+import SubjectsView from '../views/SubjectsView.vue'
 import GradesView from '../views/GradesView.vue'
 import AttendanceView from '../views/AttendanceView.vue'
 import BooksView from '../views/BooksView.vue'
@@ -51,6 +52,12 @@ const router = createRouter({
       path: '/classes',
       name: 'classes',
       component: ClassesView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/subjects',
+      name: 'subjects',
+      component: SubjectsView,
       meta: { requiresAuth: true },
     },
     {
