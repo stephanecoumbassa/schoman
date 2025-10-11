@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
+    .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .header { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 30px 20px; text-align: center; }
+    .content { padding: 30px 20px; }
+    .button { display: inline-block; padding: 12px 30px; background: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+    .footer { background: #f9fafb; padding: 20px; text-align: center; font-size: 12px; color: #6b7280; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎉 Bienvenue sur <%= appName %> !</h1>
+    </div>
+    <div class="content">
+      <h2>Bonjour <%= firstName %>,</h2>
+      <p>Nous sommes ravis de vous accueillir sur <%= appName %>, la plateforme de gestion scolaire moderne et intuitive.</p>
+      
+      <p>Votre compte <strong><%= role %></strong> a été créé avec succès. Vous pouvez maintenant accéder à toutes les fonctionnalités de la plateforme.</p>
+      
+      <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0;">
+        <p style="margin: 0;"><strong>Fonctionnalités disponibles :</strong></p>
+        <ul style="margin: 10px 0;">
+          <li>Gestion des élèves et classes</li>
+          <li>Suivi des notes et bulletins</li>
+          <li>Gestion des présences</li>
+          <li>Facturation et paiements</li>
+          <li>Communication instantanée</li>
+          <li>Bibliothèque numérique</li>
+        </ul>
+      </div>
+      
+      <div style="text-align: center;">
+        <a href="<%= appUrl %>/login" class="button">Se connecter</a>
+      </div>
+      
+      <p>Si vous avez des questions, n'hésitez pas à contacter notre équipe de support.</p>
+      
+      <p>Cordialement,<br>L'équipe <%= appName %></p>
+    </div>
+    <div class="footer">
+      <p>&copy; <%= year %> <%= appName %>. Tous droits réservés.</p>
+      <p><a href="<%= appUrl %>" style="color: #3b82f6; text-decoration: none;"><%= appUrl %></a></p>
+    </div>
+  </div>
+</body>
+</html>

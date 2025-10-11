@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
+    .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .header { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 30px 20px; text-align: center; }
+    .content { padding: 30px 20px; }
+    .button { display: inline-block; padding: 12px 30px; background: #8b5cf6; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+    .footer { background: #f9fafb; padding: 20px; text-align: center; font-size: 12px; color: #6b7280; }
+    .grade-box { background: #f5f3ff; border-left: 4px solid #8b5cf6; padding: 20px; margin: 20px 0; text-align: center; }
+    .grade-value { font-size: 48px; font-weight: bold; color: #8b5cf6; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📝 Nouvelle Note</h1>
+    </div>
+    <div class="content">
+      <h2>Bonjour,</h2>
+      <p>Une nouvelle note a été enregistrée pour <strong><%= studentName %></strong>.</p>
+      
+      <div class="grade-box">
+        <p style="margin: 0; font-size: 18px; color: #6b7280;">Matière : <strong><%= subject %></strong></p>
+        <div class="grade-value"><%= grade %> / <%= maxGrade %></div>
+        <p style="margin: 0; color: #6b7280;">Note obtenue</p>
+      </div>
+      
+      <p>Vous pouvez consulter le détail de toutes les notes et le bulletin complet sur votre espace parent.</p>
+      
+      <div style="text-align: center;">
+        <a href="<%= appUrl %>/grades" class="button">Voir les notes</a>
+      </div>
+      
+      <p>Cordialement,<br>L'équipe <%= appName %></p>
+    </div>
+    <div class="footer">
+      <p>&copy; <%= year %> <%= appName %>. Tous droits réservés.</p>
+    </div>
+  </div>
+</body>
+</html>
