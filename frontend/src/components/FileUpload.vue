@@ -120,6 +120,11 @@ const handleFileSelect = (e: Event) => {
 const handleFiles = async (files: FileList) => {
   error.value = '';
   const file = files[0];
+  
+  if (!file) {
+    error.value = 'No file selected';
+    return;
+  }
 
   // Validate file size
   if (file.size > props.maxSize * 1024 * 1024) {
