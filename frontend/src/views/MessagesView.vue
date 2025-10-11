@@ -457,7 +457,7 @@ const form = ref<MessageFormData>({
   category: 'general',
 });
 
-let searchTimeout: number;
+let searchTimeout: ReturnType<typeof setTimeout>;
 
 const debouncedSearch = () => {
   clearTimeout(searchTimeout);
