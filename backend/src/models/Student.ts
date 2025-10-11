@@ -21,6 +21,7 @@ export interface IStudent extends Document {
   };
   medicalInfo?: string;
   notes?: string;
+  avatar?: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -77,6 +78,10 @@ const StudentSchema: Schema = new Schema(
     },
     notes: {
       type: String,
+    },
+    avatar: {
+      type: String,
+      trim: true,
     },
     isActive: {
       type: Boolean,
