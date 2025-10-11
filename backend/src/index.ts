@@ -28,6 +28,7 @@ import uploadRoutes from './routes/uploadRoutes.js';
 import exportRoutes from './routes/exportRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import schoolRoutes from './routes/schoolRoutes.js';
+import swaggerRoutes from './routes/swaggerRoutes.js';
 
 // Import Socket.io service
 import socketService from './services/socketService.js';
@@ -104,6 +105,9 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// API Documentation (Swagger)
+app.use('/api-docs', swaggerRoutes);
 
 // API Routes
 app.use('/api/auth', authLimiter, authRoutes);
