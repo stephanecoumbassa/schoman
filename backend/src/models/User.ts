@@ -10,6 +10,7 @@ export interface IUser extends Document {
   phone?: string;
   address?: string;
   avatar?: string;
+  school?: mongoose.Types.ObjectId;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -56,6 +57,10 @@ const UserSchema: Schema = new Schema(
     avatar: {
       type: String,
       trim: true,
+    },
+    school: {
+      type: Schema.Types.ObjectId,
+      ref: 'School',
     },
     isActive: {
       type: Boolean,

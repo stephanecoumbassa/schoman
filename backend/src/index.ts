@@ -27,6 +27,7 @@ import budgetRoutes from './routes/budgetRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import exportRoutes from './routes/exportRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import schoolRoutes from './routes/schoolRoutes.js';
 
 // Import Socket.io service
 import socketService from './services/socketService.js';
@@ -125,6 +126,7 @@ app.use('/api/budgets', budgetRoutes);
 app.use('/api/uploads', uploadLimiter, uploadRoutes);
 app.use('/api/exports', exportLimiter, exportRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/schools', schoolRoutes);
 
 // 404 handler (must be before error handler)
 app.use(notFoundHandler);

@@ -1,12 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
+import mongoose from 'mongoose';
+
 export interface AuthRequest extends Request {
   user?: {
     id: string;
     email: string;
     role: string;
+    school?: mongoose.Types.ObjectId;
   };
+  schoolId?: mongoose.Types.ObjectId;
 }
 
 export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -24,6 +28,7 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
       id: decoded.id,
       email: decoded.email,
       role: decoded.role,
+      school: decoded.school,
     };
 
     next();
@@ -45,3 +50,6 @@ export const authorize = (...roles: string[]) => {
     next();
   };
 };
+
+// Alias for authenticate to match common naming convention
+export const protect = authenticate;

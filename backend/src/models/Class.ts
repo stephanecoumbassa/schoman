@@ -7,6 +7,7 @@ export interface IClass extends Document {
   maxCapacity: number;
   currentEnrollment: number;
   mainTeacher?: mongoose.Types.ObjectId;
+  school?: mongoose.Types.ObjectId;
   schedule?: string;
   room?: string;
   isActive: boolean;
@@ -41,6 +42,10 @@ const ClassSchema: Schema = new Schema(
     mainTeacher: {
       type: Schema.Types.ObjectId,
       ref: 'User',
+    },
+    school: {
+      type: Schema.Types.ObjectId,
+      ref: 'School',
     },
     schedule: {
       type: String,

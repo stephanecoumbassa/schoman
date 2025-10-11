@@ -8,6 +8,7 @@ export interface IStudent extends Document {
   gender: 'M' | 'F';
   class?: mongoose.Types.ObjectId;
   level?: string;
+  school?: mongoose.Types.ObjectId;
   enrollmentDate: Date;
   parentContact: {
     name: string;
@@ -58,6 +59,10 @@ const StudentSchema: Schema = new Schema(
     },
     level: {
       type: String,
+    },
+    school: {
+      type: Schema.Types.ObjectId,
+      ref: 'School',
     },
     enrollmentDate: {
       type: Date,
