@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import User from '../models/User.js';
 import Student from '../models/Student.js';
 import Class from '../models/Class.js';
+import Subject from '../models/Subject.js';
+import Schedule from '../models/Schedule.js';
 import Book from '../models/Book.js';
 import Loan from '../models/Loan.js';
 import Invoice from '../models/Invoice.js';
@@ -28,6 +30,8 @@ async function seed() {
     await User.deleteMany({});
     await Student.deleteMany({});
     await Class.deleteMany({});
+    await Subject.deleteMany({});
+    await Schedule.deleteMany({});
     await Book.deleteMany({});
     await Loan.deleteMany({});
     await Invoice.deleteMany({});
@@ -79,6 +83,253 @@ async function seed() {
       currentEnrollment: 0,
       room: 'Salle 102',
     });
+
+    // Create subjects
+    console.log('📚 Création des matières...');
+    await Subject.create([
+      {
+        name: 'Mathématiques',
+        code: 'MATH',
+        description: 'Nombres, calcul, géométrie et mesures',
+        level: 'CE1',
+        defaultCoefficient: 2,
+        color: '#3B82F6',
+        isActive: true,
+      },
+      {
+        name: 'Français',
+        code: 'FR',
+        description: 'Lecture, écriture, grammaire et conjugaison',
+        level: 'CE1',
+        defaultCoefficient: 2,
+        color: '#EF4444',
+        isActive: true,
+      },
+      {
+        name: 'Sciences',
+        code: 'SCI',
+        description: 'Sciences et technologie',
+        level: 'CE1',
+        defaultCoefficient: 1.5,
+        color: '#10B981',
+        isActive: true,
+      },
+      {
+        name: 'Histoire-Géographie',
+        code: 'HISTGEO',
+        description: 'Histoire et géographie',
+        level: 'CE1',
+        defaultCoefficient: 1,
+        color: '#F59E0B',
+        isActive: true,
+      },
+      {
+        name: 'Éducation Physique',
+        code: 'EPS',
+        description: 'Éducation physique et sportive',
+        level: 'CE1',
+        defaultCoefficient: 1,
+        color: '#8B5CF6',
+        isActive: true,
+      },
+      {
+        name: 'Mathématiques',
+        code: 'MATH-CE2',
+        description: 'Nombres, calcul, géométrie et mesures',
+        level: 'CE2',
+        defaultCoefficient: 2,
+        color: '#3B82F6',
+        isActive: true,
+      },
+      {
+        name: 'Français',
+        code: 'FR-CE2',
+        description: 'Lecture, écriture, grammaire et conjugaison',
+        level: 'CE2',
+        defaultCoefficient: 2,
+        color: '#EF4444',
+        isActive: true,
+      },
+      {
+        name: 'Sciences',
+        code: 'SCI-CE2',
+        description: 'Sciences et technologie',
+        level: 'CE2',
+        defaultCoefficient: 1.5,
+        color: '#10B981',
+        isActive: true,
+      },
+      {
+        name: 'Histoire-Géographie',
+        code: 'HISTGEO-CE2',
+        description: 'Histoire et géographie',
+        level: 'CE2',
+        defaultCoefficient: 1,
+        color: '#F59E0B',
+        isActive: true,
+      },
+      {
+        name: 'Anglais',
+        code: 'ENG-CE2',
+        description: 'Langue anglaise',
+        level: 'CE2',
+        defaultCoefficient: 1,
+        color: '#EC4899',
+        isActive: true,
+      },
+    ]);
+
+    // Get created subjects for schedules
+    const subjects = await Subject.find();
+    const mathCE1 = subjects.find(s => s.code === 'MATH');
+    const frCE1 = subjects.find(s => s.code === 'FR');
+    const sciCE1 = subjects.find(s => s.code === 'SCI');
+    const histgeoCE1 = subjects.find(s => s.code === 'HISTGEO');
+    const epsCE1 = subjects.find(s => s.code === 'EPS');
+    const mathCE2 = subjects.find(s => s.code === 'MATH-CE2');
+    const frCE2 = subjects.find(s => s.code === 'FR-CE2');
+
+    // Create schedules
+    console.log('📅 Création des emplois du temps...');
+    await Schedule.create([
+      // CE1 Schedule - Monday
+      {
+        class: classCE1._id,
+        subject: mathCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Lundi',
+        startTime: '08:00',
+        endTime: '09:30',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      {
+        class: classCE1._id,
+        subject: frCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Lundi',
+        startTime: '10:00',
+        endTime: '11:30',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      {
+        class: classCE1._id,
+        subject: sciCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Lundi',
+        startTime: '14:00',
+        endTime: '15:00',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      // CE1 Schedule - Tuesday
+      {
+        class: classCE1._id,
+        subject: frCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Mardi',
+        startTime: '08:00',
+        endTime: '09:30',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      {
+        class: classCE1._id,
+        subject: mathCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Mardi',
+        startTime: '10:00',
+        endTime: '11:30',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      {
+        class: classCE1._id,
+        subject: epsCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Mardi',
+        startTime: '14:00',
+        endTime: '15:30',
+        room: 'Gymnase',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      // CE1 Schedule - Thursday
+      {
+        class: classCE1._id,
+        subject: mathCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Jeudi',
+        startTime: '08:00',
+        endTime: '09:30',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      {
+        class: classCE1._id,
+        subject: histgeoCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Jeudi',
+        startTime: '10:00',
+        endTime: '11:00',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      // CE1 Schedule - Friday
+      {
+        class: classCE1._id,
+        subject: frCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Vendredi',
+        startTime: '08:00',
+        endTime: '09:30',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      {
+        class: classCE1._id,
+        subject: sciCE1?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Vendredi',
+        startTime: '10:00',
+        endTime: '11:00',
+        room: 'Salle 101',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      // CE2 Schedule - Monday
+      {
+        class: classCE2._id,
+        subject: mathCE2?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Lundi',
+        startTime: '08:00',
+        endTime: '09:30',
+        room: 'Salle 102',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+      {
+        class: classCE2._id,
+        subject: frCE2?._id,
+        teacher: teacher._id,
+        dayOfWeek: 'Lundi',
+        startTime: '10:00',
+        endTime: '11:30',
+        room: 'Salle 102',
+        academicYear: '2024-2025',
+        isRecurring: true,
+      },
+    ]);
 
     // Create student users and profiles
     console.log('👨‍🎓 Création des élèves...');
@@ -775,7 +1026,9 @@ async function seed() {
     console.log('   Admin: admin@schoman.com / admin123');
     console.log('   Enseignant: teacher@schoman.com / teacher123');
     console.log('   Élève: student@schoman.com / student123');
-    console.log('\n📚 Livres créés: 6 livres avec 19 exemplaires au total');
+    console.log('\n📚 Matières créées: 10 matières (5 pour CE1, 5 pour CE2)');
+    console.log('📅 Emplois du temps créés: 12 créneaux horaires');
+    console.log('📚 Livres créés: 6 livres avec 19 exemplaires au total');
     console.log('📖 Emprunts: 1 emprunt en cours');
     console.log('💰 Factures créées: 3 factures (1 payée, 1 envoyée, 1 brouillon)');
     console.log('📆 Événements créés: 3 événements planifiés');
