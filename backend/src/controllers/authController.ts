@@ -29,7 +29,7 @@ export const register = async (req: Request, res: Response) => {
 
     // Generate token
     const token = jwt.sign(
-      { id: user._id, email: user.email, role: user.role },
+      { id: user._id, email: user.email, role: user.role, school: user.school },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     );
@@ -43,6 +43,7 @@ export const register = async (req: Request, res: Response) => {
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
+        school: user.school,
       },
     });
   } catch (error: any) {
@@ -74,7 +75,7 @@ export const login = async (req: Request, res: Response) => {
 
     // Generate token
     const token = jwt.sign(
-      { id: user._id, email: user.email, role: user.role },
+      { id: user._id, email: user.email, role: user.role, school: user.school },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     );
@@ -88,6 +89,7 @@ export const login = async (req: Request, res: Response) => {
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
+        school: user.school,
       },
     });
   } catch (error: any) {

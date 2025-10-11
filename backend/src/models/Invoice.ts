@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IInvoice extends Document {
   invoiceNumber: string;
   student: mongoose.Types.ObjectId;
+  school?: mongoose.Types.ObjectId;
   items: {
     description: string;
     category: 'tuition' | 'activity' | 'material' | 'transport' | 'cafeteria' | 'other';
@@ -36,6 +37,10 @@ const InvoiceSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Student',
       required: true,
+    },
+    school: {
+      type: Schema.Types.ObjectId,
+      ref: 'School',
     },
     items: [
       {
