@@ -30,12 +30,17 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import schoolRoutes from './routes/schoolRoutes.js';
 import swaggerRoutes from './routes/swaggerRoutes.js';
 import twoFactorRoutes from './routes/twoFactorRoutes.js';
+import auditLogRoutes from './routes/auditLogRoutes.js';
+import backupRoutes from './routes/backupRoutes.js';
 
 // Import Socket.io service
 import socketService from './services/socketService.js';
 
 // Import cache service
 import cacheService from './services/cacheService.js';
+
+// Import scheduled backup service
+import scheduledBackupService from './services/scheduledBackupService.js';
 
 // Import error handling
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
@@ -46,6 +51,9 @@ import { apiLimiter, authLimiter, uploadLimiter, exportLimiter } from './middlew
 
 // Import security middleware
 import { securityHeaders } from './middleware/security.js';
+
+// Import audit logger middleware
+import { auditLogger } from './middleware/auditLogger.js';
 
 // Configuration
 dotenv.config();
@@ -67,6 +75,9 @@ app.use(compression());
 
 // Global rate limiter for all API routes
 app.use('/api', apiLimiter);
+
+// Audit logger middleware - must be after authentication routes are defined
+app.use('/api', auditLogger);
 
 // Serve static files (uploads)
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
@@ -139,6 +150,8 @@ app.use('/api/exports', exportLimiter, exportRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/schools', schoolRoutes);
 app.use('/api/2fa', twoFactorRoutes);
+app.use('/api/audit-logs', auditLogRoutes);
+app.use('/api/backups', backupRoutes);
 
 // 404 handler (must be before error handler)
 app.use(notFoundHandler);
@@ -149,6 +162,18 @@ app.use(errorHandler);
 // Create HTTP server and initialize Socket.io
 const httpServer = createServer(app);
 socketService.initialize(httpServer);
+
+// Start scheduled backups if enabled
+if (process.env.ENABLE_SCHEDULED_BACKUPS === 'true') {
+  try {
+    scheduledBackupService.start();
+    logger.info('✅ Scheduled backups enabled');
+    console.log('✅ Scheduled backups enabled');
+  } catch (error) {
+    logger.error('Failed to start scheduled backups', { error });
+    console.error('⚠️ Failed to start scheduled backups:', error);
+  }
+}
 
 // Start server
 httpServer.listen(PORT, () => {
