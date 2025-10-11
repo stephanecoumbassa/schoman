@@ -145,7 +145,7 @@
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ report.format.toUpperCase() }}
+              {{ String(report.format).toUpperCase() }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span
@@ -371,13 +371,22 @@ const filters = ref({
   scheduled: '',
 });
 
-const formData = ref({
+const formData = ref<{
+  name: string;
+  description: string;
+  type: Report['type'];
+  fields: string[];
+  filters: any[];
+  format: Report['format'];
+  scheduled: boolean;
+  scheduleExpression: string;
+}>({
   name: '',
   description: '',
-  type: 'students' as Report['type'],
-  fields: [] as string[],
+  type: 'students',
+  fields: [],
   filters: [],
-  format: 'pdf' as Report['format'],
+  format: 'pdf',
   scheduled: false,
   scheduleExpression: '0 0 * * *',
 });
