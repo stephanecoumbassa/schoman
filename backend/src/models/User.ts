@@ -11,6 +11,9 @@ export interface IUser extends Document {
   address?: string;
   avatar?: string;
   school?: mongoose.Types.ObjectId;
+  twoFactorEnabled: boolean;
+  twoFactorSecret?: string;
+  twoFactorBackupCodes?: string[];
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -61,6 +64,18 @@ const UserSchema: Schema = new Schema(
     school: {
       type: Schema.Types.ObjectId,
       ref: 'School',
+    },
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    twoFactorSecret: {
+      type: String,
+      select: false, // Don't return in queries by default
+    },
+    twoFactorBackupCodes: {
+      type: [String],
+      select: false, // Don't return in queries by default
     },
     isActive: {
       type: Boolean,

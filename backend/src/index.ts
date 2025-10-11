@@ -29,6 +29,7 @@ import exportRoutes from './routes/exportRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import schoolRoutes from './routes/schoolRoutes.js';
 import swaggerRoutes from './routes/swaggerRoutes.js';
+import twoFactorRoutes from './routes/twoFactorRoutes.js';
 
 // Import Socket.io service
 import socketService from './services/socketService.js';
@@ -43,6 +44,9 @@ import logger from './utils/logger.js';
 // Import rate limiters
 import { apiLimiter, authLimiter, uploadLimiter, exportLimiter } from './middleware/rateLimiter.js';
 
+// Import security middleware
+import { securityHeaders } from './middleware/security.js';
+
 // Configuration
 dotenv.config();
 
@@ -54,6 +58,9 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/schoma
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Security headers middleware
+app.use(securityHeaders);
 
 // Compression middleware - compress all responses
 app.use(compression());
@@ -131,6 +138,7 @@ app.use('/api/uploads', uploadLimiter, uploadRoutes);
 app.use('/api/exports', exportLimiter, exportRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/schools', schoolRoutes);
+app.use('/api/2fa', twoFactorRoutes);
 
 // 404 handler (must be before error handler)
 app.use(notFoundHandler);
