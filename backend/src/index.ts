@@ -31,12 +31,16 @@ import schoolRoutes from './routes/schoolRoutes.js';
 import swaggerRoutes from './routes/swaggerRoutes.js';
 import twoFactorRoutes from './routes/twoFactorRoutes.js';
 import auditLogRoutes from './routes/auditLogRoutes.js';
+import backupRoutes from './routes/backupRoutes.js';
 
 // Import Socket.io service
 import socketService from './services/socketService.js';
 
 // Import cache service
 import cacheService from './services/cacheService.js';
+
+// Import scheduled backup service
+import scheduledBackupService from './services/scheduledBackupService.js';
 
 // Import error handling
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
@@ -147,6 +151,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/schools', schoolRoutes);
 app.use('/api/2fa', twoFactorRoutes);
 app.use('/api/audit-logs', auditLogRoutes);
+app.use('/api/backups', backupRoutes);
 
 // 404 handler (must be before error handler)
 app.use(notFoundHandler);
@@ -157,6 +162,18 @@ app.use(errorHandler);
 // Create HTTP server and initialize Socket.io
 const httpServer = createServer(app);
 socketService.initialize(httpServer);
+
+// Start scheduled backups if enabled
+if (process.env.ENABLE_SCHEDULED_BACKUPS === 'true') {
+  try {
+    scheduledBackupService.start();
+    logger.info('✅ Scheduled backups enabled');
+    console.log('✅ Scheduled backups enabled');
+  } catch (error) {
+    logger.error('Failed to start scheduled backups', { error });
+    console.error('⚠️ Failed to start scheduled backups:', error);
+  }
+}
 
 // Start server
 httpServer.listen(PORT, () => {
