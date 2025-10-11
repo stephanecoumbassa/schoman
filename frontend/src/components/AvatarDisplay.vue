@@ -35,14 +35,14 @@ const props = withDefaults(defineProps<Props>(), {
 const imageError = ref(false);
 
 const fullAvatarUrl = computed(() => {
-  if (!props.avatarUrl || imageError.value) return null;
+  if (!props.avatarUrl || imageError.value) return undefined;
   if (props.avatarUrl.startsWith('http')) return props.avatarUrl;
   return `http://localhost:3000${props.avatarUrl}`;
 });
 
 const initials = computed(() => {
   const names = props.name.split(' ');
-  if (names.length >= 2) {
+  if (names.length >= 2 && names[0] && names[1]) {
     return `${names[0][0]}${names[1][0]}`.toUpperCase();
   }
   return props.name.substring(0, 2).toUpperCase();

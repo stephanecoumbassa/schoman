@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
+    .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px 20px; text-align: center; }
+    .content { padding: 30px 20px; }
+    .button { display: inline-block; padding: 12px 30px; background: #10b981; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+    .footer { background: #f9fafb; padding: 20px; text-align: center; font-size: 12px; color: #6b7280; }
+    .success-box { background: #f0fdf4; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>✅ Paiement Confirmé</h1>
+    </div>
+    <div class="content">
+      <h2>Bonjour,</h2>
+      <p>Nous avons bien reçu votre paiement pour <strong><%= studentName %></strong>.</p>
+      
+      <div class="success-box">
+        <p style="margin: 0 0 10px 0; font-size: 18px;">Montant payé</p>
+        <div style="font-size: 36px; font-weight: bold; color: #10b981; margin: 10px 0;"><%= amount %> €</div>
+        <p style="margin: 10px 0 0 0; color: #6b7280;">Facture #<%= invoiceNumber %></p>
+      </div>
+      
+      <p>Votre paiement a été traité avec succès. Un reçu sera disponible dans votre espace personnel.</p>
+      
+      <div style="text-align: center;">
+        <a href="<%= appUrl %>/invoices" class="button">Voir mes paiements</a>
+      </div>
+      
+      <p>Merci pour votre confiance.</p>
+      
+      <p>Cordialement,<br>L'équipe <%= appName %></p>
+    </div>
+    <div class="footer">
+      <p>&copy; <%= year %> <%= appName %>. Tous droits réservés.</p>
+    </div>
+  </div>
+</body>
+</html>
