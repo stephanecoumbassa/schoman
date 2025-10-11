@@ -20,6 +20,7 @@ import BudgetView from '../views/BudgetView.vue'
 import SchoolsView from '../views/SchoolsView.vue'
 import AuditLogsView from '../views/AuditLogsView.vue'
 import BackupsView from '../views/BackupsView.vue'
+import ReportsView from '../views/ReportsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -147,6 +148,12 @@ const router = createRouter({
       name: 'backups',
       component: BackupsView,
       meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/reports',
+      name: 'reports',
+      component: ReportsView,
+      meta: { requiresAuth: true },
     },
   ],
 })

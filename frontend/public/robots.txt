@@ -1,0 +1,6 @@
+# robots.txt for Schoman
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://schoman.app/sitemap.xml
