@@ -62,8 +62,8 @@ describe('Grade Controller', () => {
       coefficient: 3
     });
 
-    studentId = student._id;
-    subjectId = subject._id;
+    studentId = student._id as mongoose.Types.ObjectId;
+    subjectId = subject._id as mongoose.Types.ObjectId;
   });
 
   describe('Grade Creation', () => {
