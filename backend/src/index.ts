@@ -23,6 +23,7 @@ import messageRoutes from './routes/messageRoutes.js';
 import transactionRoutes from './routes/transactionRoutes.js';
 import budgetRoutes from './routes/budgetRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import exportRoutes from './routes/exportRoutes.js';
 
 // Configuration
 dotenv.config();
@@ -85,6 +86,7 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/budgets', budgetRoutes);
 app.use('/api/uploads', uploadRoutes);
+app.use('/api/exports', exportRoutes);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
