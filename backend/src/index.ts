@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import path from 'path';
 
 // Import routes
 import authRoutes from './routes/authRoutes.js';
@@ -21,6 +22,8 @@ import expenseRoutes from './routes/expenseRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import transactionRoutes from './routes/transactionRoutes.js';
 import budgetRoutes from './routes/budgetRoutes.js';
+import uploadRoutes from './routes/uploadRoutes.js';
+import exportRoutes from './routes/exportRoutes.js';
 
 // Configuration
 dotenv.config();
@@ -33,6 +36,9 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/schoma
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files (uploads)
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Database connection
 mongoose.connect(MONGODB_URI)
@@ -79,6 +85,8 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/budgets', budgetRoutes);
+app.use('/api/uploads', uploadRoutes);
+app.use('/api/exports', exportRoutes);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

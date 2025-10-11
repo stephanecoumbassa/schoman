@@ -72,10 +72,40 @@ afterEach(async () => {
 - ✅ Default values
 
 ### Controller Tests
-- ✅ Subject creation
-- ✅ Subject listing with filters
-- ✅ Duplicate code prevention
-- ✅ Search functionality
+- ✅ Authentication controller
+  - ✅ User registration with password hashing
+  - ✅ Password comparison
+  - ✅ JWT token generation
+  - ✅ User roles (admin, teacher, student, parent)
+  - ✅ User profile management
+  - ✅ User deactivation
+- ✅ Student controller
+  - ✅ Student creation with validation
+  - ✅ Duplicate student number prevention
+  - ✅ Student queries and filtering
+  - ✅ Student data updates
+  - ✅ Population of user data
+- ✅ Grade controller
+  - ✅ Grade creation with validation
+  - ✅ Grade range validation
+  - ✅ Grade statistics (min, max, average)
+  - ✅ Weighted average calculation
+  - ✅ Grade updates
+- ✅ Subject controller
+  - ✅ Subject creation
+  - ✅ Subject listing with filters
+  - ✅ Duplicate code prevention
+  - ✅ Search functionality
+
+### Pending Tests
+- [ ] Route integration tests with Supertest
+- [ ] Attendance controller tests
+- [ ] Invoice controller tests
+- [ ] Transaction controller tests
+- [ ] Message controller tests
+- [ ] Export functionality tests (PDF/Excel)
+- [ ] Upload functionality tests
+- [ ] Middleware tests (auth, validation)
 
 ## Notes
 
