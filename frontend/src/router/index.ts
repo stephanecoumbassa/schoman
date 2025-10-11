@@ -17,6 +17,7 @@ import ExpensesView from '../views/ExpensesView.vue'
 import MessagesView from '../views/MessagesView.vue'
 import AccountingView from '../views/AccountingView.vue'
 import BudgetView from '../views/BudgetView.vue'
+import SchoolsView from '../views/SchoolsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -126,6 +127,12 @@ const router = createRouter({
       name: 'budgets',
       component: BudgetView,
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/schools',
+      name: 'schools',
+      component: SchoolsView,
+      meta: { requiresAuth: true, requiresAdmin: true },
     },
   ],
 })
