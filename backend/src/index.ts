@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import path from 'path';
 import { createServer } from 'http';
+import compression from 'compression';
 
 // Import routes
 import authRoutes from './routes/authRoutes.js';
@@ -30,9 +31,15 @@ import notificationRoutes from './routes/notificationRoutes.js';
 // Import Socket.io service
 import socketService from './services/socketService.js';
 
+// Import cache service
+import cacheService from './services/cacheService.js';
+
 // Import error handling
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import logger from './utils/logger.js';
+
+// Import rate limiters
+import { apiLimiter, authLimiter, uploadLimiter, exportLimiter } from './middleware/rateLimiter.js';
 
 // Configuration
 dotenv.config();
@@ -46,6 +53,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Compression middleware - compress all responses
+app.use(compression());
+
+// Global rate limiter for all API routes
+app.use('/api', apiLimiter);
+
 // Serve static files (uploads)
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
@@ -58,6 +71,19 @@ mongoose.connect(MONGODB_URI)
   .catch((error) => {
     logger.error('❌ Erreur de connexion à MongoDB:', error);
     console.error('❌ Erreur de connexion à MongoDB:', error);
+  });
+
+// Initialize cache service
+cacheService.connect()
+  .then(() => {
+    if (cacheService.isReady()) {
+      logger.info('✅ Cache service connected');
+      console.log('✅ Cache service connected');
+    }
+  })
+  .catch((error) => {
+    logger.warn('⚠️ Cache service not available:', error);
+    console.warn('⚠️ Cache service not available - continuing without cache');
   });
 
 // Routes
@@ -79,7 +105,7 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
@@ -96,8 +122,8 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/budgets', budgetRoutes);
-app.use('/api/uploads', uploadRoutes);
-app.use('/api/exports', exportRoutes);
+app.use('/api/uploads', uploadLimiter, uploadRoutes);
+app.use('/api/exports', exportLimiter, exportRoutes);
 app.use('/api/notifications', notificationRoutes);
 
 // 404 handler (must be before error handler)
