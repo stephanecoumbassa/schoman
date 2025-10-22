@@ -311,18 +311,19 @@ Sent when:
 - Includes: filename, size, timestamp, status, error details
 
 **Email Template:**
-```
-Subject: ✅ Backup Database Successful
+The system uses a professional HTML email template (`backup-notification.ejs`) that includes:
+- Color-coded headers (green for success, red for failure)
+- Detailed backup information in a formatted table
+- Clear status indicators with emojis
+- Error details when backup fails
+- Responsive design for mobile devices
 
-Database backup completed successfully.
+**Subject Line Examples:**
+- Success: `✅ Sauvegarde réussie - backup_2025-10-11T02-00-00.gz`
+- Failure: `❌ Échec de sauvegarde - backup_2025-10-11T02-00-00.gz`
 
-Filename: backup_2025-10-11T02-00-00.gz
-Size: 2.5 MB
-Type: automatic
-Timestamp: 2025-10-11T02:00:00.000Z
-
-The backup is stored in: /backups
-```
+**Configuration:**
+Ensure `ADMIN_EMAIL` is set in your `.env` file to receive notifications.
 
 ## 🔐 Security & Permissions
 
