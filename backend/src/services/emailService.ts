@@ -201,6 +201,42 @@ class EmailService {
       }
     });
   }
+
+  async sendBackupNotificationEmail(
+    email: string,
+    filename: string,
+    type: 'manual' | 'automatic',
+    timestamp: Date,
+    status: 'success' | 'failed',
+    backupDir: string,
+    size?: string,
+    error?: string
+  ): Promise<boolean> {
+    const subject = status === 'success' 
+      ? `✅ Sauvegarde réussie - ${filename}`
+      : `❌ Échec de sauvegarde - ${filename}`;
+    
+    return this.sendEmail({
+      to: email,
+      subject,
+      template: 'backup-notification',
+      data: {
+        filename,
+        type,
+        timestamp: timestamp.toLocaleString('fr-FR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        status,
+        backupDir,
+        size: size || 'N/A',
+        error
+      }
+    });
+  }
 }
 
 // Export singleton instance
