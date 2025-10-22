@@ -16,6 +16,11 @@ build/
 # Uploaded files (don't commit user uploads)
 backend/uploads/
 
+# Backup files
+backups/
+backend/backups/
+*.gz
+
 # IDE
 .vscode/
 .idea/
