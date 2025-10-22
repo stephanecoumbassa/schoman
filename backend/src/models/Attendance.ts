@@ -10,6 +10,7 @@ export interface IAttendance extends Document {
   reason?: string;
   recordedBy: mongoose.Types.ObjectId;
   comments?: string;
+  attachments?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -56,6 +57,12 @@ const AttendanceSchema: Schema = new Schema(
       type: String,
       trim: true,
     },
+    attachments: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
   },
   {
     timestamps: true,

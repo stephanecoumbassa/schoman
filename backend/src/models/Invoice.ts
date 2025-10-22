@@ -22,6 +22,7 @@ export interface IInvoice extends Document {
   paymentMethod?: 'cash' | 'check' | 'bank_transfer' | 'credit_card' | 'mobile_money';
   paymentReference?: string;
   notes?: string;
+  attachments?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -118,6 +119,12 @@ const InvoiceSchema: Schema = new Schema(
     notes: {
       type: String,
     },
+    attachments: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
   },
   {
     timestamps: true,
