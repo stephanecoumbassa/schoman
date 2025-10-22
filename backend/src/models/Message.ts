@@ -14,6 +14,7 @@ export interface IMessage extends Document {
   }[];
   isArchived: boolean;
   parentMessage?: mongoose.Types.ObjectId;
+  attachments?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -78,6 +79,12 @@ const MessageSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Message',
     },
+    attachments: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
   },
   {
     timestamps: true,
