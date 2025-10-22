@@ -10,6 +10,7 @@
           </p>
         </div>
         <div class="flex items-center gap-3">
+          <GlobalSearch />
           <ThemeToggle />
           <button
             @click="authStore.logout"
@@ -347,6 +348,7 @@ import { useAuthStore } from '../stores/auth';
 import { api } from '../services/api';
 import type { Student, DashboardStats } from '@/types';
 import ThemeToggle from '../components/ThemeToggle.vue';
+import GlobalSearch from '../components/GlobalSearch.vue';
 
 const authStore = useAuthStore();
 

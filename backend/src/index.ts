@@ -33,6 +33,7 @@ import twoFactorRoutes from './routes/twoFactorRoutes.js';
 import auditLogRoutes from './routes/auditLogRoutes.js';
 import backupRoutes from './routes/backupRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
+import searchRoutes from './routes/searchRoutes.js';
 
 // Import Socket.io service
 import socketService from './services/socketService.js';
@@ -154,6 +155,7 @@ app.use('/api/2fa', twoFactorRoutes);
 app.use('/api/audit-logs', auditLogRoutes);
 app.use('/api/backups', backupRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/search', searchRoutes);
 
 // 404 handler (must be before error handler)
 app.use(notFoundHandler);
