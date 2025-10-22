@@ -37,7 +37,8 @@
     "socket.io": "^4.8.1",
     "uuid": "^13.0.0",
     "winston": "^3.18.3",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",
