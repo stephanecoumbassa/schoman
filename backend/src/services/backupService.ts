@@ -296,33 +296,20 @@ class BackupService {
         return;
       }
 
-      const subject = backupInfo.status === 'success'
-        ? '✅ Backup Database Successful'
-        : '❌ Backup Database Failed';
-
-      const message = backupInfo.status === 'success'
-        ? `Database backup completed successfully.
-        
-Filename: ${backupInfo.filename}
-Size: ${this.formatBytes(backupInfo.size)}
-Type: ${backupInfo.type}
-Timestamp: ${backupInfo.timestamp.toISOString()}
-
-The backup is stored in: ${this.backupDir}`
-        : `Database backup failed.
-        
-Filename: ${backupInfo.filename}
-Type: ${backupInfo.type}
-Timestamp: ${backupInfo.timestamp.toISOString()}
-Error: ${backupInfo.error}
-
-Please check the server logs for more details.`;
-
-      // Note: Email service uses templates, so we log instead
-      // TODO: Create a backup notification template for email service
-      logger.info('Backup notification', {
+      // Send email notification using the backup notification template
+      await emailService.sendBackupNotificationEmail(
         adminEmail,
-        subject,
+        backupInfo.filename,
+        backupInfo.type,
+        backupInfo.timestamp,
+        backupInfo.status,
+        this.backupDir,
+        backupInfo.status === 'success' ? this.formatBytes(backupInfo.size) : undefined,
+        backupInfo.error
+      );
+
+      logger.info('Backup notification sent', {
+        adminEmail,
         status: backupInfo.status,
         filename: backupInfo.filename
       });
