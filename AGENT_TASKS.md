@@ -109,9 +109,6 @@ D'après l'analyse de votre projet Schoman, voici les améliorations que je vous
   - Tests de validation de fichiers
   - Tests de taille et type de fichier
   - Tests de stockage et récupération
-  - Tests d'authentification JWT
-  - Tests d'autorisation par rôle
-  - Tests de validation Zod
 - ❌ Tests frontend (composants Vue)
   - Tests unitaires des composants avec Vitest
   - Tests d'intégration des stores Pinia
