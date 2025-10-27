@@ -35,6 +35,7 @@ import backupRoutes from './routes/backupRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import searchRoutes from './routes/searchRoutes.js';
 import schoolYearRoutes from './routes/schoolYearRoutes.js';
+import monitoringRoutes from './routes/monitoringRoutes.js';
 
 // Import Socket.io service
 import socketService from './services/socketService.js';
@@ -118,7 +119,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// Health check endpoint
+// Health check endpoint (kept for backward compatibility)
 app.get('/health', (req, res) => {
   res.json({
     status: 'OK',
@@ -126,6 +127,9 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// Monitoring and health routes
+app.use('/', monitoringRoutes);
 
 // API Documentation (Swagger)
 app.use('/api-docs', swaggerRoutes);

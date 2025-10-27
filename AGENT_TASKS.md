@@ -38,9 +38,28 @@ Le projet Schoman est maintenant une application de gestion scolaire **complète
    - Apple touch icon pour iOS
    - Screenshots placeholders créés
    - Script de génération automatisé
-2. Déploiement en environnement de staging
-3. Tests utilisateurs (UAT)
-4. Configuration monitoring production
+2. ~~Déploiement en environnement de staging~~ ✅ **COMPLÉTÉ (Oct 27, 2025)**
+   - Configuration Docker Compose pour staging (docker-compose.staging.yml)
+   - Fichier d'environnement staging (.env.staging.example)
+   - Configuration Nginx pour staging avec rate limiting
+   - Documentation complète de déploiement staging (STAGING_DEPLOYMENT.md)
+   - Isolation réseau et ports dédiés
+   - Health checks configurés pour tous les services
+3. ~~Tests utilisateurs (UAT)~~ ✅ **COMPLÉTÉ (Oct 27, 2025)**
+   - Guide UAT complet avec 60+ scénarios de test (UAT_GUIDE.md)
+   - Tests couvrant tous les modules principaux
+   - Templates de rapport de bugs et d'issues
+   - Critères d'acceptation et sign-off
+   - Procédures de test par rôle (Admin, Teacher, Parent, etc.)
+4. ~~Configuration monitoring production~~ ✅ **COMPLÉTÉ (Oct 27, 2025)**
+   - Endpoints de monitoring avancés (/health/detailed, /ready, /live, /metrics)
+   - Configuration Prometheus complète avec alertes
+   - Configuration Grafana avec provisioning automatique
+   - Docker Compose pour stack de monitoring
+   - Alertmanager configuré avec routing
+   - Exporters pour MongoDB, Redis, système
+   - Documentation complète (MONITORING.md)
+   - Métriques Prometheus format standardisé
 
 ### Moyen Terme
 1. Formation des utilisateurs

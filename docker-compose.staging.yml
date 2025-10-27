@@ -1,0 +1,133 @@
+version: '3.8'
+
+services:
+  # MongoDB Database - Staging
+  mongodb_staging:
+    image: mongo:latest
+    container_name: schoman_mongodb_staging
+    restart: unless-stopped
+    ports:
+      - "27018:27017"  # Different port to avoid conflicts with production
+    environment:
+      MONGO_INITDB_DATABASE: schoman_staging
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-change_this_password}
+    volumes:
+      - mongodb_staging_data:/data/db
+    networks:
+      - schoman_staging_network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API - Staging
+  backend_staging:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: schoman_backend_staging
+    restart: unless-stopped
+    ports:
+      - "3001:3000"  # Different port for staging
+    environment:
+      - NODE_ENV=staging
+      - PORT=3000
+      - MONGODB_URI=mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-change_this_password}@mongodb_staging:27017/schoman_staging?authSource=admin
+      - JWT_SECRET=${JWT_SECRET:-change_this_secret_in_staging}
+      - JWT_EXPIRES_IN=7d
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:5174}
+      - LOG_LEVEL=debug
+      # Redis cache configuration (optional)
+      - REDIS_HOST=redis_staging
+      - REDIS_PORT=6379
+    depends_on:
+      mongodb_staging:
+        condition: service_healthy
+    networks:
+      - schoman_staging_network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - backend_staging_uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend Application - Staging
+  frontend_staging:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: schoman_frontend_staging
+    restart: unless-stopped
+    ports:
+      - "5174:5173"  # Different port for staging
+    environment:
+      - VITE_API_URL=http://localhost:3001/api
+      - NODE_ENV=staging
+    depends_on:
+      - backend_staging
+    networks:
+      - schoman_staging_network
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache - Staging (Optional but recommended)
+  redis_staging:
+    image: redis:7-alpine
+    container_name: schoman_redis_staging
+    restart: unless-stopped
+    ports:
+      - "6380:6379"  # Different port for staging
+    networks:
+      - schoman_staging_network
+    volumes:
+      - redis_staging_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Nginx Reverse Proxy - Staging (Optional)
+  nginx_staging:
+    image: nginx:alpine
+    container_name: schoman_nginx_staging
+    restart: unless-stopped
+    ports:
+      - "8081:80"  # Staging proxy port
+    volumes:
+      - ./nginx/staging.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend_staging
+      - frontend_staging
+    networks:
+      - schoman_staging_network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  schoman_staging_network:
+    driver: bridge
+    name: schoman_staging_network
+
+volumes:
+  mongodb_staging_data:
+    name: schoman_mongodb_staging_data
+  backend_staging_uploads:
+    name: schoman_backend_staging_uploads
+  redis_staging_data:
+    name: schoman_redis_staging_data
