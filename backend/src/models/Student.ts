@@ -24,6 +24,12 @@ export interface IStudent extends Document {
   notes?: string;
   avatar?: string;
   isActive: boolean;
+  enrollmentHistory?: {
+    schoolYear: mongoose.Types.ObjectId;
+    class: mongoose.Types.ObjectId;
+    level: string;
+    enrolledAt: Date;
+  }[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -92,6 +98,25 @@ const StudentSchema: Schema = new Schema(
       type: Boolean,
       default: true,
     },
+    enrollmentHistory: [
+      {
+        schoolYear: {
+          type: Schema.Types.ObjectId,
+          ref: 'SchoolYear',
+        },
+        class: {
+          type: Schema.Types.ObjectId,
+          ref: 'Class',
+        },
+        level: {
+          type: String,
+        },
+        enrolledAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

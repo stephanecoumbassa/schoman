@@ -10,6 +10,7 @@ export interface IGrade extends Document {
   coefficient: number;
   date: Date;
   academicYear: string;
+  schoolYear?: mongoose.Types.ObjectId;
   semester: '1' | '2';
   comments?: string;
   teacher: mongoose.Types.ObjectId;
@@ -62,6 +63,10 @@ const GradeSchema: Schema = new Schema(
     academicYear: {
       type: String,
       required: true,
+    },
+    schoolYear: {
+      type: Schema.Types.ObjectId,
+      ref: 'SchoolYear',
     },
     semester: {
       type: String,
