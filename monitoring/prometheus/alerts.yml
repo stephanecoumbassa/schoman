@@ -1,0 +1,139 @@
+# Prometheus Alert Rules for Schoman
+# These rules define when to trigger alerts based on metrics
+
+groups:
+  - name: schoman_backend_alerts
+    interval: 30s
+    rules:
+      # Backend service is down
+      - alert: BackendServiceDown
+        expr: up{job="schoman-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: backend
+        annotations:
+          summary: "Schoman Backend service is down"
+          description: "The backend API service has been down for more than 1 minute."
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: (nodejs_memory_usage_bytes{type="heapUsed"} / nodejs_memory_usage_bytes{type="heapTotal"}) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "High memory usage detected"
+          description: "Backend is using more than 90% of allocated heap memory for 5 minutes."
+
+      # Database connection lost
+      - alert: DatabaseDisconnected
+        expr: database_connection_status == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: database
+        annotations:
+          summary: "Database connection lost"
+          description: "Backend has lost connection to MongoDB database."
+
+      # Cache connection lost
+      - alert: CacheDisconnected
+        expr: cache_connection_status == 0
+        for: 5m
+        labels:
+          severity: warning
+          service: cache
+        annotations:
+          summary: "Cache connection lost"
+          description: "Backend has lost connection to Redis cache. Application may run slower."
+
+      # Process uptime (service restarted)
+      - alert: ServiceRestarted
+        expr: nodejs_process_uptime_seconds < 300
+        for: 1m
+        labels:
+          severity: info
+          service: backend
+        annotations:
+          summary: "Service recently restarted"
+          description: "Backend service has been running for less than 5 minutes."
+
+  - name: schoman_database_alerts
+    interval: 30s
+    rules:
+      # MongoDB is down
+      - alert: MongoDBDown
+        expr: up{job="mongodb"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: mongodb
+        annotations:
+          summary: "MongoDB is down"
+          description: "MongoDB database has been down for more than 1 minute."
+
+      # High MongoDB connections
+      - alert: HighMongoDBConnections
+        expr: mongodb_connections{state="current"} > 100
+        for: 5m
+        labels:
+          severity: warning
+          service: mongodb
+        annotations:
+          summary: "High number of MongoDB connections"
+          description: "MongoDB has more than 100 active connections for 5 minutes."
+
+  - name: schoman_system_alerts
+    interval: 30s
+    rules:
+      # High system memory usage
+      - alert: HighSystemMemory
+        expr: (system_memory_bytes{type="used"} / system_memory_bytes{type="total"}) > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High system memory usage"
+          description: "System is using more than 85% of total memory."
+
+      # High CPU usage
+      - alert: HighCPUUsage
+        expr: rate(nodejs_cpu_usage_user[5m]) + rate(nodejs_cpu_usage_system[5m]) > 1000000
+        for: 5m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "High CPU usage detected"
+          description: "Backend process is consuming high CPU resources."
+
+  - name: schoman_redis_alerts
+    interval: 30s
+    rules:
+      # Redis is down
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 2m
+        labels:
+          severity: warning
+          service: redis
+        annotations:
+          summary: "Redis cache is down"
+          description: "Redis cache has been down for more than 2 minutes. Application may run slower."
+
+  - name: schoman_nginx_alerts
+    interval: 30s
+    rules:
+      # Nginx is down
+      - alert: NginxDown
+        expr: up{job="nginx"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: nginx
+        annotations:
+          summary: "Nginx proxy is down"
+          description: "Nginx reverse proxy has been down for more than 1 minute."

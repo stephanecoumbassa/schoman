@@ -1,0 +1,96 @@
+# Alertmanager Configuration for Schoman
+# Configure how alerts are routed and where notifications are sent
+
+global:
+  resolve_timeout: 5m
+  # SMTP configuration for email notifications
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alerts@schoman.com'
+  smtp_auth_username: 'your-email@gmail.com'
+  smtp_auth_password: 'your-app-password'
+  smtp_require_tls: true
+
+# The root route - all alerts go here first
+route:
+  receiver: 'default-receiver'
+  group_by: ['alertname', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 12h
+  
+  # Child routes for specific alert types
+  routes:
+    # Critical alerts - immediate notification
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      group_wait: 0s
+      repeat_interval: 5m
+
+    # Warning alerts - grouped notifications
+    - match:
+        severity: warning
+      receiver: 'warning-alerts'
+      group_wait: 30s
+      repeat_interval: 1h
+
+    # Info alerts - daily digest
+    - match:
+        severity: info
+      receiver: 'info-alerts'
+      group_wait: 5m
+      repeat_interval: 24h
+
+# Receivers define where notifications are sent
+receivers:
+  # Default receiver
+  - name: 'default-receiver'
+    email_configs:
+      - to: 'ops-team@schoman.com'
+        headers:
+          Subject: '[Schoman] Alert Notification'
+
+  # Critical alerts - multiple channels
+  - name: 'critical-alerts'
+    email_configs:
+      - to: 'ops-team@schoman.com,admin@schoman.com'
+        headers:
+          Subject: '[CRITICAL] Schoman Alert'
+        send_resolved: true
+    # Uncomment to enable Slack notifications
+    # slack_configs:
+    #   - api_url: 'YOUR_SLACK_WEBHOOK_URL'
+    #     channel: '#alerts-critical'
+    #     title: 'Critical Alert'
+    #     text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+
+  # Warning alerts
+  - name: 'warning-alerts'
+    email_configs:
+      - to: 'ops-team@schoman.com'
+        headers:
+          Subject: '[WARNING] Schoman Alert'
+        send_resolved: true
+
+  # Info alerts
+  - name: 'info-alerts'
+    email_configs:
+      - to: 'ops-team@schoman.com'
+        headers:
+          Subject: '[INFO] Schoman Notification'
+
+# Inhibition rules - suppress certain alerts when others are firing
+inhibit_rules:
+  # Suppress all alerts if the service is down
+  - source_match:
+      alertname: 'BackendServiceDown'
+    target_match_re:
+      alertname: '.*'
+    equal: ['service']
+  
+  # Suppress cache alerts if database is down
+  - source_match:
+      alertname: 'DatabaseDisconnected'
+    target_match:
+      alertname: 'CacheDisconnected'
+    equal: ['service']
