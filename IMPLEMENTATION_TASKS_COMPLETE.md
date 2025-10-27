@@ -8,7 +8,7 @@
 
 ## 📋 Overview
 
-This implementation completes all short-term objectives listed in AGENT_TASKS.md, preparing the Schoman application for production deployment with comprehensive staging, testing, and monitoring infrastructure.
+This implementation completes all short-term objectives listed in AGENT.md, preparing the Schoman application for production deployment with comprehensive staging, testing, and monitoring infrastructure.
 
 ## ✅ Completed Tasks
 
@@ -282,7 +282,7 @@ Already implemented before this PR.
 - **UAT_GUIDE.md**: Comprehensive UAT procedures
 - **MONITORING.md**: Full monitoring documentation
 - **monitoring/README.md**: Monitoring config guide
-- **AGENT_TASKS.md**: Updated with completion status
+- **AGENT.md**: Updated with completion status
 
 ### Configuration Files
 
@@ -338,7 +338,7 @@ Already implemented before this PR.
 
 ## 🎯 Next Steps (Medium Term)
 
-From AGENT_TASKS.md:
+From AGENT.md:
 
 1. **Formation des utilisateurs**
    - User training materials
@@ -423,7 +423,7 @@ From AGENT_TASKS.md:
 
 ## 🎊 Conclusion
 
-All short-term objectives from AGENT_TASKS.md have been successfully completed:
+All short-term objectives from AGENT.md have been successfully completed:
 
 1. ✅ PWA Icons Generation (previously completed)
 2. ✅ Staging Environment Deployment
