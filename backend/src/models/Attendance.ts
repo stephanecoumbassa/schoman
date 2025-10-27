@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IAttendance extends Document {
   student: mongoose.Types.ObjectId;
   class: mongoose.Types.ObjectId;
+  schoolYear?: mongoose.Types.ObjectId;
   date: Date;
   status: 'Present' | 'Absent' | 'Late' | 'Excused';
   timeIn?: Date;
@@ -26,6 +27,10 @@ const AttendanceSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Class',
       required: true,
+    },
+    schoolYear: {
+      type: Schema.Types.ObjectId,
+      ref: 'SchoolYear',
     },
     date: {
       type: Date,

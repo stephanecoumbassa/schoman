@@ -4,6 +4,7 @@ export interface IInvoice extends Document {
   invoiceNumber: string;
   student: mongoose.Types.ObjectId;
   school?: mongoose.Types.ObjectId;
+  schoolYear?: mongoose.Types.ObjectId;
   items: {
     description: string;
     category: 'tuition' | 'activity' | 'material' | 'transport' | 'cafeteria' | 'other';
@@ -42,6 +43,10 @@ const InvoiceSchema: Schema = new Schema(
     school: {
       type: Schema.Types.ObjectId,
       ref: 'School',
+    },
+    schoolYear: {
+      type: Schema.Types.ObjectId,
+      ref: 'SchoolYear',
     },
     items: [
       {

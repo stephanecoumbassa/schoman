@@ -34,6 +34,7 @@ import auditLogRoutes from './routes/auditLogRoutes.js';
 import backupRoutes from './routes/backupRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import searchRoutes from './routes/searchRoutes.js';
+import schoolYearRoutes from './routes/schoolYearRoutes.js';
 
 // Import Socket.io service
 import socketService from './services/socketService.js';
@@ -156,6 +157,7 @@ app.use('/api/audit-logs', auditLogRoutes);
 app.use('/api/backups', backupRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/school-years', schoolYearRoutes);
 
 // 404 handler (must be before error handler)
 app.use(notFoundHandler);
