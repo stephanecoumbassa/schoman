@@ -6,7 +6,7 @@ import {
   generateCSVReport,
   getReportTemplates,
 } from '../services/reportService.js';
-import { logger } from '../middleware/errorHandler.js';
+import logger from '../utils/logger.js';
 
 /**
  * Get all reports

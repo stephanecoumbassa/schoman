@@ -212,7 +212,7 @@ describe('School Controller', () => {
         email: 'test@school.com',
       });
 
-      const req = mockRequest({ params: { id: school._id.toString() } });
+      const req = mockRequest({ params: { id: (school._id as any).toString() } });
       const res = mockResponse();
       const next = mockNext;
 
@@ -274,7 +274,7 @@ describe('School Controller', () => {
       });
 
       const req = mockRequest({
-        params: { id: school._id.toString() },
+        params: { id: (school._id as any).toString() },
         body: {
           name: 'Updated School',
           city: 'Updated City',
@@ -304,14 +304,14 @@ describe('School Controller', () => {
         email: 'test@school.com',
       });
 
-      const req = mockRequest({ params: { id: school._id.toString() } });
+      const req = mockRequest({ params: { id: (school._id as any).toString() } });
       const res = mockResponse();
       const next = mockNext;
 
       await deleteSchool(req, res, next);
 
       expect(res.json).toHaveBeenCalled();
-      const deletedSchool = await School.findById(school._id);
+      const deletedSchool = await School.findById(school._id as any);
       expect(deletedSchool?.isActive).toBe(false);
     });
   });
