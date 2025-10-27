@@ -7,7 +7,7 @@ import Grade from '../models/Grade.js';
 import Attendance from '../models/Attendance.js';
 import Invoice from '../models/Invoice.js';
 import Transaction from '../models/Transaction.js';
-import { logger } from '../middleware/errorHandler.js';
+import logger from '../utils/logger.js';
 
 interface ReportData {
   [key: string]: any;
@@ -65,7 +65,7 @@ async function fetchReportData(
   sortBy?: string,
   sortOrder?: 'asc' | 'desc'
 ): Promise<ReportData[]> {
-  let Model;
+  let Model: any; // Use any type to avoid TypeScript issues with union types
   let populateFields: any[] = [];
 
   switch (type) {

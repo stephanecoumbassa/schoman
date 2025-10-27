@@ -176,7 +176,7 @@ describe('Report Controller', () => {
         createdBy: 'user123',
         school: 'school123',
       });
-      reportId = report._id.toString();
+      reportId = (report._id as any).toString();
     });
 
     it('should get a single report by ID', async () => {
@@ -209,7 +209,7 @@ describe('Report Controller', () => {
         createdBy: 'user123',
         school: 'school123',
       });
-      reportId = report._id.toString();
+      reportId = (report._id as any).toString();
     });
 
     it('should update a report', async () => {
@@ -247,7 +247,7 @@ describe('Report Controller', () => {
         createdBy: 'user123',
         school: 'school123',
       });
-      reportId = report._id.toString();
+      reportId = (report._id as any).toString();
     });
 
     it('should delete a report', async () => {
