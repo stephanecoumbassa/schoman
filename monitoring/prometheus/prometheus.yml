@@ -11,12 +11,14 @@ global:
     monitor: 'schoman-monitor'
     environment: 'production'
 
-# Alertmanager configuration (optional)
+# Alertmanager configuration
+# Note: Alertmanager is configured in docker-compose.monitoring.yml
+# Uncomment the lines below to enable alert notifications
 alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          # - 'alertmanager:9093'  # Uncomment to enable alerting
+            - 'alertmanager:9093'
 
 # Load rules once and periodically evaluate them
 rule_files:

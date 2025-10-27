@@ -218,7 +218,7 @@ nodejs_cpu_usage_user ${process.cpuUsage().user}
 nodejs_cpu_usage_system ${process.cpuUsage().system}
 `;
 
-    res.set('Content-Type', 'text/plain; version=0.0.4');
+    res.set('Content-Type', 'text/plain');
     res.send(metrics);
   } catch (error) {
     res.status(500).send('# Error generating metrics\n');

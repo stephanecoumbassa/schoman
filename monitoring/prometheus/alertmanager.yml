@@ -4,10 +4,11 @@
 global:
   resolve_timeout: 5m
   # SMTP configuration for email notifications
-  smtp_smarthost: 'smtp.gmail.com:587'
-  smtp_from: 'alerts@schoman.com'
-  smtp_auth_username: 'your-email@gmail.com'
-  smtp_auth_password: 'your-app-password'
+  # IMPORTANT: Replace these with environment variables in production
+  smtp_smarthost: '${SMTP_HOST:-smtp.gmail.com:587}'
+  smtp_from: '${SMTP_FROM:-alerts@schoman.com}'
+  smtp_auth_username: '${SMTP_USERNAME:-your-email@gmail.com}'
+  smtp_auth_password: '${SMTP_PASSWORD:-your-app-password}'
   smtp_require_tls: true
 
 # The root route - all alerts go here first

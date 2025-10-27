@@ -101,14 +101,14 @@ groups:
 
       # High CPU usage
       - alert: HighCPUUsage
-        expr: rate(nodejs_cpu_usage_user[5m]) + rate(nodejs_cpu_usage_system[5m]) > 1000000
+        expr: rate(process_cpu_seconds_total[5m]) > 0.8
         for: 5m
         labels:
           severity: warning
           service: backend
         annotations:
           summary: "High CPU usage detected"
-          description: "Backend process is consuming high CPU resources."
+          description: "Backend process is consuming more than 80% CPU resources."
 
   - name: schoman_redis_alerts
     interval: 30s
