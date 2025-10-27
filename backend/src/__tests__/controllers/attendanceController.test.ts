@@ -95,8 +95,8 @@ describe('Attendance Controller', () => {
       const attendance = await Attendance.create(attendanceData);
 
       expect(attendance.status).toBe('Present');
-      expect(attendance.student.toString()).toBe(student._id.toString());
-      expect(attendance.class.toString()).toBe(classDoc._id.toString());
+      expect(attendance.student.toString()).toBe(student._id!.toString());
+      expect(attendance.class.toString()).toBe(classDoc._id!.toString());
     });
 
     it('should fail with missing required fields', async () => {

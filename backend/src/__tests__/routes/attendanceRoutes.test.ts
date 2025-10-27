@@ -37,7 +37,7 @@ beforeAll(async () => {
     academicYearStart: new Date('2024-09-01'),
     academicYearEnd: new Date('2025-06-30')
   });
-  schoolId = school._id.toString();
+  schoolId = school._id!.toString();
 
   const teacher = await User.create({
     email: 'teacher@test.com',
@@ -47,7 +47,7 @@ beforeAll(async () => {
     role: 'teacher',
     school: school._id
   });
-  teacherId = teacher._id.toString();
+  teacherId = teacher._id!.toString();
 
   // Generate auth token
   const JWT_SECRET = process.env.JWT_SECRET || 'default_secret_change_in_production';
@@ -114,8 +114,8 @@ describe('Attendance Routes', () => {
         .post('/api/attendance')
         .set('Authorization', `Bearer ${authToken}`)
         .send({
-          student: student._id.toString(),
-          class: classDoc._id.toString(),
+          student: student._id!.toString(),
+          class: classDoc._id!.toString(),
           date: new Date().toISOString(),
           status: 'Present',
           timeIn: '08:00'
@@ -149,7 +149,7 @@ describe('Attendance Routes', () => {
         .set('Authorization', `Bearer ${authToken}`)
         .send({
           student: new mongoose.Types.ObjectId().toString(),
-          class: classDoc._id.toString(),
+          class: classDoc._id!.toString(),
           date: new Date().toISOString(),
           status: 'Present'
         });
@@ -389,7 +389,7 @@ describe('Attendance Routes', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.attendance).toBeDefined();
-      expect(response.body.attendance._id).toBe(attendance._id.toString());
+      expect(response.body.attendance._id).toBe(attendance._id!.toString());
     });
 
     it('should return 404 for non-existent attendance', async () => {
