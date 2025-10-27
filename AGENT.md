@@ -1,4 +1,4 @@
-# 📋 AGENT_TASKS.md - Tâches à Réaliser pour Schoman
+# 📋 AGENT.md - Tâches à Réaliser pour Schoman
 
 ## 🎊 Statut du Projet
 
@@ -659,7 +659,7 @@ D'après l'analyse du code de votre projet Schoman, **l'application gère mainte
 - **Fichiers créés/enrichis:** 3
   - `frontend/ARCHITECTURE.md` - **NOUVEAU** (1660 lignes)
   - `SECURITY_DOCUMENTATION.md` - **+529 lignes**
-  - `AGENT_TASKS.md` - **Mise à jour continue**
+  - `AGENT.md` - **Mise à jour continue**
 
 ### Statistiques Totales Cumulées
 - **Documentation ajoutée:** ~2200 lignes
@@ -679,28 +679,406 @@ D'après l'analyse du code de votre projet Schoman, **l'application gère mainte
    - ✅ Tests middleware: auth, errorHandler, rateLimiter, cache (FAIT)
    - ✅ Tests routes: Attendance (FAIT)
    - ❌ Ajouter tests routes API restantes (Invoice, Transaction, Message, Expense, Event, Book/Loan, Budget)
+     - [ ] Tests routes Invoice (invoiceRoutes.test.ts)
+       - POST /api/invoices - Création de factures
+       - GET /api/invoices - Liste avec filtres (statut, étudiant, période)
+       - GET /api/invoices/:id - Détails d'une facture
+       - PUT /api/invoices/:id - Mise à jour
+       - DELETE /api/invoices/:id - Suppression
+       - PUT /api/invoices/:id/payment - Enregistrer paiement
+     - [ ] Tests routes Transaction (transactionRoutes.test.ts)
+       - POST /api/transactions - Création transactions
+       - GET /api/transactions - Liste avec filtres (type, catégorie)
+       - GET /api/transactions/statistics - Statistiques financières
+       - PUT /api/transactions/:id - Mise à jour
+       - DELETE /api/transactions/:id - Suppression
+     - [ ] Tests routes Message (messageRoutes.test.ts)
+       - POST /api/messages - Envoi de messages
+       - GET /api/messages - Liste avec filtres (priorité, catégorie)
+       - GET /api/messages/:id - Détails message
+       - PUT /api/messages/:id/read - Marquer comme lu
+       - PUT /api/messages/:id/archive - Archiver message
+     - [ ] Tests routes Expense (expenseRoutes.test.ts)
+       - CRUD complet pour dépenses
+       - Filtres par catégorie et période
+       - Statistiques de dépenses
+     - [ ] Tests routes Event (eventRoutes.test.ts)
+       - CRUD complet pour événements
+       - Filtres par date et type
+       - Gestion des participants
+     - [ ] Tests routes Book/Loan (bookRoutes.test.ts, loanRoutes.test.ts)
+       - CRUD pour bibliothèque
+       - Gestion des emprunts/retours
+       - Statistiques de disponibilité
+     - [ ] Tests routes Budget (budgetRoutes.test.ts)
+       - CRUD pour budgets
+       - Suivi des dépenses vs budget
+       - Alertes de dépassement
    - ❌ Tests export (PDF/Excel)
+     - [ ] Tests génération PDF (reportController.test.ts)
+       - Export bulletins scolaires
+       - Export rapports financiers
+       - Export liste de présences
+       - Validation format et contenu PDF
+     - [ ] Tests génération Excel (exportController.test.ts)
+       - Export données élèves
+       - Export transactions financières
+       - Export statistiques
+       - Validation format XLSX et colonnes
    - ❌ Tests uploads fichiers
+     - [ ] Tests upload middleware (uploadMiddleware.test.ts)
+       - Validation types de fichiers autorisés
+       - Validation taille maximale
+       - Rejet de fichiers malveillants
+       - Gestion des erreurs upload
+     - [ ] Tests stockage fichiers (storageService.test.ts)
+       - Upload vers système de fichiers/cloud
+       - Récupération de fichiers
+       - Suppression de fichiers
+       - Gestion des permissions
    - ❌ Tests frontend (composants Vue, stores Pinia)
+     - [ ] Tests composants principaux
+       - LoginForm.vue - Authentification
+       - DashboardView.vue - Affichage statistiques
+       - StudentList.vue - Liste et filtres
+       - InvoiceForm.vue - Création/édition factures
+       - AttendanceTable.vue - Gestion présences
+     - [ ] Tests stores Pinia
+       - authStore - Login, logout, refresh token
+       - userStore - CRUD utilisateurs
+       - studentStore - Gestion élèves
+       - invoiceStore - Gestion factures
+       - attendanceStore - Gestion présences
+     - [ ] Tests composables
+       - useApi - Appels API avec gestion d'erreurs
+       - useNotification - Système de notifications
+       - useAuth - Gestion authentification
+     - [ ] Tests de navigation
+       - Guards de routes protégées
+       - Redirections selon rôle
+       - Navigation entre vues
    - **Note:** Patterns établis et réutilisables disponibles
 
 2. **Implémentation Refresh Tokens** (Optionnel mais recommandé)
-   - Créer modèle RefreshToken
-   - Ajouter endpoints refresh/revoke
-   - Mettre à jour frontend pour refresh automatique
+   - [ ] Backend: Créer modèle RefreshToken
+     - Schéma MongoDB avec token, userId, deviceId
+     - Expiration et révocation
+     - Index pour performance
+   - [ ] Backend: Endpoints API
+     - POST /api/auth/refresh - Rafraîchir access token
+     - POST /api/auth/revoke - Révoquer refresh token
+     - POST /api/auth/revoke-all - Révoquer tous les tokens d'un user
+   - [ ] Backend: Middleware
+     - Validation refresh token
+     - Détection de réutilisation
+     - Rotation automatique
+   - [ ] Frontend: Intégration
+     - Interceptor Axios pour refresh automatique
+     - Stockage sécurisé des tokens
+     - Gestion de la déconnexion
+   - [ ] Tests
+     - Tests unitaires du modèle
+     - Tests des endpoints
+     - Tests d'intégration frontend
    - **Guide complet:** SECURITY_DOCUMENTATION.md
 
+3. **DevOps et CI/CD** (Nouveau)
+   - [ ] Pipeline de déploiement automatique
+     - [ ] Créer workflow GitHub Actions pour CD
+       - Déploiement automatique sur staging (branche staging)
+       - Déploiement automatique sur production (tags)
+       - Rollback automatique en cas d'échec
+     - [ ] Scripts de déploiement
+       - Script deploy-staging.sh
+       - Script deploy-production.sh
+       - Script rollback.sh
+   - [ ] Amélioration du monitoring
+     - [ ] Alertes Prometheus
+       - Alertes sur erreurs HTTP 5xx
+       - Alertes sur utilisation mémoire/CPU
+       - Alertes sur temps de réponse
+     - [ ] Dashboards Grafana
+       - Dashboard système (CPU, RAM, Disk)
+       - Dashboard application (requêtes, erreurs)
+       - Dashboard business (utilisateurs actifs, factures)
+   - [ ] Backups automatisés
+     - [ ] Script de backup MongoDB
+       - Backup quotidien automatique
+       - Rétention 30 jours
+       - Upload vers S3/stockage cloud
+     - [ ] Script de restoration
+       - Test de restoration régulier
+       - Documentation procédure
+   - [ ] Gestion des secrets
+     - [ ] Migration vers AWS Secrets Manager ou Vault
+       - Configuration par environnement
+       - Rotation automatique des secrets
+       - Audit des accès
+
+4. **Documentation Utilisateur** (Nouveau)
+   - [ ] Guides utilisateur par rôle
+     - [ ] Guide Administrateur
+       - Configuration initiale du système
+       - Gestion des utilisateurs et rôles
+       - Configuration des années scolaires
+       - Gestion des modules
+     - [ ] Guide Professeur
+       - Gestion des classes et élèves
+       - Saisie des notes et présences
+       - Communication avec parents
+       - Génération de rapports
+     - [ ] Guide Parent
+       - Consultation des notes et présences
+       - Paiement des factures en ligne
+       - Communication avec professeurs
+       - Suivi de l'enfant
+     - [ ] Guide Élève
+       - Consultation des notes
+       - Emploi du temps
+       - Bibliothèque et emprunts
+   - [ ] Tutoriels vidéo
+     - [ ] Vidéo: Première connexion et configuration
+     - [ ] Vidéo: Gestion quotidienne (présences, notes)
+     - [ ] Vidéo: Facturation et paiements
+     - [ ] Vidéo: Génération de rapports
+   - [ ] FAQ et résolution de problèmes
+     - [ ] FAQ générale (20+ questions)
+     - [ ] Problèmes courants et solutions
+     - [ ] Contact support
+
 ### Moyen Terme
-1. Formation des utilisateurs
-2. Tests utilisateurs (UAT) - guide déjà disponible
-3. Déploiement en production
-4. Monitoring continu (Prometheus/Grafana déjà configuré)
+1. **Formation des utilisateurs**
+   - [ ] Préparation des sessions de formation
+     - Créer supports de formation (slides, documents)
+     - Préparer environnement de démonstration
+     - Planifier les sessions par rôle
+   - [ ] Sessions de formation
+     - Formation administrateurs (2 jours)
+     - Formation enseignants (1 jour)
+     - Formation personnel administratif (1 jour)
+     - Formation parents (webinaire 2h)
+   - [ ] Suivi post-formation
+     - Support utilisateurs pendant 2 semaines
+     - Collecte de feedback sur la formation
+     - Sessions de rappel si nécessaire
+
+2. **Tests utilisateurs (UAT)**
+   - [ ] Préparation UAT
+     - ✅ Guide UAT complet disponible (UAT_GUIDE.md)
+     - Sélection des testeurs (représentatifs de chaque rôle)
+     - Configuration environnement de test
+     - Création de données de test réalistes
+   - [ ] Exécution des tests
+     - Tests par module (12 modules principaux)
+     - Tests des workflows complets
+     - Tests de performance et charge
+     - Tests de sécurité
+   - [ ] Analyse et corrections
+     - Compilation des rapports de bugs
+     - Priorisation des corrections
+     - Corrections des bugs critiques
+     - Nouveau cycle de tests si nécessaire
+
+3. **Déploiement en production**
+   - [ ] Préparation infrastructure
+     - Configuration serveurs production
+     - Configuration base de données production
+     - Configuration Redis production
+     - Configuration certificats SSL
+     - Configuration backup automatique
+   - [ ] Migration des données
+     - Export données existantes (si migration)
+     - Transformation et nettoyage
+     - Import en production
+     - Vérification intégrité
+   - [ ] Déploiement application
+     - Déploiement backend
+     - Déploiement frontend
+     - Configuration Nginx
+     - Tests smoke en production
+   - [ ] Go-live
+     - Communication aux utilisateurs
+     - Support renforcé jour J
+     - Monitoring actif 24/7
+     - Plan de rollback prêt
+
+4. **Monitoring continu**
+   - [ ] Configuration monitoring avancé
+     - ✅ Prometheus/Grafana déjà configuré
+     - Alertes sur métriques critiques
+     - Dashboards business metrics
+     - Logs centralisés (ELK stack)
+   - [ ] Optimisation continue
+     - Analyse des performances hebdomadaire
+     - Optimisation requêtes lentes
+     - Ajustement ressources serveur
+     - Optimisation cache
 
 ### Long Terme
-1. Nouvelles fonctionnalités basées sur feedback
-2. Intégrations externes (SI académiques, banques)
-3. Application mobile native (iOS/Android)
-4. Support SSO et authentification fédérée
+1. **Nouvelles fonctionnalités basées sur feedback**
+   - [ ] Phase 1 (3-6 mois après go-live)
+     - Collecte et analyse feedback utilisateurs
+     - Priorisation des demandes
+     - Développement fonctionnalités prioritaires
+     - Déploiement et formation
+   - [ ] Fonctionnalités potentielles
+     - [ ] Système de notation avancé (compétences, portfolios)
+     - [ ] Planificateur d'emploi du temps automatique
+     - [ ] Module de gestion des examens
+     - [ ] Système de badges et gamification
+     - [ ] Portail parent enrichi (forum, ressources)
+     - [ ] Module de cantine et transport scolaire
+     - [ ] Gestion des stages et alternances
+     - [ ] Module RH pour le personnel
+
+2. **Intégrations externes**
+   - [ ] Intégrations académiques
+     - [ ] Système d'information académique national
+       - Export bulletins format officiel
+       - Import référentiels (programmes, diplômes)
+       - Remontée statistiques ministère
+     - [ ] Plateformes e-learning
+       - Moodle, Google Classroom
+       - Synchronisation des notes
+       - SSO pour élèves
+   - [ ] Intégrations financières
+     - [ ] Passerelles de paiement
+       - Stripe, PayPal pour paiements en ligne
+       - Paiement mobile (Orange Money, MTN Mobile Money)
+       - Prélèvements automatiques
+     - [ ] Systèmes bancaires
+       - Export comptable vers logiciels comptables
+       - Réconciliation bancaire automatique
+   - [ ] Autres intégrations
+     - [ ] Services de messagerie (SendGrid, Twilio)
+     - [ ] Stockage cloud (AWS S3, Google Drive)
+     - [ ] Visioconférence (Zoom, Teams)
+     - [ ] Signature électronique (DocuSign)
+
+3. **Application mobile native**
+   - [ ] Analyse et conception
+     - Étude des besoins mobiles
+     - Définition des fonctionnalités prioritaires
+     - Choix technologique (React Native, Flutter, Native)
+     - Architecture et design UI/UX mobile
+   - [ ] Développement MVP
+     - [ ] Module authentification
+     - [ ] Dashboard étudiant/parent
+     - [ ] Consultation notes et présences
+     - [ ] Notifications push
+     - [ ] Mode offline
+   - [ ] Tests et déploiement
+     - Tests sur iOS et Android
+     - Soumission App Store et Play Store
+     - Déploiement progressif
+     - Support et maintenance
+
+4. **Support SSO et authentification fédérée**
+   - [ ] Implémentation SSO
+     - [ ] OAuth 2.0 / OpenID Connect
+       - Configuration serveur d'autorisation
+       - Intégration avec providers (Google, Microsoft, etc.)
+       - Migration utilisateurs existants
+     - [ ] SAML 2.0
+       - Configuration pour entreprises/institutions
+       - Intégration avec Active Directory
+       - Tests avec différents IdP
+   - [ ] Gestion d'identité avancée
+     - [ ] Multi-factor authentication (MFA)
+       - SMS, Email, Authenticator apps
+       - Configuration par rôle
+     - [ ] Biométrie (mobile)
+       - Touch ID, Face ID
+       - Intégration native mobile
+   - [ ] Sécurité renforcée
+     - Tests de pénétration
+     - Certification sécurité (ISO 27001)
+     - Conformité RGPD renforcée
+
+---
+
+## 🚀 Prochaines Actions Prioritaires
+
+### 1. Vérification post-renommage ✅
+Le renommage de `AGENT_TASKS.md` en `AGENT.md` est complété avec succès:
+- ✅ Fichier renommé via git mv
+- ✅ Toutes les références mises à jour (PHASE1_COMPLETION.md, PHASE2_COMPLETION.md, IMPLEMENTATION_TASKS_COMPLETE.md, PHASE4_COMPLETION.md, PR_REVIEW_GUIDE.md)
+- ✅ Métadonnées et en-têtes mis à jour
+- ✅ Pas de références orphelines (README.md et CONTRIBUTING.md ne contiennent pas de références)
+
+### 2. Prochaine tâche prioritaire: Tests des routes API
+
+La priorité immédiate est de compléter les tests des routes API restantes pour améliorer la couverture de code et la qualité.
+
+#### Ordre suggéré d'implémentation:
+1. **Invoice Routes** (plus critique - gestion financière)
+   - Tests de création avec validation complète
+   - Tests de mise à jour de statut de paiement
+   - Tests de filtrage et statistiques
+   - Estimation: 2-3 heures
+
+2. **Transaction Routes** (critique - comptabilité)
+   - Tests CRUD complet
+   - Tests de statistiques financières
+   - Tests de filtrage par période
+   - Estimation: 2-3 heures
+
+3. **Message Routes** (important - communication)
+   - Tests d'envoi multi-destinataires
+   - Tests de threading de conversations
+   - Tests d'archivage et marquage lu
+   - Estimation: 2-3 heures
+
+4. **Expense Routes** (moyen - gestion des dépenses)
+   - Tests CRUD et filtrage
+   - Tests de statistiques
+   - Estimation: 1-2 heures
+
+5. **Event Routes** (moyen - gestion événements)
+   - Tests CRUD et gestion participants
+   - Tests de filtrage par date
+   - Estimation: 1-2 heures
+
+6. **Book/Loan Routes** (bas - bibliothèque)
+   - Tests de gestion bibliothèque
+   - Tests d'emprunts/retours
+   - Estimation: 2-3 heures
+
+7. **Budget Routes** (bas - planification budgétaire)
+   - Tests CRUD et suivi
+   - Tests d'alertes
+   - Estimation: 1-2 heures
+
+**Total estimation pour compléter tous les tests de routes:** 12-18 heures de travail
+
+#### Template réutilisable
+Utiliser le pattern établi dans `attendanceRoutes.test.ts`:
+```typescript
+import request from 'supertest';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import mongoose from 'mongoose';
+import app from '../../index';
+import jwt from 'jsonwebtoken';
+// ... autres imports
+
+describe('Route Tests', () => {
+  let mongoServer: MongoMemoryServer;
+  let authToken: string;
+  
+  beforeAll(async () => {
+    // Setup MongoDB in-memory
+    // Setup auth token
+  });
+  
+  afterAll(async () => {
+    // Cleanup
+  });
+  
+  describe('CRUD operations', () => {
+    // Tests here
+  });
+});
+```
 
 ---
 
@@ -711,4 +1089,5 @@ _Pour toute nouvelle tâche, l'ajouter ci-dessus avec le format approprié._
 **Date de mise à jour:** 27 Octobre 2025
 **Version du projet:** 3.0+ (Enterprise Edition)
 **Statut:** ✅ **PRODUCTION READY** 🚀
-**Dernière contribution:** Extension massive des tests (+106 tests: contrôleurs, middleware, routes API)
+**Dernière contribution:** Renommage AGENT_TASKS.md → AGENT.md + Expansion détaillée des tâches à réaliser
+**Fichier:** AGENT.md (anciennement AGENT_TASKS.md)

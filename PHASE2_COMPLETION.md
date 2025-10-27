@@ -367,4 +367,4 @@ L'application Schoman est maintenant **production-ready** avec :
 **Auteur:** Agent AI  
 **Statut:** ✅ 100% Complété
 
-**Next Steps:** Commencer Phase 3 selon AGENT_TASKS.md
+**Next Steps:** Commencer Phase 3 selon AGENT.md

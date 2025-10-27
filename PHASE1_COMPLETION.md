@@ -8,7 +8,7 @@
 
 ## 📋 Objectif Phase 1
 
-Compléter les fonctionnalités critiques manquantes identifiées dans `AGENT_TASKS.md` pour rendre l'application Schoman complète et production-ready.
+Compléter les fonctionnalités critiques manquantes identifiées dans `AGENT.md` pour rendre l'application Schoman complète et production-ready.
 
 ---
 
@@ -311,7 +311,7 @@ Authorization: Bearer <token>
 
 ## 🚀 Prochaines Étapes (Phase 2)
 
-D'après `AGENT_TASKS.md`, les priorités suivantes sont :
+D'après `AGENT.md`, les priorités suivantes sont :
 
 ### Phase 2 - Moyen Terme (4-6 semaines)
 1. Notifications en Temps Réel (Socket.io) - 12h

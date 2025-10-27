@@ -361,7 +361,7 @@ frontend/src/components/AttachmentManager.vue (NOUVEAU)
 
 ## 🏆 Conclusion
 
-La Phase 4 a été complétée avec succès, apportant des améliorations significatives à l'expérience utilisateur et à la qualité du code de Schoman. Toutes les fonctionnalités ont été implémentées selon les spécifications de AGENT_TASKS.md, avec une attention particulière portée à:
+La Phase 4 a été complétée avec succès, apportant des améliorations significatives à l'expérience utilisateur et à la qualité du code de Schoman. Toutes les fonctionnalités ont été implémentées selon les spécifications de AGENT.md, avec une attention particulière portée à:
 
 - La qualité du code
 - L'expérience utilisateur
