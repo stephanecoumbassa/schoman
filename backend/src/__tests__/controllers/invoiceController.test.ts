@@ -452,12 +452,12 @@ describe('Invoice Controller', () => {
       });
 
       invoice.status = 'paid';
-      invoice.paidDate = new Date();
+      invoice.paymentDate = new Date();
       await invoice.save();
 
       const updatedInvoice = await Invoice.findById(invoice._id);
       expect(updatedInvoice?.status).toBe('paid');
-      expect(updatedInvoice?.paidDate).toBeDefined();
+      expect(updatedInvoice?.paymentDate).toBeDefined();
     });
   });
 

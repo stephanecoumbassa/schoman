@@ -67,7 +67,7 @@ describe('Message Controller', () => {
 
       expect(message.subject).toBe('Test Message');
       expect(message.content).toBe('This is a test message');
-      expect(message.sender.toString()).toBe(sender._id.toString());
+      expect(message.sender.toString()).toBe(sender._id!.toString());
       expect(message.recipients).toHaveLength(1);
     });
 
@@ -520,7 +520,7 @@ describe('Message Controller', () => {
         parentMessage: parentMessage._id
       });
 
-      expect(replyMessage.parentMessage?.toString()).toBe(parentMessage._id.toString());
+      expect(replyMessage.parentMessage?.toString()).toBe(parentMessage._id!.toString());
       expect(replyMessage.conversationId).toBe(parentMessage.conversationId);
     });
   });
