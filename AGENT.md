@@ -16,9 +16,12 @@ Le projet Schoman est maintenant une application de gestion scolaire **complète
 - **Grand Total: ~147,600 lignes**
 
 **Tests:**
-- Backend: 120+ tests (+30 nouveaux tests) → **+106 nouveaux tests (Oct 27, 2025)** ✅
+- Backend: 120+ tests (+30 nouveaux tests) → **+176 nouveaux tests (Oct 27, 2025)** ✅
+  - Contrôleurs: 47 tests
+  - Middleware: 50 tests
+  - Routes API: 79 tests (9 Attendance + 70 nouveaux)
 - Frontend: 37 tests
-- **Total: 263+ tests automatisés** 🎉
+- **Total: 333+ tests automatisés** 🎉
 
 **Fonctionnalités:**
 - 12 modules de base
@@ -79,7 +82,7 @@ Le projet Schoman est maintenant une application de gestion scolaire **complète
 
 D'après l'analyse de votre projet Schoman, voici les améliorations que je vous recommande :
 
-### 1. **Tests Automatisés (Couverture Améliorée)** - PRIORITÉ HAUTE ⚠️ → ✅ **PARTIELLEMENT COMPLÉTÉ** (Oct 27, 2025)
+### 1. **Tests Automatisés (Couverture Améliorée)** - PRIORITÉ HAUTE ⚠️ → ✅ **LARGEMENT COMPLÉTÉ** (Oct 27, 2025)
 
 **✅ Complété:**
 - ✅ Tests des contrôleurs : Attendance, Invoice, Transaction, Message (47 tests)
@@ -92,15 +95,25 @@ D'après l'analyse de votre projet Schoman, voici les améliorations que je vous
   - Tests de gestion d'erreurs
   - Tests de rate limiting
   - Tests de cache Redis
-- ✅ Tests des routes API avec Supertest (9 tests pour Attendance)
-  - Tests d'intégration complets pour endpoints
+- ✅ Tests des routes API avec Supertest (79 tests) **NOUVEAUX: +70 tests** ✨
+  - ✅ Attendance routes (9 tests)
+  - ✅ Invoice routes (11 tests) - Facturation complète
+  - ✅ Transaction routes (12 tests) - Transactions financières
+  - ✅ Message routes (14 tests) - Système de messagerie
+  - ✅ Expense routes (11 tests) - Gestion des dépenses
+  - ✅ Event routes (11 tests) - Gestion des événements
+  - ✅ Budget routes (11 tests) - Gestion budgétaire
+  - Tests d'intégration complets pour tous les endpoints
   - Tests des codes de réponse HTTP et format des données
   - Tests avec MongoDB in-memory
+  - Tests d'authentification et autorisation
+  - Tests de filtres et pagination
+  - Tests de gestion d'erreurs (404, validation)
 
 **❌ Reste à faire:**
-- ❌ Tests des routes API restantes
-  - Routes manquantes : Invoice, Transaction, Message, Expense, Event, Book/Loan, Budget
-  - Tests d'intégration complets pour chaque endpoint
+- ⚡ Tests des routes API restantes (basse priorité)
+  - Routes manquantes : Book/Loan (bibliothèque - moins critique)
+  - Toutes les routes majeures (financières, communication, événements) sont testées
 - ❌ Tests des fonctionnalités d'export (PDF/Excel)
   - Tests de génération de rapports PDF
   - Tests d'export Excel avec données complexes
@@ -663,58 +676,65 @@ D'après l'analyse du code de votre projet Schoman, **l'application gère mainte
 
 ### Statistiques Totales Cumulées
 - **Documentation ajoutée:** ~2200 lignes
-- **Tests ajoutés:** ~3580 lignes (106 tests)
+- **Tests ajoutés:** ~7680 lignes (176 tests) **+4100 lignes (Oct 27, 2025)** ✨
 - **Code modifié/ajouté:** ~60 lignes
 - **Packages installés:** 1 (helmet)
-- **Total commits:** 6+
-- **Temps estimé de travail total:** 8-10 heures
+- **Total commits:** 10+
+- **Temps estimé de travail total:** 12-14 heures
 
 ---
 
 ## 🎯 Prochaines Étapes Recommandées
 
 ### Court Terme (Priorité Haute)
-1. **Tests Automatisés - Suite**
+1. **Tests Automatisés - Suite** → ✅ **LARGEMENT COMPLÉTÉ** (Oct 27, 2025)
    - ✅ Tests contrôleurs: Attendance, Invoice, Transaction, Message (FAIT)
    - ✅ Tests middleware: auth, errorHandler, rateLimiter, cache (FAIT)
-   - ✅ Tests routes: Attendance (FAIT)
-   - ❌ Ajouter tests routes API restantes (Invoice, Transaction, Message, Expense, Event, Book/Loan, Budget)
-     - [ ] Tests routes Invoice (invoiceRoutes.test.ts)
-       - POST /api/invoices - Création de factures
+   - ✅ Tests routes API: 7 suites majeures complètes (FAIT) ✨
+     - ✅ Tests routes Attendance (attendanceRoutes.test.ts) - 9 tests
+     - ✅ Tests routes Invoice (invoiceRoutes.test.ts) - 11 tests
+       - POST /api/invoices - Création de factures avec calculs
        - GET /api/invoices - Liste avec filtres (statut, étudiant, période)
        - GET /api/invoices/:id - Détails d'une facture
        - PUT /api/invoices/:id - Mise à jour
        - DELETE /api/invoices/:id - Suppression
-       - PUT /api/invoices/:id/payment - Enregistrer paiement
-     - [ ] Tests routes Transaction (transactionRoutes.test.ts)
-       - POST /api/transactions - Création transactions
-       - GET /api/transactions - Liste avec filtres (type, catégorie)
-       - GET /api/transactions/statistics - Statistiques financières
+       - POST /api/invoices/:id/payment - Enregistrer paiement
+       - GET /api/invoices/stats - Statistiques
+     - ✅ Tests routes Transaction (transactionRoutes.test.ts) - 12 tests
+       - POST /api/transactions - Création transactions (income/expense)
+       - GET /api/transactions - Liste avec filtres (type, catégorie, fiscal year, search)
+       - GET /api/transactions/stats - Statistiques financières complètes
        - PUT /api/transactions/:id - Mise à jour
        - DELETE /api/transactions/:id - Suppression
-     - [ ] Tests routes Message (messageRoutes.test.ts)
-       - POST /api/messages - Envoi de messages
-       - GET /api/messages - Liste avec filtres (priorité, catégorie)
+     - ✅ Tests routes Message (messageRoutes.test.ts) - 14 tests
+       - POST /api/messages - Envoi de messages (single/multi destinataires)
+       - GET /api/messages - Liste avec filtres (priorité, catégorie, archived)
        - GET /api/messages/:id - Détails message
-       - PUT /api/messages/:id/read - Marquer comme lu
-       - PUT /api/messages/:id/archive - Archiver message
-     - [ ] Tests routes Expense (expenseRoutes.test.ts)
-       - CRUD complet pour dépenses
-       - Filtres par catégorie et période
+       - PATCH /api/messages/:id/read - Marquer comme lu
+       - PATCH /api/messages/:id/archive - Archiver message
+       - DELETE /api/messages/:id - Suppression
+       - GET /api/messages/conversation/:id - Thread de conversation
+     - ✅ Tests routes Expense (expenseRoutes.test.ts) - 11 tests
+       - CRUD complet pour dépenses avec workflow d'approbation
+       - Filtres par catégorie, statut et période
+       - POST /api/expenses/:id/approve - Approbation
+       - POST /api/expenses/:id/payment - Enregistrement paiement
        - Statistiques de dépenses
-     - [ ] Tests routes Event (eventRoutes.test.ts)
+     - ✅ Tests routes Event (eventRoutes.test.ts) - 11 tests
        - CRUD complet pour événements
-       - Filtres par date et type
-       - Gestion des participants
+       - Filtres par type, statut, date range
+       - Gestion des participants et capacité
+     - ✅ Tests routes Budget (budgetRoutes.test.ts) - 11 tests
+       - CRUD complet pour budgets avec items income/expense
+       - Filtres par fiscal year et statut
+       - GET /api/budgets/:id/comparison - Comparaison budget vs réel
+       - Suivi des montants alloués vs dépensés
+   - ⚡ Tests routes API restantes (basse priorité)
      - [ ] Tests routes Book/Loan (bookRoutes.test.ts, loanRoutes.test.ts)
        - CRUD pour bibliothèque
        - Gestion des emprunts/retours
        - Statistiques de disponibilité
-     - [ ] Tests routes Budget (budgetRoutes.test.ts)
-       - CRUD pour budgets
-       - Suivi des dépenses vs budget
-       - Alertes de dépassement
-   - ❌ Tests export (PDF/Excel)
+   - ⚡ Tests export (PDF/Excel) - basse priorité
      - [ ] Tests génération PDF (reportController.test.ts)
        - Export bulletins scolaires
        - Export rapports financiers
