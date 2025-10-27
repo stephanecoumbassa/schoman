@@ -245,7 +245,7 @@ describe('Excel Service', () => {
       );
       expect(mockResponse.setHeader).toHaveBeenCalledWith(
         'Content-Disposition',
-        'attachment; filename=notes-export.xlsx'
+        'attachment; filename=notes.xlsx'
       );
     });
 
@@ -399,7 +399,7 @@ describe('Excel Service', () => {
       );
       expect(mockResponse.setHeader).toHaveBeenCalledWith(
         'Content-Disposition',
-        'attachment; filename=transactions-export.xlsx'
+        'attachment; filename=transactions.xlsx'
       );
     });
 
@@ -417,7 +417,7 @@ describe('Excel Service', () => {
       generateTransactionsExcel(transactions, mockResponse as Response);
 
       const jsonToSheetCall = mockXLSX.utils.json_to_sheet.mock.calls[0][0];
-      expect(jsonToSheetCall[0]).toHaveProperty('Montant');
+      expect(jsonToSheetCall[0]).toHaveProperty('Montant (FCFA)');
     });
 
     it('should handle empty transactions list', () => {
@@ -445,7 +445,7 @@ describe('Excel Service', () => {
       expect(jsonToSheetCall[0]).toHaveProperty('Date');
       expect(jsonToSheetCall[0]).toHaveProperty('Type');
       expect(jsonToSheetCall[0]).toHaveProperty('Catégorie', 'Scolarité');
-      expect(jsonToSheetCall[0]).toHaveProperty('Montant', 500);
+      expect(jsonToSheetCall[0]).toHaveProperty('Montant (FCFA)', 500);
       expect(jsonToSheetCall[0]).toHaveProperty('Description', 'Frais de scolarité');
     });
   });
