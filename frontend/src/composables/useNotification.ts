@@ -52,11 +52,7 @@ export function useNotification() {
     message: string,
     type: 'success' | 'error' | 'warning' | 'info' = 'info'
   ) => {
-    // This would typically integrate with a toast library
-    // For now, we'll just log it
-    console.log(`[${type.toUpperCase()}] ${title}: ${message}`);
-    
-    // You could dispatch a custom event here to show a toast
+    // Dispatch custom event to show a toast
     const event = new CustomEvent('show-toast', {
       detail: { title, message, type },
     });

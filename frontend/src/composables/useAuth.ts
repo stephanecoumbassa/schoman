@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
+import type { User } from '@/types';
 
 /**
  * Composable for authentication management
@@ -50,7 +51,7 @@ export function useAuth() {
   };
 
   // Register method
-  const register = async (userData: any) => {
+  const register = async (userData: Partial<User> & { password: string }) => {
     const success = await authStore.register(userData);
     if (success) {
       // Redirect to dashboard after successful registration

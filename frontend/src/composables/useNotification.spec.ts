@@ -195,8 +195,6 @@ describe('useNotification Composable', () => {
 
   describe('Toast Methods', () => {
     beforeEach(() => {
-      // Mock console.log to avoid cluttering test output
-      vi.spyOn(console, 'log').mockImplementation(() => {});
       // Mock window.dispatchEvent
       vi.spyOn(window, 'dispatchEvent');
     });
@@ -206,7 +204,6 @@ describe('useNotification Composable', () => {
       
       showToast('Test Title', 'Test Message', 'info');
       
-      expect(console.log).toHaveBeenCalledWith('[INFO] Test Title: Test Message');
       expect(window.dispatchEvent).toHaveBeenCalled();
     });
 
@@ -215,7 +212,7 @@ describe('useNotification Composable', () => {
       
       showSuccess('Success', 'Operation completed');
       
-      expect(console.log).toHaveBeenCalledWith('[SUCCESS] Success: Operation completed');
+      expect(window.dispatchEvent).toHaveBeenCalled();
     });
 
     it('should show error toast', () => {
@@ -223,7 +220,7 @@ describe('useNotification Composable', () => {
       
       showError('Error', 'Something went wrong');
       
-      expect(console.log).toHaveBeenCalledWith('[ERROR] Error: Something went wrong');
+      expect(window.dispatchEvent).toHaveBeenCalled();
     });
 
     it('should show warning toast', () => {
@@ -231,7 +228,7 @@ describe('useNotification Composable', () => {
       
       showWarning('Warning', 'Please be careful');
       
-      expect(console.log).toHaveBeenCalledWith('[WARNING] Warning: Please be careful');
+      expect(window.dispatchEvent).toHaveBeenCalled();
     });
 
     it('should show info toast', () => {
@@ -239,7 +236,7 @@ describe('useNotification Composable', () => {
       
       showInfo('Info', 'Here is some information');
       
-      expect(console.log).toHaveBeenCalledWith('[INFO] Info: Here is some information');
+      expect(window.dispatchEvent).toHaveBeenCalled();
     });
 
     it('should dispatch custom event for toast', () => {
