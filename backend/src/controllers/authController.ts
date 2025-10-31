@@ -156,12 +156,12 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   try {
     const { refreshToken: token } = req.body;
 
-    if (!token) {
+    if (!token || typeof token !== 'string') {
       return res.status(400).json({ message: 'Refresh token requis' });
     }
 
     // Find refresh token
-    const refreshToken = await RefreshToken.findOne({ token }).populate('userId');
+    const refreshToken = await RefreshToken.findOne({ token: token }).populate('userId');
     
     if (!refreshToken) {
       return res.status(401).json({ message: 'Refresh token invalide' });
@@ -215,11 +215,11 @@ export const revokeToken = async (req: AuthRequest, res: Response) => {
   try {
     const { refreshToken: token } = req.body;
 
-    if (!token) {
+    if (!token || typeof token !== 'string') {
       return res.status(400).json({ message: 'Refresh token requis' });
     }
 
-    const refreshToken = await RefreshToken.findOne({ token });
+    const refreshToken = await RefreshToken.findOne({ token: token });
 
     if (!refreshToken) {
       return res.status(404).json({ message: 'Token non trouvé' });
