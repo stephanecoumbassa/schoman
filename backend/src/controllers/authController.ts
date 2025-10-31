@@ -6,7 +6,18 @@ import { AuthRequest } from '../middleware/auth.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default_secret_change_in_production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '15m'; // Short-lived access token
-const REFRESH_TOKEN_EXPIRES_IN = parseInt(process.env.REFRESH_TOKEN_EXPIRES_IN || '7') * 24 * 60 * 60 * 1000; // 7 days in ms
+const REFRESH_TOKEN_EXPIRES_DAYS = parseInt(process.env.REFRESH_TOKEN_EXPIRES_IN || '7', 10);
+const REFRESH_TOKEN_EXPIRES_IN = (isNaN(REFRESH_TOKEN_EXPIRES_DAYS) ? 7 : REFRESH_TOKEN_EXPIRES_DAYS) * 24 * 60 * 60 * 1000; // 7 days in ms
+
+// Helper function to extract device ID
+const getDeviceId = (req: Request): string => {
+  return (req.body.deviceId as string) || (req.headers['user-agent'] as string) || 'unknown';
+};
+
+// Helper function to extract IP address
+const getIpAddress = (req: Request): string => {
+  return req.ip || req.connection.remoteAddress || 'unknown';
+};
 
 // Helper function to generate access token
 const generateAccessToken = (userId: any, email: string, role: string, school?: any) => {
@@ -18,8 +29,8 @@ const generateAccessToken = (userId: any, email: string, role: string, school?: 
 };
 
 // Helper function to create refresh token
-const createRefreshToken = async (userId: any, deviceId?: string, ipAddress?: string) => {
-  const token = RefreshToken.schema.statics.generateToken();
+const createRefreshToken = async (userId: any, deviceId: string, ipAddress: string) => {
+  const token = (RefreshToken as any).generateToken();
   const expiresAt = new Date(Date.now() + REFRESH_TOKEN_EXPIRES_IN);
 
   const refreshToken = await RefreshToken.create({
@@ -56,8 +67,8 @@ export const register = async (req: Request, res: Response) => {
 
     // Generate tokens
     const accessToken = generateAccessToken(user._id, user.email, user.role, user.school);
-    const deviceId = req.body.deviceId || req.headers['user-agent'];
-    const ipAddress = req.ip || req.connection.remoteAddress;
+    const deviceId = getDeviceId(req);
+    const ipAddress = getIpAddress(req);
     const refreshToken = await createRefreshToken(user._id, deviceId, ipAddress);
 
     res.status(201).json({
@@ -103,8 +114,8 @@ export const login = async (req: Request, res: Response) => {
 
     // Generate tokens
     const accessToken = generateAccessToken(user._id, user.email, user.role, user.school);
-    const deviceId = req.body.deviceId || req.headers['user-agent'];
-    const ipAddress = req.ip || req.connection.remoteAddress;
+    const deviceId = getDeviceId(req);
+    const ipAddress = getIpAddress(req);
     const refreshToken = await createRefreshToken(user._id, deviceId, ipAddress);
 
     res.json({
@@ -180,15 +191,12 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
 
     // Generate new tokens
     const newAccessToken = generateAccessToken(user._id, user.email, user.role, user.school);
-    const deviceId = req.body.deviceId || req.headers['user-agent'];
-    const ipAddress = req.ip || req.connection.remoteAddress;
+    const deviceId = getDeviceId(req);
+    const ipAddress = getIpAddress(req);
     const newRefreshToken = await createRefreshToken(user._id, deviceId, ipAddress);
 
     // Revoke old refresh token
-    refreshToken.isRevoked = true;
-    refreshToken.revokedAt = new Date();
-    refreshToken.revokedReason = 'Replaced by new token';
-    refreshToken.replacedByToken = newRefreshToken.token;
+    refreshToken.revoke('Replaced by new token', newRefreshToken.token);
     await refreshToken.save();
 
     res.json({
@@ -223,9 +231,7 @@ export const revokeToken = async (req: AuthRequest, res: Response) => {
     }
 
     // Revoke token
-    refreshToken.isRevoked = true;
-    refreshToken.revokedAt = new Date();
-    refreshToken.revokedReason = 'Revoked by user';
+    refreshToken.revoke('Revoked by user');
     await refreshToken.save();
 
     res.json({ message: 'Token révoqué avec succès' });

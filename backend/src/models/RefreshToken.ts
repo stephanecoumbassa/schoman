@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import crypto from 'crypto';
+import * as crypto from 'crypto';
 
 export interface IRefreshToken extends Document {
   token: string;
@@ -15,6 +15,7 @@ export interface IRefreshToken extends Document {
   updatedAt: Date;
   isExpired: boolean;
   isActive: boolean;
+  revoke(reason?: string, replacedByToken?: string): void;
 }
 
 const RefreshTokenSchema: Schema = new Schema(
